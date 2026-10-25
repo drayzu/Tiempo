@@ -6,15 +6,40 @@
     <title>Tiempo</title>
     <meta name="description" content="Un solo scroll que recorre todo el tiempo: de antes del Big Bang a la última luz." />
     <meta name="theme-color" content="#000000" />
-    <style>
-      html, body { height: 100%; margin: 0; background: #000; color: #ece7db; }
-      body { display: grid; place-content: center; text-align: center; gap: 14px; font: 13px ui-monospace, monospace; }
-      h1 { margin: 0; font: 400 96px/1 'Instrument Serif', Georgia, serif; letter-spacing: -0.03em; }
-      a { color: #8fb4ff; }
-    </style>
+    <meta property="og:title" content="Tiempo" />
+    <meta property="og:description" content="Un solo scroll que recorre todo el tiempo: de antes del Big Bang a la última luz." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000'/%3E%3Cpath d='M32 12 L22 52 L42 52 Z' fill='none' stroke='%23ece7db' stroke-opacity='.5' stroke-width='1.5'/%3E%3Ccircle cx='32' cy='38' r='4.5' fill='%238fb4ff'/%3E%3C/svg%3E" />
   </head>
   <body>
-    <h1>Tiempo</h1>
-    <p>Fase 0 · dirección · <a href="./prototypes/index.html">laboratorio</a></p>
+    <canvas id="scene"></canvas>
+    <canvas id="placa" aria-hidden="true"></canvas>
+    <div id="spacer"></div>
+
+    <section id="intro">
+      <h1>Tiempo</h1>
+      <p class="lede" data-i18n>De antes del Big Bang a la última luz.</p>
+      <p class="cue" data-i18n>Desliza para empezar<span class="cue-line"></span></p>
+    </section>
+
+    <header class="brand">
+      <span class="brand-name">Tiempo</span>
+    </header>
+    <div class="chips">
+      <button id="plate" class="chip" aria-pressed="false"><span class="chip-k">I</span><span class="chip-t" data-i18n>Lámina</span></button>
+      <button id="sound" class="chip" aria-pressed="false"><span class="chip-k">S</span><span class="chip-t" data-i18n>Sonido</span></button>
+      <button id="play" class="chip"><span class="chip-k">A</span><span class="chip-t" data-i18n>Reproducir</span></button>
+      <button id="lang" class="chip"><span class="chip-k">L</span><span class="chip-t">English</span></button>
+    </div>
+
+    <nav id="ruler" aria-label="Eras" data-i18n-label></nav>
+    <p id="leer" class="sr-only" aria-live="polite"></p>
+
+    <section id="outro">
+      <p class="outro-k" data-i18n>Fin del viaje</p>
+      <p class="outro-t" data-i18n>De antes del tiempo a la última luz: unos 150 órdenes de magnitud, y la misma materia reordenándose.</p>
+    </section>
+
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

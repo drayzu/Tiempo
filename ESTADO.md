@@ -20,7 +20,26 @@ Heredado del brief: Vite + TypeScript + Three.js sin React; Instrument Serif, Ge
 - **«Ahora»: Tierra** (los continentes que se arman, la Tierra que gira rápido) **con la inmersión del Túnel** (primera persona). La Regla, opcional dentro de la lámina.
 - **Inmersión como regla del sitio entero:** movimientos de cámara, primera persona, volar dentro de las cosas; «estas cosas debes usarlo mucho en la página, es clave». Recogido en `BIBLIA.md` (principio 2).
 
-## Fase 0 · estudios de estilo (`npm run dev`, puerto 5191)
+## La aplicación (`index.html`, `npm run dev`, puerto 5191) · fase 1
+El viaje entero ya corre con el motor de Tiempo, de punta a punta: **16 eras**, unos **145 beats** (~67 000 px de scroll), del «t = ?» de la portada a «Después del tiempo».
+
+antes del tiempo (provisional) → **época de Planck** (la espuma de Potencias) → inflación → plasma de quarks → una de cada mil millones → veinte minutos de cocina (provisionales) → **la niebla / se hace la luz** → el gas se enfría (provisional) → **la edad oscura / la primera estrella / el amanecer** → las burbujas se tocan → la Vía Láctea → nace el Sol (provisionales) → **ahora** → el Sol se apaga → el largo final → después del tiempo (provisionales).
+
+- Las eras **reales** son Planck, la niebla, la primera estrella y «Ahora» (las tres de los estudios, con el estilo elegido y la cámara en primera persona). Las **provisionales** dicen «era provisional» arriba en pantalla y se reemplazan en las fases 2 a 4.
+- Scroll nativo; **A** reproduce, **S** sonido, **I** lámina (`?lamina` la abre encendida), **L** idioma. `?ver=N` congela en el beat N; `?p=N` arranca ahí; `?debug` deja `tiempo` en la consola: `tiempo.sheet([beats], columnas, ancho, 'docs/…/x.jpg')` guarda una hoja de contactos (película + lámina) en el proyecto; `tiempo.seek(b)`, `tiempo.at('niebla')`.
+- Capturas de la fase 1: `docs/fase1/viaje.jpg` (el viaje entero) y `docs/fase1/momentos.jpg`.
+
+### El motor (`src/engine/`)
+- `eras.ts`: la cadena de eras **en el orden en que se viven** (no por tamaño, como en Potencias): cada era tiene sus unidades y se ancla en la anterior (`anchor` + razón de unidades: la escala puede subir o bajar). La pista `era` dice dónde estamos (3,4 = 40 % del paso de la era 3 a la 4). Matrices en doble precisión relativas al pivote; carga perezosa; generación en workers (puede ser asíncrona: la Tierra carga sus costas). Visibilidad por el paso (`fade`) y por la escala (`fadeE`, como los mundos de Potencias: una era vista lejos de su escala serían manchas o polvo).
+- `materia.ts`: las partículas de Potencias + **tinta** (cada punto da luz y tapa luz, premultiplicado), niebla por distancia (`uFog`), desvanecimiento cerca de la cámara (`uNear`, para volar dentro), reordenamiento (`uAssemble`), sustitutos (`flag`), fuentes de luz (`star`) y GLSL propio por era (`move`).
+- `fondo.ts`: **el fondo es la temperatura** (ley de Planck, brillo para un ojo adaptado a la oscuridad). Brasa (tinta incandescente con huecos que se disipa en una pared lejana) y Horno (pantalla entera) mezclados por la pista `horno`; `fondo` es su ganancia (0 en las eras de lámina). La transparencia del universo sale de la recombinación (`cosmo.transparency`); el plasma «suena» (ondas acústicas) hasta que la luz se libera.
+- `protagonista.ts`: **nuestro protón**, un punto azul que nunca se pierde; cada era dice dónde está (`proton()` en sus unidades) y el motor lo mezcla entre eras. Con núcleo oscuro sobre fondos brillantes.
+- `placa.ts`: todo lo 2D sobre la película (en el canvas `#placa`, así las capturas lo incluyen): los **tres relojes** (`reloj` 0 desde el inicio con `lt`; 1 hacia atrás con `lb`; 2 ahora, con la hora real; 3 hacia adelante con `ah`; 4 «t = ?»), el **cono** (relleno con el color del universo a lo largo del viaje, bordes según certeza, las ramas de los finales, el nombre de la era) y las notas. Bilingüe.
+- `post.ts`, `scroll.ts`, `polvo.ts` (de Potencias); `sonido.ts` (el tono baja con la temperatura); `taller.ts` (workers); `contactos.ts` (hoja de contactos que guarda en `docs/`).
+- Pistas globales: `era`, `e`, `lt`, `lb`, `ah`, `reloj`, `yaw`/`pitch`/`roll`/`fov`, `<era>.fx/fy/fz` (volar por la era: primera persona), `<era>.keep`, `fondo`, `horno`, `bloom`/`umbral`. Sobre un cielo Horno brillante el bloom cede solo (si no, rellena las motas oscuras).
+- `src/eras/`: un módulo por era (`planck`, `niebla`, `amanecer`, `ahora`) y `provisional.ts` + `provisionales.ts` para el resto. Para agregar una era: su módulo y sumarla a `crearEras()` en `src/eras/index.ts` (la usan la página y los workers).
+
+## Fase 0 · estudios de estilo (`prototypes/`)
 `prototypes/index.html` (laboratorio) enlaza `prototypes/estudio.html`: tres momentos clave, cada uno de tres maneras. El scroll es el tiempo; **A** reproduce, **1–3** cambian de estilo.
 
 | Momento | A · Horno | B · Brasa | C · Lámina |
@@ -70,10 +89,15 @@ Heredado del brief: Vite + TypeScript + Three.js sin React; Instrument Serif, Ge
 - Estudios de «Se hace la luz», «La primera estrella» (A/B/C) y «Ahora» (1/2/3), revisados con hojas de contactos y corregidos (exposición del fondo, materia iluminada por el resplandor, frente de ionización irregular, recombinación al morir la estrella, pliegues en la deriva de continentes, exponentes en las etiquetas).
 - Diego eligió: Brasa de base, Horno en los picos de luz, Lámina opcional, «Ahora» Tierra con la inmersión del Túnel, y pidió inmersión en primera persona en todo el sitio.
 
+**Sesión del 25 de octubre de 2026, tarde (fase 1 · motor):**
+- Motor de Tiempo adaptado de Potencias (ver «El motor»): eras en orden de viaje, materia con tinta, fondo-temperatura Brasa/Horno, protón protagonista, tres relojes, cono, sonido por temperatura, workers, hoja de contactos que guarda en el proyecto.
+- Esqueleto del viaje entero con 16 eras; reales: Planck (de Potencias, cuerdas en azul), la niebla, la primera estrella y «Ahora» (anillos del túnel en espacio de cámara: años hasta un año, luego segundos).
+- Revisión con hoja de contactos: eras que aparecían como manchas al estar lejos de su escala (visibilidad por escala), Tierra quemada (bloom por momento), inflación negra, motas invisibles sobre el cielo naranja (el bloom las rellenaba: ahora cede solo), contraste del texto sobre Horno.
+
 ## Siguiente paso
-1. Fase 1 · motor: copiar y adaptar el de Potencias (`cadena`, `points`, `post`, `lamina`, `sonido`, `taller`, `hud`, `scroll`, `contactos`) a pistas de tiempo (`lt`, `lb`, `ah`), materia persistente con el protón como índice fijo, el fondo-temperatura, el HUD de tres relojes y la regla-cono.
-   Con la cámara en primera persona desde el principio (recorridos y miras por era, como en Potencias), el fondo con modo Horno por momentos y la lámina como capa.
-2. Fase 2 · prueba de fuego: del plasma a la primera estrella en un tramo continuo, volando dentro, más «Ahora» (Tierra con la entrada por el túnel).
+1. Que Diego recorra el viaje (mejor con **A**) y diga qué funciona.
+2. Fase 2 · prueba de fuego: del plasma a la primera estrella en un tramo continuo, volando dentro. Reemplazar las provisionales del Acto I y II por eras reales: la inflación (arrugas estiradas, «serán galaxias»), el plasma de quarks y el nacimiento de nuestro protón (enlace con «Nadie ha visto un quark solo» de Potencias), la aniquilación (un destello y el sobrante), la nucleosíntesis (dos tonos) y el gas que se enfría (un puente que se vea a toda escala). Hoy esas tres eras del plasma se parecen demasiado (todo es tinta blanca azulada).
+3. Pendientes del motor: tono exacto del fondo bajo ACES (hoy el naranja tira a dorado cuando es muy brillante; se puede corregir invirtiendo la curva solo para el fondo), y transiciones de gran salto de escala sin nada en medio (Vía Láctea → Sol, futuro → final).
 
 ## Plan de fases
-0 Dirección (biblia, estudios de estilo) ✓ · 1 Motor · 2 Prueba de fuego (Acto I a III + Ahora) · 3 Acto IV, V y momentos con nombre · 4 Los extremos (Acto 0, VI, finales, bucle) · 5 Sonido, lámina, bilingüe, enlaces cruzados · 6 Pulido, móvil, deploy y README.
+0 Dirección (biblia, estudios de estilo) ✓ · 1 Motor ✓ (esqueleto con eras provisionales) · 2 Prueba de fuego (Acto I a III + Ahora) · 3 Acto IV, V y momentos con nombre · 4 Los extremos (Acto 0, VI, finales, bucle) · 5 Sonido, lámina, bilingüe, enlaces cruzados · 6 Pulido, móvil, deploy y README.
