@@ -129,6 +129,10 @@ const VIEW = LOC_NOW.clone().add(SUN0.clone().multiplyScalar(0.75)).normalize();
 const TURN = new THREE.Quaternion().setFromUnitVectors(VIEW, new THREE.Vector3(0, 0, 1));
 /** You, at now, in the era's units (on the surface). */
 const YOU = LOC_NOW.clone().applyQuaternion(TURN).multiplyScalar(R * 1.004);
+/** Where the Sun is, seen from the Earth now, in this era's units (1 000 km): 1 AU away, towards the light. */
+export const SOL_DESDE_TIERRA = SUN0.clone().applyQuaternion(TURN).multiplyScalar(1.496e11 / 1e6);
+/** The direction of the Earth's north pole in this era's frame (close enough to the ecliptic's for the planets' plane). */
+export const NORTE = new THREE.Vector3(0, 1, 0).applyQuaternion(TURN);
 
 const EARTH_MOVE = /* glsl */ `
   // The surface turns under a fixed Sun; fast, its days blur into bands (a long exposure).

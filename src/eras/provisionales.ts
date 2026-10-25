@@ -338,7 +338,6 @@ export const final = marcar(
     label: 'final',
     unitExp: 21,
     frame: 20,
-    anchor: [-2.46e9, 0, 0],
     tint: 0x8a6a5a,
     forma(b) {
       const r = b.r;

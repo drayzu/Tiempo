@@ -75,8 +75,20 @@ export function anios(y: number, digits = 2): string {
 }
 
 /** A temperature from its log10 (it spans 10³² K to far below 10⁻¹⁰⁰ K). */
+/**
+ * A power whose exponent is itself huge (the far future: 10^(−2,7 × 10¹⁷)), written as a power of a
+ * power, as Potencias does at its end.
+ */
+function potPot(log: number, unit: string) {
+  const sign = log < 0 ? '−' : '';
+  const e = Math.floor(Math.log10(Math.abs(log)));
+  const m = Math.abs(log) / Math.pow(10, e);
+  return `10^(${sign}${m.toFixed(1).replace('.', DEC)}·10${sup(e)}) ${unit}`;
+}
+
 export function kelvin(logT: number) {
   if (Number.isNaN(logT)) return EN ? 'temperature ≈ 0' : 'temperatura ≈ 0';
+  if (Math.abs(logT) >= 1e4) return potPot(logT, 'K');
   if (logT >= 5 || logT < -2) return `10${sup(Math.floor(logT))} K`;
   const T = Math.pow(10, logT);
   if (T >= 100) return `${group(roundSig(T, 3))} K`;
@@ -93,6 +105,7 @@ export function largo(logM: number) {
     [3, 'km', 'km'],
     [0, 'm', 'm'],
   ];
+  if (Math.abs(logM) >= 1e4) return potPot(logM, 'm');
   if (logM < -3 || logM > Math.log10(LY * 1e9) + 4) return `10${sup(Math.floor(logM))} m`;
   const [lu, es, en] = units.find(([u]) => logM >= u) ?? units[units.length - 1];
   const v = Math.pow(10, logM - lu);
