@@ -117,9 +117,11 @@ antes del tiempo → época de Planck → inflación → plasma de quarks → un
 - La bifurcación: panel de finales, `crearEras(final)`, y los otros tres finales (Desgarro, Colapso, Vacío), revisados con hojas de contactos (`docs/fase4/`).
 - Correcciones: en los finales que no son el frío el reloj ya no retrocede (la bifurcación espera en ~16 000 millones de años); planetas del Desgarro que no se veían (su `delay` > 1 los escondía en el revelado); el cielo Horno de 3 K ya no tiñe de rojo oscuro; la tinta de la interfaz cambia más rápido (menos texto gris sobre gris); `?p=` funciona también al recargar.
 
+**Fase 5 · sonido:** «El universo sonaba»: mientras el universo es un plasma opaco (desde sus primeros segundos hasta que se hace la luz) suena un rugido de ruido filtrado con sus armónicos en las razones de los picos acústicos del fondo de microondas (ℓ ≈ 220, 537, 810, 1 120, 1 420), unas cincuenta octavas más agudo, que respira con el plasma y baja de tono al enfriarse; en el Gran Colapso vuelve, subiendo. La pista `silencio` vacía el sonido en el futuro lejano y el momento en que llega a 1 suena la última campana (la última luz de cada final). Volumen calibrado midiendo con un `OfflineAudioContext` (`buildSound` sirve para eso).
+
 ## Siguiente paso
 1. Que Diego recorra el viaje (mejor con **A**) y los cuatro finales, y diga qué funciona.
-2. Fase 5: sonido (el plasma que suena, silencio al final), los textos en inglés (las leyendas nuevas aún no tienen traducción), la lámina (notas por era), enlaces cruzados con Potencias y AstroIngeniería.
+2. Fase 5 (resto): los textos en inglés (las leyendas nuevas aún no tienen traducción), la lámina (notas por era), enlaces cruzados con Potencias y AstroIngeniería.
 3. Pendientes del motor: tono exacto del fondo bajo ACES (el naranja tira a dorado cuando es muy brillante), legibilidad del texto sobre el naranja del Horno (en el cruce de tinta clara a oscura).
 4. Fase 6: móvil, rendimiento, README con capturas y publicar (preguntar a Diego el nombre del repo antes).
 

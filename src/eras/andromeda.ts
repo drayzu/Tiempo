@@ -183,7 +183,7 @@ export function andromeda(conUltima = true): EraModule {
       tl.to(4.2, { 'and.sky': 1, ah: 11.4, e: era.home + 1.1, yaw: 1.6, pitch: 0.2 });
       // The last star belongs to the cold ending.
       tl.caption(4.6, 'La última estrella', 'Las estrellas se apagan una a una, las más grandes primero. Hacia los 10¹⁴ años se apaga la última enana roja.');
-      tl.to(4.6, { 'and.last': 1, ah: 14, e: era.home - 0.7, yaw: 1.9, pitch: 0.45 });
+      tl.to(4.6, { 'and.last': 1, ah: 14, e: era.home - 0.7, yaw: 1.9, pitch: 0.45, silencio: 0.25 });
     },
   };
 }

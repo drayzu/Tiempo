@@ -4,7 +4,7 @@ import '@fontsource-variable/geist';
 import '@fontsource-variable/geist-mono';
 import './style.css';
 import * as THREE from 'three';
-import { clamp, damp } from './lib/math';
+import { clamp, damp, smoothstep } from './lib/math';
 import { AGE, R_OBS, YEAR, logScaleFactor, logTemperature } from './lib/cosmo';
 import { bbColor, bbVisible } from './lib/cuerpo-negro';
 import { Eras, type Era, type EraData, type EraFrame } from './engine/eras';
@@ -100,7 +100,7 @@ langBtn.addEventListener('click', switchLang);
 
 // ---------------------------------------------------------------- the choreography
 
-const tl = new Timeline({ era: 0, e: eras.list[0].home, lt: -45, lb: 9.6, ah: 0, reloj: 4, yaw: 0, pitch: 0, roll: 0, fov: 50, fondo: 0, horno: 0, bloom: 0.7, umbral: 0.12 });
+const tl = new Timeline({ era: 0, e: eras.list[0].home, lt: -45, lb: 9.6, ah: 0, reloj: 4, yaw: 0, pitch: 0, roll: 0, fov: 50, fondo: 0, horno: 0, bloom: 0.7, umbral: 0.12, silencio: 0 });
 const starts = new Map<string, number>();
 MODULES.forEach((m, i) => {
   starts.set(eras.list[i].id, tl.length);
@@ -259,6 +259,8 @@ let prevE = tl.get('e', 0);
 let prevLt = tl.get('lt', 0);
 let speakTimer = 0;
 let atEnd = 0;
+let lastSilencio = 0;
+let lastP = 0;
 
 function step(now: number) {
   const dt = Math.min((now - last) / 1000, 0.1);
@@ -420,7 +422,20 @@ function step(now: number) {
     }
   } else atEnd = 0;
   playBtn.classList.toggle('is-on', scroll.playing);
-  sound.update(Number.isNaN(l.logT) ? -2 : l.logT, timeSpeed + zoomSpeed, eras.segment + (eras.blend > 0.5 ? 1 : 0));
+  // The plasma rings while the universe is opaque (from its first seconds); the end falls silent,
+  // and the moment the silence arrives is the last bell.
+  const silencio = tl.get('silencio', p);
+  if (silencio >= 0.9 && lastSilencio < 0.9 && p > lastP) sound.ultima();
+  lastSilencio = silencio;
+  lastP = p;
+  sound.update({
+    logT: Number.isNaN(l.logT) ? -2 : l.logT,
+    speed: timeSpeed + zoomSpeed,
+    era: eras.segment + (eras.blend > 0.5 ? 1 : 0),
+    plasma: (1 - fondo.state.clear) * smoothstep(-1, 2, l.lt) * Math.min(1, tl.get('fondo', p)),
+    wave: fondo.state.wave,
+    silencio,
+  });
 }
 
 /** Adaptive quality, as in Potencias: fewer pixels when frames run slow, more when there is room. */

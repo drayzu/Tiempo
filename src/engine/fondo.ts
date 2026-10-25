@@ -99,7 +99,7 @@ export function createFondo() {
   const m4 = new THREE.Matrix4();
   const bb = { r: 0, g: 0, b: 0 };
   let waveT = 0;
-  const state = { T: 0, logT: 0, vis: 0, clear: 0, bgL: 0, tinta: 0 };
+  const state = { T: 0, logT: 0, vis: 0, clear: 0, bgL: 0, tinta: 0, wave: 0 };
 
   return {
     mesh,
@@ -135,6 +135,7 @@ export function createFondo() {
       // The plasma's sound rings until the light lets go, then freezes.
       waveT += dt * (1 - clear);
       u.uWaveT.value = waveT;
+      state.wave = waveT;
       u.uSound.value = (1 - clear) * smoothstep(-1, 2, lt);
       state.T = T;
       state.logT = logT;

@@ -84,12 +84,12 @@ export function degenerada(): EraModule {
     choreo(tl, era) {
       tl.with(0.02, { reloj: 3 });
       tl.set({ 'deg.k': 0 });
-      tl.to(3.0, { era: era.index, e: era.home - 0.3, ah: 14.6, fondo: 1, horno: 0, fov: 54, yaw: 2.0, pitch: 0.4, roll: 0, bloom: 0.4, umbral: 0.25 });
+      tl.to(3.0, { era: era.index, e: era.home - 0.3, ah: 14.6, fondo: 1, horno: 0, fov: 54, yaw: 2.0, pitch: 0.4, roll: 0, bloom: 0.4, umbral: 0.25, silencio: 0.35 });
       tl.label('degenerada');
       tl.to(3.6, { 'deg.k': 0.45, ah: 17, e: era.home - 0.15, yaw: 2.3 });
       tl.caption(3.4, 'Un fuego raro', 'A veces dos enanas marrones chocan y encienden una estrella nueva, por un rato.');
       tl.to(3.4, { 'deg.k': 0.8, ah: 19.5, yaw: 2.6, pitch: 0.3 });
-      tl.to(2.6, { 'deg.k': 1, ah: 22, e: era.home + 0.6, yaw: 2.8 });
+      tl.to(2.6, { 'deg.k': 1, ah: 22, e: era.home + 0.6, yaw: 2.8, silencio: 0.5 });
     },
   };
 }
@@ -214,7 +214,7 @@ export function protones(): EraModule {
       tl.to(3.0, { ah: 36, e: era.home - 0.3, yaw: 0.5, pitch: 0.15 });
       // If protons decay, ours goes.
       tl.caption(4.2, 'Adiós', 'Desde la primera millonésima de segundo hasta aquí: unos 10⁴⁰ años. Fue hidrógeno, agua, parte de ti.');
-      tl.to(4.2, { 'pro.decay': 1, ah: 40, e: era.home + 0.2, yaw: 0.9, roll: 0.3 });
+      tl.to(4.2, { 'pro.decay': 1, ah: 40, e: era.home + 0.2, yaw: 0.9, roll: 0.3, silencio: 0.6 });
       tl.wait(1.2);
     },
   };
@@ -316,12 +316,15 @@ export function ultimaLuz(): EraModule {
       tl.with(0.02, { reloj: 3 });
       tl.set({ 'luz.k': 0 });
       // Back up from where our proton was, to the black holes.
-      tl.to(3.4, { era: era.index, e: era.home - 0.15, ah: 60, fov: 56, yaw: 0.2, pitch: 0.25, roll: 0, bloom: 0.4, umbral: 0.3 });
+      tl.to(3.4, { era: era.index, e: era.home - 0.15, ah: 60, fov: 56, yaw: 0.2, pitch: 0.25, roll: 0, bloom: 0.4, umbral: 0.3, silencio: 0.7 });
       tl.label('ultima-luz');
       tl.to(3.4, { 'luz.k': 0.56, ah: 80, yaw: 0.6 });
       tl.to(3.0, { 'luz.k': 0.9, ah: 96, 'ultima-luz.fx': 0.4, 'ultima-luz.fy': 0.2, 'ultima-luz.fz': 0.3, e: era.home - 0.4, yaw: 0.9 });
       tl.caption(3.0, 'La última luz', 'El último agujero negro se evapora en un destello. Después, nada vuelve a brillar.');
-      tl.to(3.0, { 'luz.k': 1.02, ah: 100, e: era.home - 0.55, yaw: 1.1 });
+      tl.to(2.5, { 'luz.k': 1, ah: 99.6, e: era.home - 0.52, yaw: 1.07 });
+      // The last light is the last bell; then, silence.
+      tl.with(0.2, { silencio: 1 });
+      tl.to(0.5, { 'luz.k': 1.02, ah: 100, e: era.home - 0.55, yaw: 1.1 });
     },
   };
 }

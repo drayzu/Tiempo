@@ -334,6 +334,7 @@ export function ripAtomo(): EraModule {
       tl.label('rip-atomo');
       tl.caption(3.6, 'Faltan 10⁻¹⁹ segundos', 'Los átomos se rompen. Después, el espacio mismo.');
       tl.to(3.6, { 'rip.a': 1, e: era.home + 0.4, roll: 0.2 });
+      tl.with(0.2, { silencio: 1 });
       tl.wait(0.8);
     },
   };
@@ -419,6 +420,7 @@ export function colapso(): EraModule {
       tl.to(4.8, { 'col.k': 1, ah: 10.29, e: era.home - 0.9, yaw: 2.7, pitch: 0.05, roll: 0.3 });
       // Hotter than any star, back to the temperature of the beginning: a flash, and nothing.
       tl.to(1.4, { 'col.fin': 1, bloom: 0.9, e: era.home - 1.2 });
+      tl.with(0.2, { silencio: 1 });
       tl.to(0.8, { fondo: 0, bloom: 0.5 });
     },
   };
@@ -511,7 +513,10 @@ export function vacio(): EraModule {
       tl.label('vacio');
       tl.to(3.4, { 'vac.r': 8, yaw: VISTA.y + 0.04 });
       tl.caption(5.6, 'Sin aviso', 'Dentro, las leyes de la física serían otras. Nada de lo que conocemos podría existir.');
-      tl.to(5.6, { 'vac.r': 40, yaw: VISTA.y + 0.08, roll: 0.05 });
+      // (the wall reaches us at about r = 19: the last bell)
+      tl.to(1.9, { 'vac.r': 19, yaw: VISTA.y + 0.06, roll: 0.02 });
+      tl.with(0.15, { silencio: 1 });
+      tl.to(3.7, { 'vac.r': 40, yaw: VISTA.y + 0.08, roll: 0.05 });
       tl.wait(0.8);
     },
   };
