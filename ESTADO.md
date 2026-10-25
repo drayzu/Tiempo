@@ -20,12 +20,16 @@ Heredado del brief: Vite + TypeScript + Three.js sin React; Instrument Serif, Ge
 - **«Ahora»: Tierra** (los continentes que se arman, la Tierra que gira rápido) **con la inmersión del Túnel** (primera persona). La Regla, opcional dentro de la lámina.
 - **Inmersión como regla del sitio entero:** movimientos de cámara, primera persona, volar dentro de las cosas; «estas cosas debes usarlo mucho en la página, es clave». Recogido en `BIBLIA.md` (principio 2).
 
-## La aplicación (`index.html`, `npm run dev`, puerto 5191) · fase 1
+**25 de octubre de 2026, tarde (Diego, tras ver la fase 1):** el túnel de anillos de «Ahora» no se ve natural: quitarlo y dejar la Tierra girando. «El resto va por buen camino.» Pide seguir con espectacularidad, efecto wow y movimiento de cámara.
+
+## La aplicación (`index.html`, `npm run dev`, puerto 5191) · fases 1 a 3
 El viaje entero ya corre con el motor de Tiempo, de punta a punta: **16 eras**, unos **145 beats** (~67 000 px de scroll), del «t = ?» de la portada a «Después del tiempo».
 
 antes del tiempo (provisional) → **época de Planck** (la espuma de Potencias) → inflación → plasma de quarks → una de cada mil millones → veinte minutos de cocina (provisionales) → **la niebla / se hace la luz** → el gas se enfría (provisional) → **la edad oscura / la primera estrella / el amanecer** → las burbujas se tocan → la Vía Láctea → nace el Sol (provisionales) → **ahora** → el Sol se apaga → el largo final → después del tiempo (provisionales).
 
-- Las eras **reales** son Planck, la niebla, la primera estrella y «Ahora» (las tres de los estudios, con el estilo elegido y la cámara en primera persona). Las **provisionales** dicen «era provisional» arriba en pantalla y se reemplazan en las fases 2 a 4.
+- Eras **reales** (12): Planck · **inflación** (lámina: la retícula de la espuma estirándose sin fin, arrugas que se congelan, semillas en azul; los relojes muestran el trozo de universo creciendo 10²⁶ veces y la temperatura ≈ 0; al terminar, el destello del recalentamiento) · **el plasma de quarks** (vuelo en primera persona entre quarks rojos, verdes y azules y gluones; al enfriarse quedan presos de a tres, los colores se apagan en blanco y la «Y» de tubos de gluones de nuestro protón se forma mientras la cámara lo rodea) · **una de cada mil millones** (materia y antimateria se aniquilan en destellos; quedan sobrevivientes; después la ola de electrones y positrones; la lámina avisa que el dibujo deja 1 de cada 30 y la realidad 1 de cada 1 000 millones) · **veinte minutos de cocina** (deuterio y luego helio dorado entre protones blancos; nuestro protón queda solo: hidrógeno) · **la niebla / se hace la luz** · **el gas se enfría** (puente de 20 órdenes de magnitud: zoom infinito por un gas que se agrumó en hilos y nudos) · **la primera estrella** · **las burbujas se tocan** (reionización: galaxias que se encienden en la red y burbujas rosadas que se funden) · **la Vía Láctea se arma** (enanas que caen en espiral, disco que crece de adentro hacia afuera con cuatro brazos, viveros rosados, polvo oscuro, bulbo; «la expansión acelera») · **nace el Sol** (nube molecular, onda de supernova que la siembra, colapso en disco con chorros, anillos vistos de frente como en ALMA, el Sol se enciende) · **ahora** (sin túnel: la Tierra girando y la cámara rodeándola; la órbita de la Luna como anillo de luz que se condensa en la Luna en su fase real; los hitos pasan arriba).
+- Las **provisionales** (antes del tiempo, el Sol se apaga, el largo final, después del tiempo) dicen «era provisional» arriba en pantalla y se reemplazan en la fase 4.
+- El plasma (quarks, aniquilación, núcleos) tiene **profundidad**: es opaco, así que lo cercano es nítido y lo lejano se disuelve en su resplandor (`uFog`).
 - Scroll nativo; **A** reproduce, **S** sonido, **I** lámina (`?lamina` la abre encendida), **L** idioma. `?ver=N` congela en el beat N; `?p=N` arranca ahí; `?debug` deja `tiempo` en la consola: `tiempo.sheet([beats], columnas, ancho, 'docs/…/x.jpg')` guarda una hoja de contactos (película + lámina) en el proyecto; `tiempo.seek(b)`, `tiempo.at('niebla')`.
 - Capturas de la fase 1: `docs/fase1/viaje.jpg` (el viaje entero) y `docs/fase1/momentos.jpg`.
 
@@ -37,7 +41,9 @@ antes del tiempo (provisional) → **época de Planck** (la espuma de Potencias)
 - `placa.ts`: todo lo 2D sobre la película (en el canvas `#placa`, así las capturas lo incluyen): los **tres relojes** (`reloj` 0 desde el inicio con `lt`; 1 hacia atrás con `lb`; 2 ahora, con la hora real; 3 hacia adelante con `ah`; 4 «t = ?»), el **cono** (relleno con el color del universo a lo largo del viaje, bordes según certeza, las ramas de los finales, el nombre de la era) y las notas. Bilingüe.
 - `post.ts`, `scroll.ts`, `polvo.ts` (de Potencias); `sonido.ts` (el tono baja con la temperatura); `taller.ts` (workers); `contactos.ts` (hoja de contactos que guarda en `docs/`).
 - Pistas globales: `era`, `e`, `lt`, `lb`, `ah`, `reloj`, `yaw`/`pitch`/`roll`/`fov`, `<era>.fx/fy/fz` (volar por la era: primera persona), `<era>.keep`, `fondo`, `horno`, `bloom`/`umbral`. Sobre un cielo Horno brillante el bloom cede solo (si no, rellena las motas oscuras).
-- `src/eras/`: un módulo por era (`planck`, `niebla`, `amanecer`, `ahora`) y `provisional.ts` + `provisionales.ts` para el resto. Para agregar una era: su módulo y sumarla a `crearEras()` en `src/eras/index.ts` (la usan la página y los workers).
+- `src/eras/`: un módulo por era y `provisional.ts` + `provisionales.ts` para las que faltan. `infinito.ts`: zoom infinito (capas del mismo patrón a décadas fijas alrededor de la cámara; en puntos o en líneas de lámina) para las eras que cruzan muchos órdenes sin un objeto de un solo tamaño (inflación, el gas).
+- Las eras pueden corregir los relojes donde la historia estándar no vale (`lectura()`: en la inflación el tamaño y una temperatura ≈ 0).
+- Regla de GLSL: las variables internas del shader de la materia llevan prefijo `m` (`mK`, `mPx`…); el código de una era puede usar cualquier nombre corto. `tiempo.errores()` (con `?debug`) lista los shaders que no compilaron: una era con un error simplemente no se ve. Para agregar una era: su módulo y sumarla a `crearEras()` en `src/eras/index.ts` (la usan la página y los workers).
 
 ## Fase 0 · estudios de estilo (`prototypes/`)
 `prototypes/index.html` (laboratorio) enlaza `prototypes/estudio.html`: tres momentos clave, cada uno de tres maneras. El scroll es el tiempo; **A** reproduce, **1–3** cambian de estilo.
@@ -94,10 +100,17 @@ antes del tiempo (provisional) → **época de Planck** (la espuma de Potencias)
 - Esqueleto del viaje entero con 16 eras; reales: Planck (de Potencias, cuerdas en azul), la niebla, la primera estrella y «Ahora» (anillos del túnel en espacio de cámara: años hasta un año, luego segundos).
 - Revisión con hoja de contactos: eras que aparecían como manchas al estar lejos de su escala (visibilidad por escala), Tierra quemada (bloom por momento), inflación negra, motas invisibles sobre el cielo naranja (el bloom las rellenaba: ahora cede solo), contraste del texto sobre Horno.
 
+**Sesión del 25 de octubre de 2026, tarde y noche (fases 2 y 3, Diego dejó trabajando en segundo plano):**
+- «Ahora» sin túnel (pedido de Diego): la Tierra girando, la cámara que la rodea, la Luna en su fase real.
+- Fase 2: inflación, plasma de quarks, aniquilación, nucleosíntesis y el gas que se enfría, como eras reales; recalentamiento al salir de la inflación.
+- Fase 3: las burbujas se tocan, la Vía Láctea se arma, nace el Sol.
+- Correcciones: el destello de la primera estrella vuelve a ser azul lavanda con siluetas (era una pantalla blanca); hueco negro antes del futuro; shaders que no compilaban por nombres repetidos (de ahí la regla del prefijo).
+
 ## Siguiente paso
+0. Fase 4: el futuro (el Sol se apaga, Andrómeda, la última estrella), el largo final (enanas negras, ¿mueren los protones? —el fin del hilo—, la última luz de los agujeros negros), la bifurcación de finales (`?final=`), después del tiempo y el bucle; y antes del tiempo (portada).
 1. Que Diego recorra el viaje (mejor con **A**) y diga qué funciona.
 2. Fase 2 · prueba de fuego: del plasma a la primera estrella en un tramo continuo, volando dentro. Reemplazar las provisionales del Acto I y II por eras reales: la inflación (arrugas estiradas, «serán galaxias»), el plasma de quarks y el nacimiento de nuestro protón (enlace con «Nadie ha visto un quark solo» de Potencias), la aniquilación (un destello y el sobrante), la nucleosíntesis (dos tonos) y el gas que se enfría (un puente que se vea a toda escala). Hoy esas tres eras del plasma se parecen demasiado (todo es tinta blanca azulada).
 3. Pendientes del motor: tono exacto del fondo bajo ACES (hoy el naranja tira a dorado cuando es muy brillante; se puede corregir invirtiendo la curva solo para el fondo), y transiciones de gran salto de escala sin nada en medio (Vía Láctea → Sol, futuro → final).
 
 ## Plan de fases
-0 Dirección (biblia, estudios de estilo) ✓ · 1 Motor ✓ (esqueleto con eras provisionales) · 2 Prueba de fuego (Acto I a III + Ahora) · 3 Acto IV, V y momentos con nombre · 4 Los extremos (Acto 0, VI, finales, bucle) · 5 Sonido, lámina, bilingüe, enlaces cruzados · 6 Pulido, móvil, deploy y README.
+0 Dirección (biblia, estudios de estilo) ✓ · 1 Motor ✓ · 2 Prueba de fuego (Acto I a III + Ahora) ✓ · 3 Acto IV ✓ (V y momentos con nombre: en curso) · 4 Los extremos (Acto 0, VI, finales, bucle) · 5 Sonido, lámina, bilingüe, enlaces cruzados · 6 Pulido, móvil, deploy y README.
