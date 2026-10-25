@@ -1,0 +1,159 @@
+:root {
+  --ink: #ece7db;
+  --dim: rgba(236, 231, 219, 0.5);
+  --faint: rgba(236, 231, 219, 0.14);
+  --accent: #8fb4ff;
+  --serif: 'Instrument Serif', serif;
+  --sans: 'Geist Variable', system-ui, sans-serif;
+  --mono: 'Geist Mono Variable', ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  background: #000;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The film and its plate: the same size, one over the other (a capture is both, composed). */
+#scene,
+#placa {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#placa {
+  pointer-events: none;
+}
+
+/* A fixed capture size (?cap=1600x900) is shown letterboxed in the window. */
+body.is-cap #scene,
+body.is-cap #placa {
+  object-fit: contain;
+  background: #000;
+}
+
+#spacer {
+  position: relative;
+  pointer-events: none;
+}
+
+.brand {
+  position: fixed;
+  top: 24px;
+  left: 28px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  pointer-events: none;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+}
+
+.brand-name {
+  font-family: var(--serif);
+  font-size: 26px;
+  line-height: 1;
+}
+
+.brand-sub {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.dock {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: min(760px, calc(100vw - 32px));
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 12px var(--sans);
+  color: var(--dim);
+  background: rgba(8, 8, 12, 0.6);
+  border: 1px solid var(--faint);
+  border-radius: 999px;
+  padding: 5px 12px 5px 6px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tab:hover,
+.tab.is-on {
+  color: var(--ink);
+  border-color: rgba(143, 180, 255, 0.65);
+}
+
+.tab-k {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 999px;
+  font: 500 11px var(--mono);
+  color: var(--ink);
+  background: var(--faint);
+}
+
+.tab.is-on .tab-k {
+  background: var(--accent);
+  color: #0b0b0c;
+}
+
+#blurb {
+  max-width: 560px;
+  text-align: center;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  color: rgba(236, 231, 219, 0.78);
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+}
+
+.hint {
+  font: 10.5px var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+}
+
+body.is-clean .dock,
+body.is-clean .brand {
+  display: none;
+}
