@@ -77,3 +77,49 @@ export function contactSheet(host: SheetHost) {
     return beats.length;
   };
 }
+
+/**
+ * A continuous clip (debug only, for the README): `n` frames from beat `b0` to `b1`, each a thirtieth
+ * of a second after the last, saved as JPG into `dir` (dev only). The film alone by default (no
+ * plate), so the README can set its own words beside it.
+ */
+export function pelicula(host: SheetHost) {
+  return async (b0: number, b1: number, n: number, dir: string, plate = false) => {
+    await document.fonts?.ready;
+    const [film] = host.canvases;
+    const out = document.createElement('canvas');
+    out.width = film.width;
+    out.height = film.height;
+    const g = out.getContext('2d')!;
+    const before = host.held();
+    let now = performance.now();
+    // Arrive at the first beat and let everything load and settle.
+    host.freeze(b0);
+    for (let i = 0; i < 500; i++) {
+      host.step((now += 1000 / 30));
+      if (i > 1 && !host.eras.some((e) => e.pending)) break;
+      const until = performance.now() + 40;
+      while (performance.now() < until) await tick();
+    }
+    for (const e of host.eras) e.born = -1e9;
+    for (let i = 0; i < 45; i++) host.step((now += 1000 / 30));
+    for (let k = 0; k < n; k++) {
+      host.freeze(b0 + ((b1 - b0) * k) / Math.max(1, n - 1));
+      // An era arriving mid-clip: wait for it rather than let it pop in.
+      for (let w = 0; w < 400 && host.eras.some((e) => e.pending); w++) {
+        const until = performance.now() + 25;
+        while (performance.now() < until) await tick();
+      }
+      for (const e of host.eras) if (e.born > -1e8) e.born = -1e9;
+      host.step((now += 1000 / 30));
+      g.fillStyle = '#000';
+      g.fillRect(0, 0, out.width, out.height);
+      g.drawImage(film, 0, 0, out.width, out.height);
+      if (plate) for (const c of host.canvases.slice(1)) g.drawImage(c, 0, 0, out.width, out.height);
+      const blob = await new Promise<Blob>((res) => out.toBlob((bb) => res(bb!), 'image/jpeg', 0.93));
+      await fetch(`/__guardar?f=${encodeURIComponent(`${dir}/${String(k).padStart(4, '0')}.jpg`)}`, { method: 'POST', body: blob });
+    }
+    host.freeze(before);
+    return n;
+  };
+}

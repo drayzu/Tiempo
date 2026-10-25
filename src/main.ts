@@ -16,7 +16,7 @@ import { createSound } from './engine/sonido';
 import { createFondo } from './engine/fondo';
 import { createProtagonista } from './engine/protagonista';
 import { anillo, cono, escala, ficha, hud, nota, proyectar, rotulo, CONO, type Cono, type Lectura } from './engine/placa';
-import { contactSheet } from './engine/contactos';
+import { contactSheet, pelicula, type SheetHost } from './engine/contactos';
 import { crearEras, FINALES, type Final } from './eras';
 import { lang, switchLang, tx } from './i18n';
 
@@ -510,7 +510,7 @@ requestAnimationFrame(frame);
 
 // `?debug`: the eras and timeline in the console, and `tiempo.sheet([beats], cols, width, path?)`.
 if (params.has('debug')) {
-  const sheet = contactSheet({
+  const host: SheetHost = {
     freeze: (b) => scroll.freeze(b),
     held: () => scroll.held,
     step,
@@ -521,11 +521,12 @@ if (params.has('debug')) {
       for (const e of eras.list) if (tl.at(e.id) <= b + 1e-6) id = e.id;
       return id;
     },
-  });
+  };
+  const sheet = contactSheet(host);
   // Shaders that failed to compile (an era whose GLSL clashes would otherwise just not show).
   const errores = () =>
     (renderer.info.programs ?? [])
       .filter((pr) => (pr as unknown as { diagnostics?: { runnable: boolean } }).diagnostics?.runnable === false)
       .map((pr) => (pr as unknown as { name: string; diagnostics: { vertexShader: { log: string } } }).diagnostics.vertexShader.log.slice(0, 300));
-  Object.assign(window, { tiempo: { eras, tl, camera, root, sound, post, renderer, sheet, step, errores, seek: (b: number | null) => scroll.freeze(b), at: (id: string) => tl.at(id), clamp } });
+  Object.assign(window, { tiempo: { eras, tl, camera, root, sound, post, renderer, sheet, pelicula: pelicula(host), step, errores, seek: (b: number | null) => scroll.freeze(b), at: (id: string) => tl.at(id), clamp } });
 }
