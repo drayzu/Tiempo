@@ -245,7 +245,10 @@ const refit = () => {
   fit = Math.max(1, Math.min(1.7, 0.78 / (innerWidth / innerHeight)));
 };
 refit();
+/** While a clip is being captured the canvas keeps its size (a hidden or resized window must not change it) and the page's own loop stands aside. */
+let fijo = false;
 addEventListener('resize', () => {
+  if (fijo) return;
   post.resize();
   refit();
 });
@@ -277,7 +280,8 @@ let lastSilencio = 0;
 let lastP = 0;
 
 function step(now: number) {
-  const dt = Math.min((now - last) / 1000, 0.1);
+  // (never backwards: a clock that runs behind would turn every damped value into NaN)
+  const dt = Math.min(Math.max((now - last) / 1000, 0), 0.1);
   last = now;
   const time = calm.matches ? 0 : now / 1000;
   const p = scroll.update(dt);
@@ -480,7 +484,7 @@ let lastRaw = performance.now();
 function adapt(now: number) {
   const raw = (now - lastRaw) / 1000;
   lastRaw = now;
-  if (now < 4000 || raw > 0.1 || document.visibilityState !== 'visible') return;
+  if (fijo || now < 4000 || raw > 0.1 || document.visibilityState !== 'visible') return;
   avg += (raw - avg) * 0.05;
   if (avg > 1 / 40) {
     slow += raw;
@@ -502,8 +506,11 @@ function adapt(now: number) {
 }
 
 function frame(now: number) {
-  adapt(now);
-  step(now);
+  // While a clip is captured, its own clock drives the film.
+  if (!fijo) {
+    adapt(now);
+    step(now);
+  }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
@@ -516,6 +523,7 @@ if (params.has('debug')) {
     step,
     eras: eras.list,
     canvases: [renderer.domElement, plate],
+    fijar: (on) => (fijo = on),
     labelOf: (b) => {
       let id = '';
       for (const e of eras.list) if (tl.at(e.id) <= b + 1e-6) id = e.id;
