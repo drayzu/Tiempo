@@ -192,7 +192,8 @@ export function ahora(): EraModule {
       label: 'ahora',
       unitExp: 6,
       frame: 19,
-      anchor: new THREE.Vector3(1.496, 0, 0),
+      // Where the Earth formed in the Sun's disk (1 AU, in that era's 10¹³ m units).
+      anchor: new THREE.Vector3(1.496e11 / 1e13, 0, 0),
       frameCenter: new THREE.Vector3(),
       fade: [0.55, 0.5],
       tint: 0x8fb4ff,
