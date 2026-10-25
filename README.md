@@ -1,13 +1,5 @@
 <p align="center">
-  <a href="https://drayzu.github.io/Tiempo/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/header-dark.svg"><img src="docs/media/header-light.svg" width="100%" alt="Tiempo — From before the Big Bang to the last light."></picture></a>
-</p>
-
-<p align="center">
-  <a href="https://drayzu.github.io/Tiempo/"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/scroll-dark.svg"><img src="docs/media/scroll-light.svg" width="460" alt="Scroll through all of time"></picture></a>
-</p>
-
-<p align="center">
-  <picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/hero-dark.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/hero-dark.webp"><source type="image/avif" srcset="docs/media/hero-light.avif"><img src="docs/media/hero-light.webp" width="100%" alt="One scroll: the Milky Way assembles, the Sun is born, the Earth takes shape, and now."></picture>
+  <a href="https://drayzu.github.io/Tiempo/"><picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/cover-dark.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/cover-dark.webp"><source type="image/avif" srcset="docs/media/cover-light.avif"><img src="docs/media/cover-light.webp" width="100%" alt="Tiempo — From before the Big Bang to the last light. One scroll: the Milky Way assembles, the Sun is born, the Earth takes shape, and now."></picture></a>
 </p>
 
 <p align="center">
