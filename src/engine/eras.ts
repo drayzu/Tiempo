@@ -71,6 +71,11 @@ export interface EraContent {
   placa?(g: CanvasRenderingContext2D, f: EraFrame & { u: number }, on: boolean, toScreen: (v: THREE.Vector3) => { x: number; y: number; z: number }): void;
   /** The interface ink it asks for: 0 light (dark film) .. 1 dark (when it floods the screen with light). */
   tinta?(f: EraFrame): number;
+  /**
+   * What the clocks should read instead of the standard history, where it does not apply (during
+   * inflation the patch grows 10²⁶ times and the temperature falls to almost nothing: NaN).
+   */
+  lectura?(f: EraFrame): { logSize?: number; logT?: number };
 }
 
 export interface EraSpec {

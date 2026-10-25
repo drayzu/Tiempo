@@ -359,6 +359,10 @@ function step(now: number) {
   }
   // Provisional eras say so (phase 1: the skeleton of the journey).
   const cur = eras.list[eras.segment + (eras.blend > 0.5 ? 1 : 0)];
+  // Where the standard history does not apply (inflation), the era says what the clocks read.
+  const over = cur.content?.lectura?.(frameOf(cur));
+  if (over?.logSize !== undefined) l.logSize = over.logSize;
+  if (over?.logT !== undefined) l.logT = over.logT;
   if ((cur as Era & { provisional?: boolean }).provisional) rotulo(g, u, W / 2, 26 * u, tx('era provisional'), 9.5, inkT, 0.5);
 
   let here = 0;
@@ -379,7 +383,7 @@ function step(now: number) {
   ruler.style.opacity = String(introOut);
   outro.classList.toggle('is-in', p > tl.length - 0.6);
   playBtn.classList.toggle('is-on', scroll.playing);
-  sound.update(l.logT, timeSpeed + zoomSpeed, eras.segment + (eras.blend > 0.5 ? 1 : 0));
+  sound.update(Number.isNaN(l.logT) ? -2 : l.logT, timeSpeed + zoomSpeed, eras.segment + (eras.blend > 0.5 ? 1 : 0));
 }
 
 /** Adaptive quality, as in Potencias: fewer pixels when frames run slow, more when there is room. */

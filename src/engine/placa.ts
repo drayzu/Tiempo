@@ -76,6 +76,7 @@ export function anios(y: number, digits = 2): string {
 
 /** A temperature from its log10 (it spans 10³² K to far below 10⁻¹⁰⁰ K). */
 export function kelvin(logT: number) {
+  if (Number.isNaN(logT)) return EN ? 'temperature ≈ 0' : 'temperatura ≈ 0';
   if (logT >= 5 || logT < -2) return `10${sup(Math.floor(logT))} K`;
   const T = Math.pow(10, logT);
   if (T >= 100) return `${group(roundSig(T, 3))} K`;
