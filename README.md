@@ -7,6 +7,10 @@
 </p>
 
 <p align="center">
+  <picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/hero-dark.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/hero-dark.webp"><source type="image/avif" srcset="docs/media/hero-light.avif"><img src="docs/media/hero-light.webp" width="100%" alt="One scroll: the Milky Way assembles, the Sun is born, the Earth takes shape, and now."></picture>
+</p>
+
+<p align="center">
   <picture><source media="(prefers-color-scheme: dark)" type="image/avif" srcset="docs/media/quarks-dark.avif"><source media="(prefers-color-scheme: dark)" srcset="docs/media/quarks-dark.webp"><source type="image/avif" srcset="docs/media/quarks-light.avif"><img src="docs/media/quarks-light.webp" width="100%" alt="The quarks are caught"></picture>
 </p>
 

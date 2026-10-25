@@ -26,7 +26,7 @@ Z = 1840 / W               # px per unit
 PW, PH = round(W * Z), round(H * Z)
 FPS = 30
 WEBP_W, WEBP_Q = 920, 70
-XFADE = 14                 # frames of crossfade when looping forwards
+XFADE = 18                 # frames of crossfade when looping forwards
 
 THEMES = {
     'dark': dict(page=(13, 17, 23), ink=(236, 231, 219), dim=(236, 231, 219, 150), acc=(143, 180, 255)),
@@ -163,8 +163,56 @@ def moment(k, m):
         print(f'  {name}-{theme}: {len(seq)} frames  avif {os.path.getsize(dst + ".avif") / 1e6:.2f} MB'
               f'  webp {os.path.getsize(dst + ".webp") / 1e6:.2f} MB', flush=True)
 
+# ------------------------------------------------------------------ the hero: one scroll, full width, no words
+HERO = dict(clip='hero', count=360, crop=(0, 0, 1280, 720), crf=36)
+
+def hero():
+    """One scroll from the Milky Way assembling to the Sun being born, the Earth and now: the whole
+    width of the README, blended into the page, looping forwards with a crossfade."""
+    x, y, w, h = HERO['crop']
+    hw, hh = PW, round(PW * h / w)
+    seq = sequence(0, HERO['count'], 'forward')
+    clips = {}
+    def frame(i):
+        if i not in clips:
+            im = Image.open(os.path.join(FR, HERO['clip'], f'{i:04d}.jpg')).crop((x, y, x + w, y + h)).resize((hw, hh), Image.LANCZOS)
+            clips[i] = np.asarray(im, dtype=np.float32) / 255
+            if len(clips) > 40:
+                clips.pop(next(iter(clips)))
+        return clips[i]
+    mask = feather(hw, hh, inner=0.72)
+    rounded = card(hw, hh)
+    for theme, th in THEMES.items():
+        page = np.array(th['page'], np.float32) / 255
+        dst = os.path.join(OUT, f'hero-{theme}')
+        enc = subprocess.Popen(
+            ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{hw}x{hh}', '-r', str(FPS), '-i', '-',
+             '-vf', 'scale=out_color_matrix=bt709:out_range=tv,format=yuv420p',
+             '-color_primaries', 'bt709', '-color_trc', 'iec61966-2-1', '-colorspace', 'bt709', '-color_range', 'tv',
+             '-c:v', 'libsvtav1', '-preset', '5', '-crf', str(HERO['crf']), '-g', '600', '-loop', '0', dst + '.avif'],
+            stdin=subprocess.PIPE)
+        webp = []
+        for n, (a, bb, wgt) in enumerate(seq):
+            rgb = frame(a) if bb is None else frame(a) * (1 - wgt) + frame(bb) * wgt
+            if theme == 'dark':
+                col, al = page + rgb * (1 - page), mask
+            else:
+                col, al = rgb, rounded
+            out = col * al[..., None] + page * (1 - al[..., None])
+            img = Image.fromarray((np.clip(out, 0, 1) * 255 + .5).astype(np.uint8), 'RGB')
+            enc.stdin.write(img.tobytes())
+            if n % 2 == 0:
+                webp.append(img.resize((WEBP_W, round(hh * WEBP_W / hw)), Image.LANCZOS))
+        enc.stdin.close()
+        enc.wait()
+        webp[0].save(dst + '.webp', save_all=True, append_images=webp[1:], duration=2000 // FPS, loop=0, quality=WEBP_Q - 12, method=4)
+        print(f'  hero-{theme}: {len(seq)} frames  avif {os.path.getsize(dst + ".avif") / 1e6:.2f} MB'
+              f'  webp {os.path.getsize(dst + ".webp") / 1e6:.2f} MB', flush=True)
+
 if __name__ == '__main__':
     which = sys.argv[1:]
+    if not which or 'hero' in which:
+        hero()
     for k, m in enumerate(MOMENTS):
         if not which or m[0] in which:
             moment(k, m)
