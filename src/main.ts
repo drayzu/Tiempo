@@ -437,5 +437,10 @@ if (params.has('debug')) {
       return id;
     },
   });
-  Object.assign(window, { tiempo: { eras, tl, camera, root, sound, post, renderer, sheet, step, seek: (b: number | null) => scroll.freeze(b), at: (id: string) => tl.at(id), clamp } });
+  // Shaders that failed to compile (an era whose GLSL clashes would otherwise just not show).
+  const errores = () =>
+    (renderer.info.programs ?? [])
+      .filter((pr) => (pr as unknown as { diagnostics?: { runnable: boolean } }).diagnostics?.runnable === false)
+      .map((pr) => (pr as unknown as { name: string; diagnostics: { vertexShader: { log: string } } }).diagnostics.vertexShader.log.slice(0, 300));
+  Object.assign(window, { tiempo: { eras, tl, camera, root, sound, post, renderer, sheet, step, errores, seek: (b: number | null) => scroll.freeze(b), at: (id: string) => tl.at(id), clamp } });
 }

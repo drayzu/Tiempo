@@ -31,28 +31,29 @@ const VERT = (pre: string, move: string) => /* glsl */ `
   varying float vOcc;
   ${pre}
   void main() {
-    float k = clamp(uAssemble * (1.0 + uSpread) - aDelay * uSpread, 0.0, 1.0);
-    k = k * k * (3.0 - 2.0 * k);
-    vec3 p = mix(aFrom, position, k);
+    // (Internal names carry an m prefix, so an era's own GLSL can use any short name.)
+    float mK = clamp(uAssemble * (1.0 + uSpread) - aDelay * uSpread, 0.0, 1.0);
+    mK = mK * mK * (3.0 - 2.0 * mK);
+    vec3 p = mix(aFrom, position, mK);
     p += drift * vec3(sin(uTime * 1.3 + seed * 17.0), cos(uTime * 1.1 + seed * 23.0), sin(uTime * 0.9 + seed * 31.0));
     vec3 em = color;
     float occ = aInk;
     float sz = size;
     ${move}
-    float scale = length(modelMatrix[0].xyz);
-    vec4 mv = modelViewMatrix * vec4(p, 1.0);
-    gl_Position = projectionMatrix * mv;
-    float depth = max(-mv.z, 1e-6);
-    float s = sz * uSizeUnit * scale * uFocal / depth;
-    gl_PointSize = clamp(s, uMinPx, uMaxPx);
-    float dim = mix(min(1.0, (s * s) / (uMinPx * uMinPx)), 1.0, aStar);
-    float shown = smoothstep(aDelay, aDelay + 0.04, uReveal * 1.04);
-    float arrive = mix(1.0, smoothstep(0.0, 0.35, k), uFlyFade);
-    if (uNear > 0.0 && uCamDist > 0.0) arrive *= mix(1.0, smoothstep(0.08, 0.35, -mv.z / uCamDist), uNear);
-    float fog = uFog > 0.0 ? exp(-max(depth / scale - uFogNear, 0.0) / uFog) : 1.0;
-    float a = uAlpha * mix(1.0, uFlagAlpha, flag) * shown * arrive * fog;
-    vEm = em * uGain * dim * a;
-    vOcc = clamp(occ * uInk * min(dim, 1.0) * a, 0.0, 1.0);
+    float mScale = length(modelMatrix[0].xyz);
+    vec4 mMv = modelViewMatrix * vec4(p, 1.0);
+    gl_Position = projectionMatrix * mMv;
+    float mDepth = max(-mMv.z, 1e-6);
+    float mPx = sz * uSizeUnit * mScale * uFocal / mDepth;
+    gl_PointSize = clamp(mPx, uMinPx, uMaxPx);
+    float mDim = mix(min(1.0, (mPx * mPx) / (uMinPx * uMinPx)), 1.0, aStar);
+    float mShown = smoothstep(aDelay, aDelay + 0.04, uReveal * 1.04);
+    float mArrive = mix(1.0, smoothstep(0.0, 0.35, mK), uFlyFade);
+    if (uNear > 0.0 && uCamDist > 0.0) mArrive *= mix(1.0, smoothstep(0.08, 0.35, -mMv.z / uCamDist), uNear);
+    float mFog = uFog > 0.0 ? exp(-max(mDepth / mScale - uFogNear, 0.0) / uFog) : 1.0;
+    float mA = uAlpha * mix(1.0, uFlagAlpha, flag) * mShown * mArrive * mFog;
+    vEm = em * uGain * mDim * mA;
+    vOcc = clamp(occ * uInk * min(mDim, 1.0) * mA, 0.0, 1.0);
     // Nothing to draw: park it off screen so it costs no fill.
     if (vEm.r + vEm.g + vEm.b + vOcc < 1e-4) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
   }
