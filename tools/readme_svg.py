@@ -6,7 +6,7 @@ Fonts are subset and embedded, so the SVGs look the same on GitHub as here. The 
 follows the journey (each era where it falls along the scroll), coloured by the temperature of the
 universe: white-hot, then the orange of the first light, then dark for almost all of time.
 """
-import base64, io, os, random
+import base64, io, math, os, random
 from fontTools import subset
 from fontTools.ttLib import TTFont
 
@@ -67,111 +67,87 @@ LEN = 271.0  # the journey, in beats
 # (beat, label above the axis, tick below it)
 STOPS = [
     (6.6, 'the Planck epoch', pow10(-43, ' s', 15)),
-    (27, 'the quarks are caught', None),
-    (66, 'let there be light', '380 000 yr'),
-    (96, 'the first star', None),
-    (157, 'now', 'now'),
-    (184, 'the Sun goes out', None),
-    (207, 'the last star', None),
-    (247, 'the last light', pow10(100, ' yr', 15)),
+    (27, 'the quarks are caught', pow10(-5, ' s', 15)),
+    (66, 'let there be light', pow10(13, ' s', 15)),
+    (96, 'the first star', pow10(15, ' s', 15)),
+    (157, 'you are here', 'now'),
+    (184, 'the Sun goes out', 'in ' + pow10(9, ' yr', 15)),
+    (207, 'the last star', 'in ' + pow10(14, ' yr', 15)),
+    (247, 'the last light', 'in ' + pow10(100, ' yr', 15)),
 ]
 # (beat, colour): the temperature of the universe along the way
 HEAT = [(0, '#d9d4ff'), (8, '#ffffff'), (40, '#f4f1ff'), (58, '#ffe2b0'), (66, '#ffb35c'), (72, '#ff7a3d'),
         (78, '#a8341f'), (86, '#2a1612'), (100, '#141210')]
 
 def header(t):
-    W, H = 1200, 470
+    """A cover, not a diagram: the title out of the dark, a faint thread of light that our proton runs
+    along (white-hot, the orange of the first light, then dark), opening at its end into four dotted
+    ways that fade out; one quiet line below says where it is."""
+    W, H = 1200, 360
     ink, acc = t['ink'], t['acc']
     dark = t is THEMES['dark']
-    x0, x1, ay = 110, 1010, 352
+    x0, x1, ay = 330, 870, 296
     X = lambda b: x0 + (x1 - x0) * b / LEN
-    D = 18.0  # seconds for the proton to cross
+    D = 20.0
     rng = random.Random(7)
-    style = ('.s{animation:tw 6s ease-in-out infinite}@keyframes tw{0%,100%{opacity:.12}50%{opacity:.7}}'
-             '.rise{animation:rise 1.4s cubic-bezier(.2,.7,.2,1) both}'
-             '@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}'
-             '.run{animation:run 5s linear infinite}@keyframes run{to{stroke-dashoffset:-60}}')
+    style = ('.s{animation:tw 7s ease-in-out infinite}@keyframes tw{0%,100%{opacity:.08}50%{opacity:.55}}'
+             '.rise{animation:rise 2.4s cubic-bezier(.2,.7,.2,1) both}'
+             '@keyframes rise{from{opacity:0;filter:blur(6px)}to{opacity:1;filter:none}}')
     b = []
     if dark:
-        b.append('<defs><radialGradient id="v" cx="50%" cy="45%" r="70%"><stop offset="0" stop-color="#10141c"/>'
-                 '<stop offset="1" stop-color="#0d1117"/></radialGradient></defs>'
-                 f'<rect width="{W}" height="{H}" fill="url(#v)"/>')
-    # stars, only where it is dark (after the light has cooled)
-    for _ in range(150):
-        x, y = rng.uniform(12, W - 12), rng.uniform(12, H - 12)
-        if abs(y - ay) < 30:
+        b.append(f'<rect width="{W}" height="{H}" fill="{t["page"]}"/>')
+    # a cloud of embers around the title, the colours of a cooling universe
+    for _ in range(420):
+        a = rng.uniform(0, 6.283)
+        r = abs(rng.gauss(0, 1)) ** .8
+        x = 600 + math.cos(a) * r * 330 * rng.uniform(.6, 1.1)
+        y = 175 + math.sin(a) * r * 95 * rng.uniform(.6, 1.1)
+        if not (10 < x < W - 10 and 10 < y < H - 10):
             continue
-        b.append(f'<circle class="s" cx="{x:.0f}" cy="{y:.0f}" r="{rng.uniform(.4, 1.2):.2f}" fill="{ink}" '
-                 f'style="animation-delay:-{rng.uniform(0, 6):.1f}s"/>')
-    # the kicker, title and phrase
-    b.append(f'<text class="rise" x="600" y="96" text-anchor="middle" font-family="M,monospace" font-size="13" '
-             f'letter-spacing="5.5" fill="{ink}" fill-opacity=".5">DRAYZU · ESCALAS · TIME</text>')
-    b.append(f'<text class="rise" x="600" y="214" text-anchor="middle" font-family="S,serif" font-size="128" fill="{ink}" '
-             f'style="animation-delay:.15s">Tiempo</text>')
-    b.append(f'<text class="rise" x="600" y="268" text-anchor="middle" font-family="I,serif" font-style="italic" font-size="31" '
-             f'fill="{ink}" fill-opacity=".75" style="animation-delay:.3s">From before the Big Bang to the last light.</text>')
-    # the axis: a band in the colour of the universe, then dark; certainty in its dashes
-    # (on a white page the dark of almost all of time is drawn faint, as ink)
+        c = rng.choice(['#ffe9cf', '#ffc68a', '#ff9a5c', '#cfd8ff', ink, ink])
+        b.append(f'<circle class="s" cx="{x:.0f}" cy="{y:.0f}" r="{rng.uniform(.5, 1.6):.2f}" fill="{c}" '
+                 f'style="animation-delay:-{rng.uniform(0, 7):.1f}s"/>')
+    for _ in range(90):
+        x, y = rng.uniform(10, W - 10), rng.uniform(10, H - 10)
+        b.append(f'<circle class="s" cx="{x:.0f}" cy="{y:.0f}" r="{rng.uniform(.4, 1):.2f}" fill="{ink}" '
+                 f'style="animation-delay:-{rng.uniform(0, 7):.1f}s"/>')
+    b.append(f'<text class="rise" x="600" y="196" text-anchor="middle" font-family="S,serif" font-size="128" fill="{ink}">Tiempo</text>')
+    b.append(f'<text class="rise" x="600" y="244" text-anchor="middle" font-family="I,serif" font-style="italic" font-size="29" '
+             f'fill="{ink}" fill-opacity=".72" style="animation-delay:.4s">From before the Big Bang to the last light.</text>')
+    # the thread: hot, then the orange of the first light, then almost nothing
     fade = lambda bt: '' if dark or bt < 80 else ' stop-opacity=".25"'
     stops = ''.join(f'<stop offset="{(X(bt) - x0) / (x1 - x0):.4f}" stop-color="{c}"{fade(bt)}/>' for bt, c in HEAT)
-    tail = ink if not dark else '#ece7db'
     b.append(f'<defs><linearGradient id="heat" gradientUnits="userSpaceOnUse" x1="{x0}" x2="{x1}" y1="0" y2="0">{stops}'
              f'<stop offset="1" stop-color="#141210"{fade(LEN)}/></linearGradient>'
-             f'<filter id="glow" x="-10%" y="-200%" width="120%" height="500%"><feGaussianBlur stdDeviation="6"/></filter></defs>')
-    b.append(f'<rect x="{x0}" y="{ay - 5}" width="{X(100) - x0:.0f}" height="10" rx="5" fill="url(#heat)" filter="url(#glow)" opacity=".75"/>')
-    b.append(f'<rect x="{x0}" y="{ay - 2.5}" width="{x1 - x0}" height="5" rx="2.5" fill="url(#heat)"/>')
-    # the dark part of time, drawn faintly so it reads on both themes
-    b.append(f'<line x1="{X(86):.0f}" x2="{x1}" y1="{ay}" y2="{ay}" stroke="{tail}" stroke-opacity=".28" stroke-width="5" stroke-linecap="round"/>')
-    seg = lambda a, z, dash, op: (f'<line x1="{X(a):.1f}" x2="{X(z):.1f}" y1="{ay + 10}" y2="{ay + 10}" stroke="{ink}" '
-                                  f'stroke-opacity="{op}" stroke-width="1.4" {dash} stroke-linecap="round"/>')
-    b.append(seg(0, 6.6, 'stroke-dasharray="1 5"', .5))
-    b.append(seg(6.6, 40, 'stroke-dasharray="5 4"', .45))
-    b.append(seg(40, 157, '', .5))
-    b.append(seg(157, LEN, 'stroke-dasharray="5 4"', .45))
-    # the fork: from Andromeda on, physics is not sure
-    xf = X(202)
-    for dy, lab in ((-46, 'rip?'), (46, 'crunch?'), (-82, 'decay?')):
-        b.append(f'<path class="run" d="M{xf:.0f},{ay} C{xf + 70:.0f},{ay} {x1 - 60},{ay + dy} {x1 + 20},{ay + dy}" fill="none" stroke="{acc}" '
-                 f'stroke-opacity=".55" stroke-width="1.6" stroke-dasharray="1 6" stroke-linecap="round"/>'
-                 f'<text x="{x1 + 30}" y="{ay + dy + 6}" font-family="I,serif" font-style="italic" font-size="19" fill="{ink}" fill-opacity=".6">{lab}</text>')
-    b.append(f'<text x="{x1 + 30}" y="{ay + 6}" font-family="I,serif" font-style="italic" font-size="19" fill="{ink}" fill-opacity=".6">cold?</text>')
-    # ticks below
-    for bt, lab, tick in STOPS:
-        if not tick:
-            continue
-        x = X(bt)
-        b.append(f'<line x1="{x:.1f}" x2="{x:.1f}" y1="{ay + 16}" y2="{ay + 24}" stroke="{ink}" stroke-opacity=".4"/>'
-                 f'<text x="{x:.1f}" y="{ay + 46}" text-anchor="middle" font-family="M,monospace" font-size="15" fill="{ink}" fill-opacity=".55">{tick}</text>')
-    # the proton crossing all of time, naming each moment as it passes
-    kt = []
-    for bt, lab, _ in STOPS:
+             f'<filter id="glow" x="-10%" y="-300%" width="120%" height="700%"><feGaussianBlur stdDeviation="4"/></filter></defs>')
+    b.append(f'<line x1="{x0}" x2="{X(90):.0f}" y1="{ay}" y2="{ay}" stroke="url(#heat)" stroke-width="5" filter="url(#glow)" opacity=".6"/>')
+    b.append(f'<line x1="{x0}" x2="{x1}" y1="{ay}" y2="{ay}" stroke="url(#heat)" stroke-width="1.6" stroke-linecap="round"/>')
+    b.append(f'<line x1="{X(86):.0f}" x2="{x1}" y1="{ay}" y2="{ay}" stroke="{ink}" stroke-opacity=".16" stroke-width="1.2"/>')
+    # at the end, four ways that fade into the dark (no names: the question stays open)
+    b.append(f'<defs><linearGradient id="way" gradientUnits="userSpaceOnUse" x1="{x1 - 20}" x2="{x1 + 120}" y1="0" y2="0">'
+             f'<stop offset="0" stop-color="{acc}" stop-opacity=".6"/><stop offset="1" stop-color="{acc}" stop-opacity="0"/></linearGradient></defs>')
+    for dy in (-30, -10, 10, 30):
+        b.append(f'<path d="M{x1 - 20},{ay} C{x1 + 30},{ay} {x1 + 60},{ay + dy} {x1 + 120},{ay + dy * 1.6:.0f}" fill="none" '
+                 f'stroke="url(#way)" stroke-width="1.4" stroke-dasharray="1 5" stroke-linecap="round"/>')
+    # one quiet line below, naming where the proton is
+    for k, (bt, lab, when) in enumerate(STOPS):
         f = bt / LEN * .92
-        a, z = max(f - .025, 0), min(f + .06, .999)
-        x = X(bt)
-        b.append(f'<text x="{x:.1f}" y="{ay - 26}" text-anchor="middle" font-family="I,serif" font-style="italic" font-size="21" fill="{ink}" opacity="0">{lab}'
-                 f'<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;{a:.3f};{f:.3f};{z - .02:.3f};{z:.3f};1" dur="{D}s" repeatCount="indefinite"/></text>')
-    b.append(f'<g><circle r="13" fill="{acc}" fill-opacity=".22"/><circle r="5.5" fill="{acc}"/><circle r="2.2" fill="#ffffff"/>'
+        a, z = max(f - .03, 0), min(f + .07, .999)
+        b.append(f'<text x="600" y="{ay + 40}" text-anchor="middle" font-family="M,monospace" font-size="15" letter-spacing="1" '
+                 f'fill="{ink}" fill-opacity=".6" opacity="0"><tspan fill="{acc}" fill-opacity="1">{when}</tspan> · {lab}'
+                 f'<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;{a:.3f};{a + .02:.3f};{z - .02:.3f};{z:.3f};1" '
+                 f'dur="{D}s" repeatCount="indefinite"/></text>')
+    b.append(f'<g><circle r="10" fill="{acc}" fill-opacity=".2"/><circle r="4.2" fill="{acc}"/><circle r="1.8" fill="#ffffff"/>'
              f'<animateMotion path="M{x0},{ay} H{x1}" keyPoints="0;1;1" keyTimes="0;.92;1" calcMode="linear" dur="{D}s" repeatCount="indefinite"/>'
              f'<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;.02;.9;.94;1" dur="{D}s" repeatCount="indefinite"/></g>')
-    return svg(W, H, 'Tiempo — From before the Big Bang to the last light. One scroll through all of time, coloured by the '
-               'temperature of the universe, with four possible endings.', style, ''.join(b))
+    return svg(W, H, 'Tiempo — From before the Big Bang to the last light. One scroll through all of time.', style, ''.join(b))
 
-# ------------------------------------------------------------------ the scroll link
+# ------------------------------------------------------------------ the scroll link: just the words
 def scroll(t):
     ink, acc = t['ink'], t['acc']
-    W, H = 460, 100
-    x0, x1, y = 40, 420, 50
-    b = [f'<text x="{x0}" y="26" font-family="M,monospace" font-size="13" letter-spacing="1.5" fill="{ink}" opacity=".55">{pow10(-43, " s", 13)}</text>',
-         f'<text x="{x1}" y="26" text-anchor="end" font-family="M,monospace" font-size="13" letter-spacing="1.5" fill="{ink}" opacity=".55">{pow10(100, " yr", 13)}</text>']
-    for k in range(20):
-        x = x0 + (x1 - x0) * k / 19
-        big = k % 5 == 0 or k == 19
-        b.append(f'<line x1="{x:.1f}" x2="{x:.1f}" y1="{38 if big else 44}" y2="{y}" stroke="{ink}" stroke-opacity="{.5 if big else .25}"/>')
-    b.append(f'<line x1="{x0}" x2="{x1}" y1="{y}" y2="{y}" stroke="{ink}" stroke-opacity=".3"/>')
-    b.append(f'<circle cy="{y}" r="5" fill="{acc}"><animate attributeName="cx" values="{x0};{x1};{x0}" dur="7s" repeatCount="indefinite" '
-             'calcMode="spline" keySplines=".45 0 .55 1;.45 0 .55 1"/></circle>')
-    b.append(f'<text x="{W / 2 - 14}" y="86" text-anchor="middle" font-family="I,serif" font-style="italic" font-size="26" fill="{ink}">Scroll through all of time</text>')
-    b.append(arrow(W / 2 + 128, 78, 18, acc, 1.8))
+    W, H = 460, 56
+    b = [f'<text x="{W / 2 - 14}" y="36" text-anchor="middle" font-family="I,serif" font-style="italic" font-size="26" fill="{ink}">Scroll through all of time</text>',
+         arrow(W / 2 + 128, 28, 18, acc, 1.8)]
     return svg(W, H, 'Scroll through all of time: open Tiempo', '', ''.join(b))
 
 # ------------------------------------------------------------------ the ENTER bar
