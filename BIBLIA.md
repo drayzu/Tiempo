@@ -1,13 +1,13 @@
 # Tiempo · biblia visual
 
-**Una idea:** un solo scroll que recorre todo el tiempo, de antes del Big Bang a la última luz y después. **Tú te quedas y el tiempo pasa:** la cámara está en nuestro lugar del universo, y la misma materia se reordena delante de ella.
+**Una idea:** un solo scroll que recorre todo el tiempo, de antes del Big Bang a la última luz y después. **Tú estás ahí y el tiempo pasa:** la cámara vive en nuestro lugar del universo, en primera persona, y la misma materia se reordena a su alrededor.
 
 Tercera pieza de la serie *Escalas* (Potencias mide el tamaño; Tiempo, la duración). De la misma familia que Potencias, pero no igual.
 
 ## Principios
 0. **Un viaje muy, muy largo.** De 10⁻⁴³ s a 10¹⁰⁰ años y más: unos 150 órdenes de magnitud, más del doble que Potencias. Mucho scroll, y algo que ver en cada tramo.
 1. **Lo visual va primero.** Cada era tiene un nombre, **una frase** y su momento en el tiempo. Si algo necesita un párrafo, va a la lámina.
-2. **Tú te quedas, el tiempo pasa.** La cámara está en el trocito de universo que algún día será la Vía Láctea, el Sol y la Tierra. Se mueve para los momentos (se acerca a nuestro protón, se asoma a una estrella), pero vuelve.
+2. **Inmersión en primera persona (clave).** La cámara vive en el trocito de universo que algún día será la Vía Láctea, el Sol y la Tierra, pero no mira de lejos: está dentro. Vuela entre las partículas del plasma, se zambulle en la red cuando el gas cae, se acerca a la primera estrella, atraviesa el túnel del tiempo hasta la Tierra. Cada momento se diseña primero desde la cámara (qué se atraviesa, hacia dónde se mira) y después desde el diagrama. Lo que no se mueve es el lugar: el tiempo pasa sobre él.
 3. **Nada se crea: el tiempo reordena.** Hay una sola materia persistente que nunca desaparece de golpe: los quarks quedan presos en protones, los protones atrapan electrones, el gas cae en la red, se enciende en estrellas, los continentes se asientan… y en el futuro lejano el proceso se invierte: todo se dispersa, se enfría y se apaga.
 4. **El hilo: un protón tuyo.** Un punto azul que la cámara nunca pierde. Nace cuando los quarks quedan presos (~10⁻⁶ s), atrapa su electrón (380 000 años), cae en la nube que formará el Sol y queda en el agua de la Tierra. En **Ahora**: «este protón está en ti». Después lo seguimos hasta el final, y si los protones decaen (hipótesis), es el último en desaparecer.
 5. **Cada color tiene una razón física**, como en Potencias cada parpadeo. El fondo es el color de cuerpo negro del universo en ese instante, calculado con la ley de Planck, nunca elegido a mano.
@@ -16,6 +16,12 @@ Tercera pieza de la serie *Escalas* (Potencias mide el tamaño; Tiempo, la durac
 8. **Nunca un cuadro vacío por accidente.** La edad oscura y la muerte térmica son oscuras porque ese es el tema, pero medidas: algo se mueve, una lámina mide, un número corre.
 9. **Los números son el espectáculo** en los extremos: 10⁻⁴³ s, 10¹⁰⁰ años, 10^(10^(10^…)) años.
 10. **Nada parpadea sin razón física** (heredado de Potencias). Una captura de electrón suelta un fotón: eso puede destellar. Lo que pasa más rápido de lo que el ojo sigue se ve como una **exposición larga** (los días se vuelven bandas, las edades de hielo un promedio), nunca como un estroboscopio.
+
+## Estilo elegido (fase 0, 25 de octubre de 2026)
+- **Base: Brasa.** Partículas de luz sobre negro, con una tinta incandescente del color de la temperatura: lo más espectacular y con más cosas que ver.
+- **Momentos de Horno:** cuando la luz llena todo, la pantalla entera toma su color. En la niebla y su transición al naranja (el cielo naranja que se apaga), al encenderse la primera estrella y en los destellos (supernovas, la última luz). Es la idea más propia de Tiempo: usarla en sus picos, no siempre.
+- **Lámina: capa opcional (tecla I)**, para aprender: los caminos de la luz, el alcance de la luz, el espectro, la red de materia oscura con sus rótulos, la regla del calendario cósmico contra la logarítmica. También es el lenguaje de lo especulativo y de lo que no brilla.
+- **«Ahora» = Tierra con la inmersión del Túnel:** la cámara atraviesa los anillos de las potencias de diez en primera persona rumbo a la Tierra, que gira cada vez más lento mientras los continentes se asientan y las edades de hielo van y vienen; al llegar, el Sol la ilumina como en ese instante y la cámara baja hasta tu lugar: «este protón está en ti». La Regla queda dentro de la lámina.
 
 ## Lenguaje
 | Capa | Qué es | Dónde |
@@ -52,7 +58,7 @@ Interfaz: tinta `#ece7db`, tenue al 50 %, **acento azul `#8fb4ff`** (el protón,
 Vertical, estrecho arriba (el inicio) y ensanchándose hacia abajo; **relleno con el color del universo en cada momento** (el mismo cálculo de Planck: blanco y naranja arriba, negro después); bordes continuos, discontinuos o punteados según la certeza; dos ramas punteadas se abren donde la física deja de estar segura (los finales). El marcador azul es «estás aquí»; solo se nombra la era donde estás.
 
 ## Movimiento y cámara
-- La cámara se queda en nuestro lugar. Se mueve para los momentos y vuelve.
+- Primera persona: la cámara está dentro de lo que pasa y se mueve mucho (vuela, atraviesa, se zambulle, rodea), siempre en nuestro lugar del universo. Herramientas de Potencias: órbita, recorrido, alabeo, *dolly zoom*, mira.
 - El mouse inclina la vista unos grados (paralaje), nunca más.
 - El tiempo avanza **lineal en el exponente**, pero puede detenerse cuando la acción lo pide (la vida de una estrella cabe en una centésima de orden de magnitud).
 - Lo que pasa demasiado rápido se ve como exposición larga, no como parpadeo.

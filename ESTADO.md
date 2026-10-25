@@ -13,9 +13,12 @@ Un solo scroll que recorre todo el tiempo, de antes del Big Bang a la última lu
 
 Heredado del brief: Vite + TypeScript + Three.js sin React; Instrument Serif, Geist y Geist Mono; acento azul `#8fb4ff`; el fondo es la temperatura del universo; regla-cono a la derecha; teclas A, S, I y L como Potencias; bilingüe; sonido opcional generado.
 
-## Decisiones pendientes (fase 0)
-- [ ] **Estilo** para la niebla y las estrellas: **A Horno**, **B Brasa** o **C Lámina** (o una mezcla por era, como el dial de tinta de Potencias).
-- [ ] **Versión de «Ahora»:** **1 Túnel**, **2 Tierra** o **3 Regla** (o una combinación).
+**25 de octubre de 2026 (Diego, tras ver los estudios de estilo): fase 0 cerrada.**
+- **Base: B · Brasa** («el más espectacular, tiene más cosas»).
+- **Momentos de A · Horno** donde la luz llena todo: el cielo naranja de la niebla y su transición («un momento genial»), el encendido de la primera estrella («incluso más color»), los destellos.
+- **C · Lámina** como capa opcional para aprender (tecla I): clara y útil, pero no es la base.
+- **«Ahora»: Tierra** (los continentes que se arman, la Tierra que gira rápido) **con la inmersión del Túnel** (primera persona). La Regla, opcional dentro de la lámina.
+- **Inmersión como regla del sitio entero:** movimientos de cámara, primera persona, volar dentro de las cosas; «estas cosas debes usarlo mucho en la página, es clave». Recogido en `BIBLIA.md` (principio 2).
 
 ## Fase 0 · estudios de estilo (`npm run dev`, puerto 5191)
 `prototypes/index.html` (laboratorio) enlaza `prototypes/estudio.html`: tres momentos clave, cada uno de tres maneras. El scroll es el tiempo; **A** reproduce, **1–3** cambian de estilo.
@@ -65,11 +68,12 @@ Heredado del brief: Vite + TypeScript + Three.js sin React; Instrument Serif, Ge
 - Proyecto creado: Vite + TypeScript + Three.js, `BIBLIA.md`, `ESTADO.md`, laboratorio y estudio de estilo.
 - Física base: reloj cosmológico y color de cuerpo negro.
 - Estudios de «Se hace la luz», «La primera estrella» (A/B/C) y «Ahora» (1/2/3), revisados con hojas de contactos y corregidos (exposición del fondo, materia iluminada por el resplandor, frente de ionización irregular, recombinación al morir la estrella, pliegues en la deriva de continentes, exponentes en las etiquetas).
+- Diego eligió: Brasa de base, Horno en los picos de luz, Lámina opcional, «Ahora» Tierra con la inmersión del Túnel, y pidió inmersión en primera persona en todo el sitio.
 
 ## Siguiente paso
-1. Que Diego elija estilo (A/B/C o mezcla por era) y versión de «Ahora» (1/2/3); anotarlo arriba.
-2. Fase 1 · motor: copiar y adaptar el de Potencias (`cadena`, `points`, `post`, `lamina`, `sonido`, `taller`, `hud`, `scroll`, `contactos`) a pistas de tiempo (`lt`, `lb`, `ah`), materia persistente con el protón como índice fijo, el fondo-temperatura, el HUD de tres relojes y la regla-cono.
-3. Fase 2 · prueba de fuego: del plasma a la primera estrella en un tramo continuo, más «Ahora».
+1. Fase 1 · motor: copiar y adaptar el de Potencias (`cadena`, `points`, `post`, `lamina`, `sonido`, `taller`, `hud`, `scroll`, `contactos`) a pistas de tiempo (`lt`, `lb`, `ah`), materia persistente con el protón como índice fijo, el fondo-temperatura, el HUD de tres relojes y la regla-cono.
+   Con la cámara en primera persona desde el principio (recorridos y miras por era, como en Potencias), el fondo con modo Horno por momentos y la lámina como capa.
+2. Fase 2 · prueba de fuego: del plasma a la primera estrella en un tramo continuo, volando dentro, más «Ahora» (Tierra con la entrada por el túnel).
 
 ## Plan de fases
-0 Dirección (biblia, estudios de estilo) · 1 Motor · 2 Prueba de fuego (Acto I a III + Ahora) · 3 Acto IV, V y momentos con nombre · 4 Los extremos (Acto 0, VI, finales, bucle) · 5 Sonido, lámina, bilingüe, enlaces cruzados · 6 Pulido, móvil, deploy y README.
+0 Dirección (biblia, estudios de estilo) ✓ · 1 Motor · 2 Prueba de fuego (Acto I a III + Ahora) · 3 Acto IV, V y momentos con nombre · 4 Los extremos (Acto 0, VI, finales, bucle) · 5 Sonido, lámina, bilingüe, enlaces cruzados · 6 Pulido, móvil, deploy y README.
