@@ -126,3 +126,45 @@ export function cosmicCalendar(t: number) {
   const day = Math.floor(seconds / 86400);
   return { day, secondOfDay: seconds - day * 86400 };
 }
+
+/**
+ * log10 of the scale factor, valid at any time, also in the far future where `a` itself overflows
+ * (the Λ era grows it exponentially: after 10¹⁴ years a ≈ 10²⁶⁰⁰).
+ */
+export function logScaleFactor(t: number): number {
+  const tEnd = Math.exp(lnT[N]);
+  if (t <= tEnd) return Math.log10(scaleFactor(t));
+  const HL = H0_S * Math.sqrt(OMEGA_L);
+  return (LN_A1 + HL * (t - tEnd)) / Math.LN10;
+}
+
+/** log10 of the temperature of the radiation, K, at any time. */
+export function logTemperature(t: number): number {
+  if (t <= 300) return Math.log10(temperature(t));
+  return Math.log10(T0) - logScaleFactor(t);
+}
+
+/**
+ * Fraction of electrons still free at redshift z: a logistic fit around recombination (to check
+ * against RECFAST): 0.5 near z ≈ 1 180, about 0.2 at the peak of last scattering (z ≈ 1 090),
+ * freezing out near 2 × 10⁻⁴.
+ */
+export const freeFraction = (z: number) => 2e-4 + (1 - 2e-4) / (1 + Math.exp(-(z - 1180) / 60));
+
+/**
+ * How far light gets between collisions with free electrons, in arbitrary units (1 ≈ the scale at
+ * which the studies show it): ∝ 1 / (x_e n_e), and n_e ∝ (1 + z)³.
+ */
+export const meanFreePath = (z: number) => (0.07 / freeFraction(z)) * Math.pow(1100 / (1 + z), 3);
+
+/**
+ * How clear the universe is to its own light, 0 (an opaque glowing fog: everything before
+ * recombination) .. 1 (light flies freely: after about 400 000 years, for ever).
+ */
+export function transparency(t: number): number {
+  if (t < 2e12) return 0;
+  const mfp = meanFreePath(redshift(t));
+  const x = (Math.log10(mfp) - Math.log10(0.4)) / (Math.log10(30) - Math.log10(0.4));
+  const k = Math.min(Math.max(x, 0), 1);
+  return k * k * (3 - 2 * k);
+}
