@@ -1,0 +1,5 @@
+node_modules
+dist
+
+# capture frames for the README and studies (heavy)
+tools/src/
