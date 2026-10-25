@@ -4,7 +4,7 @@ Un solo scroll que recorre todo el tiempo, de antes del Big Bang a la última lu
 
 ## Decisiones tomadas
 **25 de octubre de 2026 (Diego, respuestas a la sección 13 del brief):**
-- **Nombre:** «Tiempo», por ahora (puede cambiar más adelante). Repo propuesto: `drayzu/Tiempo` → drayzu.github.io/Tiempo; confirmar al publicar.
+- **Nombre:** «Tiempo», por ahora (puede cambiar más adelante). Publicado en `drayzu/Tiempo` → **drayzu.github.io/Tiempo** (GitHub Pages con Actions: cada push a `main` despliega).
 - **Protón protagonista:** sí. Un punto azul que el viaje nunca pierde, desde que los quarks quedan presos hasta el agua de tu cuerpo y después.
 - **«Ahora»:** un solo momento fuerte (el zoom temporal), no un capítulo sobre la vida y lo humano.
 - **Finales:** bifurcación que elige el visitante, con la elección en la URL (`?final=frio|desgarro|colapso|vacio`).
@@ -127,7 +127,7 @@ antes del tiempo → época de Planck → inflación → plasma de quarks → un
 1. Que Diego recorra el viaje (mejor con **A**) y los cuatro finales, y diga qué funciona.
 2. Fase 6: pulido con hoja de contactos (viaje y finales), móvil y rendimiento.
 3. Pendiente del motor: tono exacto del fondo bajo ACES (el naranja tira a dorado cuando es muy brillante).
-4. Publicar (`drayzu/Tiempo` propuesto: falta el visto bueno de Diego) y README visual.
+4. README visual (como los de Potencias y AstroIngeniería).
 
 ## Plan de fases
 0 Dirección (biblia, estudios de estilo) ✓ · 1 Motor ✓ · 2 Prueba de fuego (Acto I a III + Ahora) ✓ · 3 Acto IV ✓ · 4 Los extremos (Acto 0, VI, finales, bucle) ✓ · 5 Sonido, lámina, bilingüe, enlaces cruzados ✓ · 6 Pulido, móvil, deploy y README.
