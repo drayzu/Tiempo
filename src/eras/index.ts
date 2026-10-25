@@ -13,7 +13,8 @@ import { viaLactea } from './vialactea';
 import { sol } from './sol';
 import { solMuere } from './solmuere';
 import { andromeda } from './andromeda';
-import { antes, final, despues } from './provisionales';
+import { degenerada, protones, ultimaLuz, oscuridad } from './final';
+import { antes, despues } from './provisionales';
 
 /**
  * The journey, in the order it is lived. Each era sits inside or around the one before it. Shared
@@ -22,5 +23,5 @@ import { antes, final, despues } from './provisionales';
  * rest of the time axis.
  */
 export function crearEras(): EraModule[] {
-  return [antes, planck(), inflacion(), quarks(), aniquilacion(), nucleos(), niebla(), gas(), amanecer(), galaxias(), viaLactea(), sol(), ahora(), solMuere(), andromeda(), final, despues];
+  return [antes, planck(), inflacion(), quarks(), aniquilacion(), nucleos(), niebla(), gas(), amanecer(), galaxias(), viaLactea(), sol(), ahora(), solMuere(), andromeda(), degenerada(), protones(), ultimaLuz(), oscuridad(), despues];
 }

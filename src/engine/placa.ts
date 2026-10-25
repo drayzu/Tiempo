@@ -88,6 +88,7 @@ function potPot(log: number, unit: string) {
 
 export function kelvin(logT: number) {
   if (Number.isNaN(logT)) return EN ? 'temperature ≈ 0' : 'temperatura ≈ 0';
+  if (!Number.isFinite(logT) || Math.abs(logT) > 1e300) return EN ? 'temperature → 0' : 'temperatura → 0';
   if (Math.abs(logT) >= 1e4) return potPot(logT, 'K');
   if (logT >= 5 || logT < -2) return `10${sup(Math.floor(logT))} K`;
   const T = Math.pow(10, logT);
@@ -105,6 +106,7 @@ export function largo(logM: number) {
     [3, 'km', 'km'],
     [0, 'm', 'm'],
   ];
+  if (!Number.isFinite(logM) || Math.abs(logM) > 1e300) return '→ ∞';
   if (Math.abs(logM) >= 1e4) return potPot(logM, 'm');
   if (logM < -3 || logM > Math.log10(LY * 1e9) + 4) return `10${sup(Math.floor(logM))} m`;
   const [lu, es, en] = units.find(([u]) => logM >= u) ?? units[units.length - 1];
@@ -152,6 +154,34 @@ function potencia(g: CanvasRenderingContext2D, x: number, y: number, exp: number
   g.fillStyle = ink(inkT, 0.6);
   g.fillText(unit, cx, y);
   return cx + g.measureText(unit).width - x;
+}
+
+/**
+ * A power of a power: 10^(10^n), when even the exponent has too many digits to write (the very far
+ * future, the recurrence). The numbers become the spectacle, as at the end of Potencias.
+ */
+function potenciaDoble(g: CanvasRenderingContext2D, x: number, y: number, logV: number, unit: string, px: number, inkT: number, prefix = '') {
+  let cx = x;
+  if (prefix) {
+    g.font = FONT.italic(px * 0.42);
+    g.fillStyle = ink(inkT, 0.6);
+    g.fillText(prefix, cx, y);
+    cx += g.measureText(prefix).width + px * 0.14;
+  }
+  g.font = FONT.serif(px);
+  g.fillStyle = ink(inkT);
+  g.fillText('10', cx, y);
+  cx += g.measureText('10').width + px * 0.02;
+  g.font = FONT.serif(px * 0.52);
+  g.fillText('10', cx, y - px * 0.42);
+  cx += g.measureText('10').width + px * 0.02;
+  g.font = FONT.serif(px * 0.3);
+  const e = String(Math.floor(Math.log10(logV)));
+  g.fillText(e, cx, y - px * 0.72);
+  cx += g.measureText(e).width + px * 0.14;
+  g.font = FONT.serif(px * 0.4);
+  g.fillStyle = ink(inkT, 0.6);
+  g.fillText(unit, cx, y);
 }
 
 function wrap(g: CanvasRenderingContext2D, text: string, maxW: number) {
@@ -402,8 +432,9 @@ export interface Lectura {
   reloj: number;
   /** log10 of seconds since the beginning. */
   lt: number;
-  /** Years back from now (reloj 1) or ahead (reloj 3). */
+  /** Years back from now (reloj 1) or ahead (reloj 3), and their log10 (which does not overflow). */
   years: number;
+  logYears: number;
   /** log10 of the temperature (K) and of our patch's diameter (m). */
   logT: number;
   logSize: number;
@@ -455,7 +486,8 @@ export function hud(g: CanvasRenderingContext2D, u: number, H: number, l: Lectur
   } else if (l.reloj === 3) {
     mono(`${EN ? 'our universe will measure' : 'nuestro universo medirá'} ${largo(l.logSize)}`, 0.42);
     mono(kelvin(l.logT), 0.62);
-    mono(EN ? `${anios(l.years, 2)} from now` : `dentro de ${anios(l.years, 2)}`, 0.85);
+    const ahead = l.logYears >= 12 ? `10${sup(Math.floor(l.logYears))} ${EN ? 'years' : 'años'}` : anios(l.years, 2);
+    mono(EN ? `${ahead} from now` : `dentro de ${ahead}`, l.logYears >= 1e4 ? 0 : 0.85);
   } else if (l.reloj === 4) {
     mono(EN ? 'before time: hypotheses' : 'antes del tiempo: hipótesis', 0.42);
     mono(EN ? 'physics as we know it begins at the Planck time, 10⁻⁴³ s' : 'la física que conocemos empieza en el tiempo de Planck, 10⁻⁴³ s', 0.62);
@@ -482,7 +514,8 @@ export function hud(g: CanvasRenderingContext2D, u: number, H: number, l: Lectur
     const pre = l.reloj === 1 ? (EN ? '' : 'hace') : EN ? 'in' : 'dentro de';
     const unitY = EN ? (l.reloj === 1 ? 'years ago' : 'years') : 'años';
     const unitS = EN ? (l.reloj === 1 ? 's ago' : 's') : 's';
-    if (l.years >= 1) potencia(g, x, y, order(l.years), unitY, big, inkT, pre);
+    if (l.logYears >= 1e3) potenciaDoble(g, x, y, l.logYears, unitY, big, inkT, pre);
+    else if (l.logYears >= 0) potencia(g, x, y, Math.floor(l.logYears + 1e-9), unitY, big, inkT, pre);
     else potencia(g, x, y, order(Math.max(l.years * YEAR, 1e-3)), unitS, big, inkT, pre);
   } else {
     potencia(g, x, y, Math.floor(l.lt + 1e-9), 's', big, inkT, 't =');

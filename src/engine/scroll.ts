@@ -52,6 +52,11 @@ export function createScroll(spacer: HTMLElement, length: number) {
       autoplay = false;
       scrollTo({ top: clamp(beat, 0, length) * PX_PER_BEAT, behavior: 'smooth' });
     },
+    /** Back to the beginning at once, without travelling back through everything (the loop). */
+    restart() {
+      scrollTo(0, 0);
+      p = target = 0;
+    },
     togglePlay() {
       if (!autoplay && target >= length - 0.05) {
         scrollTo(0, 0);
@@ -73,7 +78,7 @@ export function createScroll(spacer: HTMLElement, length: number) {
         const next = Math.min(length, target + dt * beatsPerSecond);
         scrollTo(0, next * PX_PER_BEAT);
         target = next;
-        if (next >= length) autoplay = false;
+        // (at the end it keeps playing: the page loops back to the cover)
       }
       read();
       // Follows the hand closely (a long glide reads as lag), still smoothing a wheel's steps.

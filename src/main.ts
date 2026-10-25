@@ -120,21 +120,31 @@ root.add(proton.points);
 function lecturaAt(p: number): Lectura {
   const reloj = Math.round(tl.get('reloj', p));
   let lt = tl.get('lt', p);
-  let years = 0;
-  let t: number;
-  if (reloj === 1) {
-    years = Math.pow(10, tl.get('lb', p));
-    t = AGE;
-    lt = Math.log10(AGE);
-  } else if (reloj === 2) {
-    t = AGE;
-    lt = Math.log10(AGE);
-  } else if (reloj === 3) {
-    years = Math.pow(10, tl.get('ah', p));
-    t = AGE + years * YEAR;
+  let logYears = 0;
+  let logT: number;
+  let logSize: number;
+  if (reloj === 1 || reloj === 3) {
+    logYears = tl.get(reloj === 1 ? 'lb' : 'ah', p);
+    // Far ahead the years themselves overflow (10¹⁰⁰ and beyond): work in logarithms.
+    const years = Math.pow(10, Math.min(logYears, 300));
+    const t = reloj === 1 ? AGE : AGE + years * YEAR;
     lt = Math.log10(t);
-  } else t = Math.pow(10, lt);
-  return { reloj, lt, years, logT: logTemperature(t), logSize: Math.log10(2 * R_OBS) + logScaleFactor(t) };
+    if (logYears > 300) {
+      // Exponential expansion: log10 a grows linearly with time, and the temperature falls with it.
+      const logA = logScaleFactor(AGE + 1e300 * YEAR) * Math.pow(10, logYears - 300);
+      logT = Math.log10(2.7255) - logA;
+      logSize = Math.log10(2 * R_OBS) + logA;
+    } else {
+      logT = logTemperature(t);
+      logSize = Math.log10(2 * R_OBS) + logScaleFactor(t);
+    }
+  } else {
+    const t = reloj === 2 ? AGE : Math.pow(10, lt);
+    if (reloj === 2) lt = Math.log10(AGE);
+    logT = logTemperature(t);
+    logSize = Math.log10(2 * R_OBS) + logScaleFactor(t);
+  }
+  return { reloj, lt, logYears, years: Math.pow(10, Math.min(logYears, 300)), logT, logSize };
 }
 
 // The cone: one tick per era, and the colour of the universe along the whole journey.
@@ -234,6 +244,7 @@ let last = performance.now();
 let prevE = tl.get('e', 0);
 let prevLt = tl.get('lt', 0);
 let speakTimer = 0;
+let atEnd = 0;
 
 function step(now: number) {
   const dt = Math.min((now - last) / 1000, 0.1);
@@ -382,6 +393,14 @@ function step(now: number) {
   intro.style.transform = `translateY(${-introOut * 40}px)`;
   ruler.style.opacity = String(introOut);
   outro.classList.toggle('is-in', p > tl.length - 0.6);
+  // The loop: the end draws the cover again; a moment there, and the journey begins anew.
+  if (p > tl.length - 0.03 && scroll.held === null) {
+    atEnd += dt;
+    if (atEnd > 1.8) {
+      atEnd = 0;
+      scroll.restart();
+    }
+  } else atEnd = 0;
   playBtn.classList.toggle('is-on', scroll.playing);
   sound.update(Number.isNaN(l.logT) ? -2 : l.logT, timeSpeed + zoomSpeed, eras.segment + (eras.blend > 0.5 ? 1 : 0));
 }

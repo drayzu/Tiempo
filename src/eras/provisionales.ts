@@ -26,8 +26,7 @@ function volumen(b: Builder, n: number, half: [number, number, number], fill: (x
   for (let k = 0; k < n; k++) fill((r() * 2 - 1) * half[0], (r() * 2 - 1) * half[1], (r() * 2 - 1) * half[2]);
 }
 
-export const antes = marcar(
-  provisional({
+export const antes = provisional({
     id: 'antes',
     acto: 'Antes del tiempo',
     certeza: 'E',
@@ -37,27 +36,15 @@ export const antes = marcar(
     unitExp: -35,
     frame: 14,
     tint: INK,
-    forma(b) {
-      // Three hypotheses as plate figures: bubbles, a previous aeon, a bounce.
-      const r = b.r;
-      for (let k = 0; k < 9; k++) circulo(b, -5 + gauss(r) * 1.4, 1.6 + gauss(r) * 1.1, gauss(r), 0.4 + r() * 1.1, 260, INK, 0.5);
-      circulo(b, 0, -1.2, 0, 2.2, 700, 0x8fb4ff, 0.6);
-      circulo(b, 0, -1.2, 0, 1.7, 500, INK, 0.35);
-      for (let k = 0; k < 900; k++) {
-        const t = (k / 900) * 2 - 1;
-        const w = 0.25 + 1.4 * t * t;
-        const a = r() * Math.PI * 2;
-        b.push(5 + Math.cos(a) * w, 0.6 + t * 2.4, Math.sin(a) * w, INK, 0.045, 0.45);
-      }
-    },
+    // Three hypotheses as plate figures: bubbles, a previous aeon, a bounce.
+    forma: (b) => hipotesis(b),
     arrive: 0,
     stay: 4.2,
     reloj: { reloj: 4, from: -46, to: -44 },
     fondo: 0,
     e: [0, 0.12],
     spin: 0.04,
-  }),
-);
+});
 
 export const inflacion = marcar(
   provisional({
@@ -352,25 +339,37 @@ export const final = marcar(
   }),
 );
 
-export const despues = marcar(
-  provisional({
-    id: 'despues',
-    acto: 'Después del tiempo',
-    certeza: 'E',
-    name: 'Después del tiempo',
-    fact: 'Hipótesis: un universo frío y vacío, sin nada que mida el tiempo, es igual a un comienzo. Y todo vuelve a empezar.',
-    label: 'después',
-    unitExp: 21,
-    frame: 12,
-    tint: INK,
-    forma(b) {
-      for (let k = 0; k < 7; k++) circulo(b, 0, 0, -k * 1.5, 1 + k * 0.9, 400 + k * 100, k === 0 ? 0x8fb4ff : INK, 0.5 - k * 0.05);
-    },
-    arrive: 3.0,
-    stay: 3.4,
-    reloj: { reloj: 4, from: 100, to: 120 },
-    fondo: 0,
-    turn: [0.2, 0.1],
-    spin: 0.05,
-  }),
-);
+/** The cover's three figures (bubbles, a previous aeon, a bounce): the end draws them again, and loops. */
+function hipotesis(b: Builder) {
+  const r = b.r;
+  for (let k = 0; k < 9; k++) circulo(b, -5 + gauss(r) * 1.4, 1.6 + gauss(r) * 1.1, gauss(r), 0.4 + r() * 1.1, 260, INK, 0.5);
+  circulo(b, 0, -1.2, 0, 2.2, 700, 0x8fb4ff, 0.6);
+  circulo(b, 0, -1.2, 0, 1.7, 500, INK, 0.35);
+  for (let k = 0; k < 900; k++) {
+    const t = (k / 900) * 2 - 1;
+    const w = 0.25 + 1.4 * t * t;
+    const a = r() * Math.PI * 2;
+    b.push(5 + Math.cos(a) * w, 0.6 + t * 2.4, Math.sin(a) * w, INK, 0.045, 0.45);
+  }
+}
+
+export const despues = provisional({
+  id: 'despues',
+  acto: 'Después del tiempo',
+  certeza: 'E',
+  name: 'Después del tiempo',
+  fact: 'Hipótesis: si se espera lo suficiente, todo vuelve a pasar; quizá nacen universos de otros; quizá el final es un comienzo.',
+  label: 'después',
+  unitExp: -35,
+  frame: 14,
+  tint: INK,
+  forma: hipotesis,
+  arrive: 3.6,
+  stay: 5.2,
+  reloj: { reloj: 4, from: -46, to: -46 },
+  fondo: 0,
+  e: [0.4, 0],
+  fadeE: [-60, -58, 70, 72],
+  turn: [0, 0],
+  spin: 0.04,
+});
