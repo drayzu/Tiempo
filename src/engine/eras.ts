@@ -107,6 +107,8 @@ export interface EraSpec {
   /** Colour of the time dust while this era is in view. */
   tint: number;
   notes?: Note[];
+  /** Its card on the plate: a few numbers (how sure we are comes from `certeza`). */
+  ficha?: string[];
   generate(): EraData | Promise<EraData>;
   assemble(data: EraData): EraContent;
 }

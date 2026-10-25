@@ -51,6 +51,7 @@ export function aniquilacion(): EraModule {
       certeza: 'O',
       name: 'Una de cada mil millones',
       fact: 'La materia y la antimateria se aniquilan en destellos de luz. Sobra una partícula de cada mil millones: todo lo que existe es ese sobrante.',
+      ficha: ['por cada 10⁹ antiprotones había 10⁹ + 1 protones', 'por qué sobró materia sigue sin explicarse', 'electrones y positrones: entre 1 y 10 segundos'],
       label: 'aniquilación',
       unitExp: -14,
       frame: 30,

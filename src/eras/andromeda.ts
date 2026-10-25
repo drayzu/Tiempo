@@ -79,6 +79,7 @@ export function andromeda(conUltima = true): EraModule {
       certeza: 'T',
       name: 'Andrómeda',
       fact: 'Andrómeda viene hacia nosotros. Quizá choquemos.',
+      ficha: ['a 2,5 millones de años luz, acercándose a ~110 km/s', 'fusión: ~50 % en 10 000 millones de años (Sawala et al., 2025)', 'las demás galaxias cruzan el horizonte hacia 10¹¹ años'],
       label: 'Andrómeda',
       unitExp: 21,
       frame: 20,

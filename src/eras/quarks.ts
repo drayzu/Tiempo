@@ -56,6 +56,7 @@ export function quarks(): EraModule {
       certeza: 'T',
       name: 'El plasma de quarks',
       fact: 'Quarks y gluones sueltos a billones de grados: ni siquiera existen los protones.',
+      ficha: ['plasma de quarks y gluones: sobre 2 × 10¹² K', 'se recrea en choques de núcleos en el LHC y en RHIC', 'los protones se forman hacia 10⁻⁵ s'],
       label: 'quarks',
       unitExp: -16,
       frame: 30,

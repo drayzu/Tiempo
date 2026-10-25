@@ -157,6 +157,7 @@ export function amanecer(): EraModule {
       certeza: 'T',
       name: 'La edad oscura',
       fact: 'Nada brilla. La materia oscura, que no se ve, arma una red, y el gas cae en ella.',
+      ficha: ['primeras estrellas: hacia 100 a 200 millones de años', 'población III: solo hidrógeno y helio, ~100 masas solares', 'aún no se han observado directamente'],
       label: 'primera estrella',
       unitExp: 19.5,
       frame: 12,

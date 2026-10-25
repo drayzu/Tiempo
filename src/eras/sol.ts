@@ -67,6 +67,7 @@ export function sol(): EraModule {
       certeza: 'O',
       name: 'Nace el Sol',
       fact: 'Una nube de gas y polvo colapsa en un disco. En su centro se enciende el Sol.',
+      ficha: ['hace 4 567 millones de años (los meteoritos más antiguos)', 'el disco que formó los planetas: ~100 UA', 'la Tierra tardó decenas de millones de años en formarse'],
       label: 'el Sol',
       unitExp: 13,
       frame: 30,

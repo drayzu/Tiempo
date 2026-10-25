@@ -293,6 +293,113 @@ export function anillo(g: CanvasRenderingContext2D, u: number, x: number, y: num
   g.restore();
 }
 
+// ---------------------------------------------------------------- the plate's scale and card
+
+/** A round length near 10^logT m, in the unit that reads best: «2 000 años luz», «10⁻¹⁵ m». */
+function redondo(logT: number): { logM: number; text: string } {
+  const units: [number, string, string][] = [
+    [Math.log10(LY * 1e9), 'mil millones de años luz', 'billion light-years'],
+    [Math.log10(LY * 1e6), 'millones de años luz', 'million light-years'],
+    [Math.log10(LY), 'años luz', 'light-years'],
+    [Math.log10(1.496e11), 'UA', 'AU'],
+    [3, 'km', 'km'],
+    [0, 'm', 'm'],
+    [-3, 'mm', 'mm'],
+  ];
+  if (logT < -3 || logT > Math.log10(LY * 1e9) + 3) {
+    const k = Math.floor(logT);
+    return { logM: k, text: `10${sup(k)} m` };
+  }
+  const [lu, es, en] = units.find(([u]) => logT >= u) ?? units[units.length - 1];
+  const v = Math.pow(10, logT - lu);
+  const k = Math.pow(10, Math.floor(Math.log10(v)));
+  const f = v / k;
+  const n = (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * k;
+  return { logM: lu + Math.log10(n), text: `${num(n)} ${EN ? en : es}` };
+}
+
+/**
+ * The scale bar, true at the focus: a round length about a sixth of the screen's height, centred at
+ * the bottom. `logView`: log10 of the metres the screen spans from top to bottom.
+ */
+export function escala(g: CanvasRenderingContext2D, u: number, W: number, H: number, logView: number, inkT: number, alpha: number) {
+  if (alpha <= 0.01 || !Number.isFinite(logView) || Math.abs(logView) > 300) return;
+  const { logM, text } = redondo(logView + Math.log10(0.16));
+  const px = H * Math.pow(10, logM - logView);
+  const x0 = W / 2 - px / 2;
+  const x1 = W / 2 + px / 2;
+  const y = H - 30 * u;
+  g.save();
+  g.globalAlpha = alpha;
+  g.shadowColor = halo(inkT, 0.8);
+  g.shadowBlur = 6 * u;
+  g.strokeStyle = ink(inkT, 0.8);
+  g.lineWidth = Math.max(1, u);
+  g.beginPath();
+  g.moveTo(x0, y - 6 * u);
+  g.lineTo(x0, y);
+  g.lineTo(x1, y);
+  g.lineTo(x1, y - 6 * u);
+  g.stroke();
+  g.font = FONT.mono(10 * u);
+  g.letterSpacing = `${0.8 * u}px`;
+  g.textAlign = 'center';
+  g.textBaseline = 'alphabetic';
+  g.fillStyle = ink(inkT, 0.85);
+  g.fillText(text, W / 2, y - 11 * u);
+  g.restore();
+}
+
+const CERTEZA: Record<Certeza, [string, string]> = {
+  O: ['observado', 'observed'],
+  T: ['teoría establecida', 'established theory'],
+  E: ['especulación', 'speculation'],
+};
+
+/**
+ * The era's card on the plate: how sure we are (the cone's marks: solid observed, half theory,
+ * dashed speculation) and its few numbers, top left.
+ */
+export function ficha(g: CanvasRenderingContext2D, u: number, certeza: Certeza, lines: string[], inkT: number, alpha: number) {
+  if (alpha <= 0.01) return;
+  const x = 42 * u;
+  let y = 92 * u;
+  g.save();
+  g.globalAlpha = alpha;
+  g.shadowColor = halo(inkT, 0.85);
+  g.shadowBlur = 8 * u;
+  // The mark.
+  const r = 4 * u;
+  const cx = x + r;
+  const cy = y - 3.5 * u;
+  g.strokeStyle = ACCENT;
+  g.fillStyle = ACCENT;
+  g.lineWidth = Math.max(1, u);
+  if (certeza === 'E') g.setLineDash([2 * u, 2 * u]);
+  g.beginPath();
+  g.arc(cx, cy, r, 0, Math.PI * 2);
+  g.stroke();
+  g.setLineDash([]);
+  if (certeza === 'O') g.fill();
+  if (certeza === 'T') {
+    g.beginPath();
+    g.arc(cx, cy, r, Math.PI / 2, (Math.PI * 3) / 2);
+    g.fill();
+  }
+  g.font = FONT.mono(10 * u);
+  g.letterSpacing = `${1.1 * u}px`;
+  g.textBaseline = 'alphabetic';
+  g.fillText(CERTEZA[certeza][EN ? 1 : 0].toUpperCase(), x + 2 * r + 8 * u, y);
+  g.letterSpacing = `${0.3 * u}px`;
+  g.font = FONT.mono(10.5 * u);
+  g.fillStyle = ink(inkT, 0.82);
+  for (const line of lines) {
+    y += 18 * u;
+    g.fillText(tr(line), x, y);
+  }
+  g.restore();
+}
+
 // ---------------------------------------------------------------- the cone of time
 
 export interface ConoTick {

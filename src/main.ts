@@ -15,7 +15,7 @@ import { createScaleDust } from './engine/polvo';
 import { createSound } from './engine/sonido';
 import { createFondo } from './engine/fondo';
 import { createProtagonista } from './engine/protagonista';
-import { anillo, cono, hud, nota, proyectar, rotulo, CONO, type Cono, type Lectura } from './engine/placa';
+import { anillo, cono, escala, ficha, hud, nota, proyectar, rotulo, CONO, type Cono, type Lectura } from './engine/placa';
 import { contactSheet } from './engine/contactos';
 import { crearEras, FINALES, type Final } from './eras';
 import { lang, switchLang, tx } from './i18n';
@@ -84,6 +84,7 @@ for (const e of eras.list) {
   e.label = tx(e.label);
   e.acto = tx(e.acto);
   for (const n of e.notes ?? []) n.text = tx(n.text);
+  if (e.ficha) e.ficha = e.ficha.map(tx);
 }
 document.documentElement.lang = lang;
 for (const el of document.querySelectorAll<HTMLElement>('[data-i18n]')) {
@@ -221,6 +222,19 @@ for (const b of finales.querySelectorAll<HTMLButtonElement>('button[data-final]'
     location.href = url.toString();
   });
 }
+
+// The series: where Tiempo passes a place Potencias also shows, a quiet link opens Potencias right
+// there (its `?p=` beat); at the end, AstroIngeniería (could a civilisation outlast the end?).
+const enlace = $<HTMLAnchorElement>('#enlace');
+const POTENCIAS = (beat: number) => `https://drayzu.github.io/Potencias/?p=${beat}&lang=${lang}`;
+const ENLACES = [
+  { from: tl.at('planck') - 1, to: tl.at('inflacion') - 1, href: POTENCIAS(1.5), text: 'La espuma de Planck, en Potencias' },
+  { from: tl.at('quarks') + 2, to: tl.at('aniquilacion') - 1, href: POTENCIAS(22.5), text: '«Nadie ha visto un quark solo», en Potencias' },
+  { from: tl.at('niebla') + 4, to: tl.at('gas') - 1, href: POTENCIAS(275), text: 'La luz más antigua, en Potencias' },
+  { from: tl.at('andromeda'), to: forkAt - 0.5, href: POTENCIAS(236), text: 'Andrómeda, en Potencias' },
+  { from: tl.at('despues') - 1, to: tl.length - 1, href: 'https://drayzu.github.io/AstroIngenieria/', text: '¿Podría una civilización escapar del final? AstroIngeniería' },
+].filter((x) => x.to > x.from);
+let enlaceOn = -1;
 
 const plate = $<HTMLCanvasElement>('#placa');
 const g = plate.getContext('2d')!;
@@ -394,6 +408,16 @@ function step(now: number) {
   if (over?.logSize !== undefined) l.logSize = over.logSize;
   if (over?.logT !== undefined) l.logT = over.logT;
   if ((cur as Era & { provisional?: boolean }).provisional) rotulo(g, u, W / 2, 26 * u, tx('era provisional'), 9.5, inkT, 0.5);
+  // The plate: a true scale bar, and each era's card (crossing over between eras).
+  if (plateOn) {
+    const introOut = Math.min(1, Math.max(0, (p - 0.05) / 0.55));
+    const A = eras.list[eras.segment];
+    const B = eras.list[eras.segment + 1];
+    const show = (era: Era | undefined, a: number) => era?.ficha && ficha(g, u, era.certeza, era.ficha, inkT, a * introOut);
+    show(A, 1 - smoothstep(0.3, 0.5, eras.blend));
+    show(B, smoothstep(0.5, 0.7, eras.blend));
+    if (l.reloj !== 4) escala(g, u, W, H, e + Math.log10(fit), inkT, introOut);
+  }
 
   let here = 0;
   conoData.ticks.forEach((t, i) => {
@@ -413,6 +437,15 @@ function step(now: number) {
   ruler.style.opacity = String(introOut);
   outro.classList.toggle('is-in', p > tl.length - 0.6);
   finales.classList.toggle('is-in', p > forkAt - 0.3 && p < forkAt + 4.4);
+  const k = ENLACES.findIndex((x) => p >= x.from && p <= x.to);
+  if (k !== enlaceOn) {
+    enlaceOn = k;
+    if (k >= 0) {
+      enlace.href = ENLACES[k].href;
+      enlace.textContent = `${tx(ENLACES[k].text)} ↗`;
+    }
+    enlace.classList.toggle('is-in', k >= 0);
+  }
   // The loop: the end draws the cover again; a moment there, and the journey begins anew.
   if (p > tl.length - 0.03 && scroll.held === null) {
     atEnd += dt;

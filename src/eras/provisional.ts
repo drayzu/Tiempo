@@ -30,6 +30,8 @@ export interface ProvisionalOpts {
   anchor?: [number, number, number];
   frameCenter?: [number, number, number];
   tint: number;
+  /** Its card on the plate. */
+  ficha?: string[];
   /** Fills the cloud (local units). */
   forma: (b: Builder) => void;
   /** Where our proton is (local units), if it is here. */
@@ -62,6 +64,7 @@ export function provisional(o: ProvisionalOpts): EraModule {
       certeza: o.certeza,
       name: o.name,
       fact: o.fact,
+      ficha: o.ficha,
       label: o.label,
       unitExp: o.unitExp,
       frame: o.frame,

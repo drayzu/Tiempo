@@ -53,6 +53,7 @@ export function viaLactea(): EraModule {
       certeza: 'O',
       name: 'La Vía Láctea se arma',
       fact: 'Nuestra galaxia crece tragándose galaxias más pequeñas. Nuestro protón viaja en el gas del disco.',
+      ficha: ['~100 000 años luz de diámetro', 'entre 100 000 y 400 000 millones de estrellas', 'el Sol, a ~26 000 años luz del centro'],
       label: 'Vía Láctea',
       unitExp: 20,
       frame: 14,

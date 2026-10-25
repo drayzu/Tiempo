@@ -70,6 +70,7 @@ export function solMuere(): EraModule {
       certeza: 'T',
       name: 'El Sol se apaga',
       fact: 'El Sol brillará cada vez más, se hinchará y se apagará: le quedan unos cinco mil millones de años.',
+      ficha: ['el Sol brilla ~10 % más cada 1 000 millones de años', 'gigante roja: en ~5 000 millones de años, ~200 veces su radio', 'queda una enana blanca de ~0,5 masas solares'],
       label: 'el Sol se apaga',
       unitExp: 11,
       frame: 8,

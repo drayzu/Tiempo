@@ -85,6 +85,7 @@ export function galaxias(): EraModule {
       certeza: 'O',
       name: 'Las burbujas se tocan',
       fact: 'La luz de las primeras galaxias ioniza burbujas de gas que crecen hasta tocarse y fundirse, como un queso suizo.',
+      ficha: ['reionización: hasta ~1 000 millones de años', 'JWST: galaxias a z ≈ 14, unos 290 millones de años', 'el gas entre galaxias sigue ionizado hasta hoy'],
       label: 'galaxias',
       unitExp: 21.5,
       frame: 30,

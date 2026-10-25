@@ -101,6 +101,7 @@ export function niebla(): EraModule {
       certeza: 'O',
       name: 'La niebla',
       fact: 'Todo es un plasma incandescente: la luz choca con los electrones libres y no puede avanzar.',
+      ficha: ['recombinación: hacia 380 000 años, a ≈ 3 000 K', 'esa luz llega hoy a 2,725 K: el fondo de microondas', 'sus ondas de sonido dejaron una escala: ~480 millones de años luz'],
       label: 'la niebla',
       unitExp: -3,
       frame: 6,

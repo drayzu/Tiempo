@@ -194,6 +194,7 @@ export function ahora(): EraModule {
       certeza: 'O',
       name: 'Ahora',
       fact: 'Cada gesto, diez veces menos tiempo: mil millones de años, un millón, mil, un año, un segundo.',
+      ficha: ['edad del universo: 13 787 ± 20 millones de años', 'el fondo de microondas: 2,725 K', 'el universo observable: ~93 000 millones de años luz'],
       label: 'ahora',
       unitExp: 6,
       frame: 19,

@@ -23,6 +23,7 @@ export function inflacion(): EraModule {
       certeza: 'T',
       name: 'Inflación',
       fact: 'En menos tiempo del que la luz tarda en cruzar un protón, el espacio crece unas 10²⁶ veces.',
+      ficha: ['dura unos 10⁻³² s (según el modelo)', 'el espacio crece al menos 10²⁶ veces', 'sus arrugas: 1 parte en 100 000 en el fondo de microondas'],
       label: 'inflación',
       unitExp: -35,
       frame: 10,

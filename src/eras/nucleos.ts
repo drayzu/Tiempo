@@ -51,6 +51,7 @@ export function nucleos(): EraModule {
       certeza: 'O',
       name: 'Veinte minutos de cocina',
       fact: 'Protones y neutrones se juntan en núcleos de helio. Nuestro protón queda solo: será hidrógeno.',
+      ficha: ['entre 3 y 20 minutos, a ~10⁹ K', '≈ 75 % hidrógeno y ≈ 25 % helio, en masa', 'más trazas de deuterio y de litio'],
       label: 'núcleos',
       unitExp: -13,
       frame: 30,

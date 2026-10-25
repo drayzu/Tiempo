@@ -23,6 +23,7 @@ export function gas(): EraModule {
       certeza: 'O',
       name: 'El gas se enfría',
       fact: 'Ya no hay luz que ver. El gas, frío y casi uniforme, guarda arrugas diminutas: la gravedad las agranda.',
+      ficha: ['la edad oscura: de 380 000 a ~100 millones de años', 'la materia oscura es ~85 % de toda la materia', 'el gas se enfría de ~3 000 K a ~10 K'],
       label: 'gas frío',
       unitExp: 8,
       frame: 30,
