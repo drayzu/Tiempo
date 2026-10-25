@@ -282,7 +282,7 @@ export function niebla(): EraModule {
       // From the nuclei's minutes to the fog of 120 000 years, zooming out to where atoms are a
       // millimetre apart; the camera, inside the plasma, drifts forward.
       tl.with(0.02, { reloj: 0 });
-      tl.to(3.2, { era: era.index, e: era.home + 0.05, lt: LT(1.2e5), fondo: 1, horno: 0, fov: 50, yaw: 0, pitch: 0, roll: 0 });
+      tl.to(3.2, { era: era.index, e: era.home + 0.05, lt: LT(1.2e5), fondo: 1, horno: 0, fov: 50, yaw: 0, pitch: 0, roll: 0, bloom: 0.7, umbral: 0.12 });
       tl.label('niebla');
       tl.caption(4.6, 'La niebla', 'Todo es un plasma incandescente: la luz choca con los electrones libres y no puede avanzar.');
       tl.to(4.4, { lt: LT(2.9e5), 'niebla.fz': -2.5, yaw: 0.12, pitch: 0.04 });

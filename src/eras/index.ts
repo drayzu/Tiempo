@@ -3,7 +3,10 @@ import { planck } from './planck';
 import { niebla } from './niebla';
 import { amanecer } from './amanecer';
 import { ahora } from './ahora';
-import { antes, inflacion, quarks, aniquilacion, nucleos, oscura, galaxias, viaLactea, sol, futuro, final, despues } from './provisionales';
+import { quarks } from './quarks';
+import { aniquilacion } from './aniquilacion';
+import { nucleos } from './nucleos';
+import { antes, inflacion, oscura, galaxias, viaLactea, sol, futuro, final, despues } from './provisionales';
 
 /**
  * The journey, in the order it is lived. Each era sits inside or around the one before it. Shared
@@ -12,5 +15,5 @@ import { antes, inflacion, quarks, aniquilacion, nucleos, oscura, galaxias, viaL
  * rest of the time axis.
  */
 export function crearEras(): EraModule[] {
-  return [antes, planck(), inflacion, quarks, aniquilacion, nucleos, niebla(), oscura, amanecer(), galaxias, viaLactea, sol, ahora(), futuro, final, despues];
+  return [antes, planck(), inflacion, quarks(), aniquilacion(), nucleos(), niebla(), oscura, amanecer(), galaxias, viaLactea, sol, ahora(), futuro, final, despues];
 }
