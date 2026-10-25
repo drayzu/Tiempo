@@ -3,18 +3,18 @@ import { clamp, smoothstep } from '../lib/math';
 import { YEAR } from '../lib/cosmo';
 import { materia, materiaBuilder, type MateriaData } from '../engine/materia';
 import type { EraModule } from '../engine/eras';
-import { ink, nota, rotulo, rotuloPot } from '../engine/placa';
+import { ink, nota, rotulo } from '../engine/placa';
 
 /**
- * Ahora: the time zoom (the time counterpart of Potencias' dolly zoom), chosen in phase 0 as the
- * Earth entered through the tunnel of years. 1 unit = 1 000 km.
+ * Ahora: the time zoom (the time counterpart of Potencias' dolly zoom). 1 unit = 1 000 km.
  *
  * Arriving at today, the clocks stop counting from the beginning and count back from now, in powers
- * of ten. The camera flies, first person, through a ring for every power of ten (the milestones on
- * their walls) towards the Earth: its continents settle into today's shape, the ice ages come and
- * go, its days blur into bands (a long exposure) and slow into one day. At now the Sun lights it as
- * it does at this very moment, the camera goes down to where you are, and our proton is in the water
- * of your body. Then the axis opens towards the future.
+ * of ten. The Earth turns under the camera, which circles it and comes closer: going forward in time
+ * its continents settle into today's shape, the ice ages come and go, its days blur into bands (a
+ * long exposure) and slow into one day; the Moon's orbit is a ring of light that gathers into the
+ * Moon, in its phase of this very moment. At now the Sun lights the Earth as it does right now, the
+ * camera goes down to where you are, and our proton is in the water of your body. Then the axis
+ * opens towards the future. (A tunnel of rings was tried and dropped: it did not look natural.)
  */
 
 const LOADED = typeof performance !== 'undefined' ? performance.now() : 0;
@@ -155,35 +155,31 @@ const EARTH_MOVE = /* glsl */ `
   em *= smoothstep(-0.02, 0.12, dot(nV, normalize(-pV)));
 `;
 
-/** The rings of the tunnel live in camera space: they pass over the camera, whatever it looks at. */
-const RING_VERT = /* glsl */ `
-  attribute float aAng, aPow, aMajor;
-  uniform float uLb, uAlpha, uPx, uSP, uRad;
-  varying float vA;
-  void main() {
-    float ahead = uLb - aPow;
-    vec3 p = vec3(cos(aAng) * uRad, sin(aAng) * uRad * 0.82, -0.25 - ahead * uSP);
-    gl_Position = projectionMatrix * vec4(p, 1.0);
-    gl_PointSize = uPx * (aMajor > 0.5 ? 1.0 : 0.7) * clamp(2.0 / max(-p.z, 0.2), 0.6, 3.0);
-    vA = uAlpha * smoothstep(-0.05, 0.5, ahead) * (1.0 - smoothstep(3.0, 5.0, ahead)) * (aMajor > 0.5 ? 0.85 : 0.35);
-    if (vA < 0.002) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
-  }
+/**
+ * The Moon: a sphere of points on its orbit (the ecliptic, close enough). Fast, it smears along the
+ * orbit into a ring of light (each point at its own instant of the exposure); slow, it is the Moon.
+ */
+const MOON_MOVE = /* glsl */ `
+  float th = uMoonTh + (seed - 0.5) * 6.2832 * uMoonBlur;
+  vec3 c = (cos(th) * uE1 + sin(th) * uE2) * 384.4;
+  vec3 n = normalize(position);
+  p = c + position * mix(1.0, 0.25, uMoonBlur);
+  float lit = smoothstep(-0.05, 0.25, dot(n, uSun));
+  em *= mix(0.02 + 0.98 * lit, 0.3, uMoonBlur);
+  // Spread along the whole orbit its points grow, so the ring reads as a continuous trail of light.
+  sz *= mix(1.0, 16.0, uMoonBlur);
 `;
-const RING_FRAG = /* glsl */ `
-  varying float vA;
-  void main() {
-    vec2 c = gl_PointCoord - 0.5;
-    gl_FragColor = vec4(vec3(0.93, 0.91, 0.86) * exp(-dot(c, c) * 14.0) * vA, 1.0);
-  }
-`;
-const SP = 1.6;
-const RAD = 1.15;
-const LOG_YEAR_S = Math.log10(YEAR);
-/** The rings: powers of ten of years (10¹⁰ … 1), then of seconds (10⁷ s … 1 s); `lb` in log10 years. */
-const RINGS: { lb: number; n: number; unit: 'años' | 's' }[] = [
-  ...Array.from({ length: 11 }, (_, i) => ({ lb: 10 - i, n: 10 - i, unit: 'años' as const })),
-  ...Array.from({ length: 8 }, (_, i) => ({ lb: 7 - i - LOG_YEAR_S, n: 7 - i, unit: 's' as const })),
-];
+
+/** Synodic month (days) and a new moon to count from (2000-01-06 18:14 UTC). */
+const SYNODIC = 29.530588;
+const NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
+const EPS = 23.44 * D2R;
+/** A direction given ecliptic longitude λ, in the scene's frame (the Sun on the subsolar meridian). */
+function eclipticDir(lam: number, raSun: number, out: THREE.Vector3) {
+  const dec = Math.asin(Math.sin(EPS) * Math.sin(lam));
+  const ra = Math.atan2(Math.cos(EPS) * Math.sin(lam), Math.cos(lam));
+  return dirOf(dec / D2R, (ra - raSun) / D2R, 0, out);
+}
 
 export function ahora(): EraModule {
   return {
@@ -267,21 +263,14 @@ export function ahora(): EraModule {
           const [sx, sy, sz] = sb.onSphere();
           sb.push(sx * 900, sy * 900, sz * 900, 0xdfe6ff, 0.8, 0.25 + Math.pow(sb.r(), 6) * 2.5, { star: true });
         }
-        // The tunnel's rings (camera space): one per power of ten (years down to one year, then
-        // seconds, as the big clock counts), fainter ones at 2 and 5.
-        const ang: number[] = [];
-        const pw: number[] = [];
-        const major: number[] = [];
-        for (const v of RINGS)
-          for (const m of [1, 2, 5]) {
-            const N2 = m === 1 ? 700 : 260;
-            for (let k = 0; k < N2; k++) {
-              ang.push((k / N2) * Math.PI * 2);
-              pw.push(v.lb + Math.log10(m));
-              major.push(m === 1 ? 1 : 0);
-            }
-          }
-        return { earth: b.data(), ll: new Float32Array(ll), land: new Float32Array(landA), stars: sb.data(), ang: new Float32Array(ang), pw: new Float32Array(pw), major: new Float32Array(major) };
+        // The Moon: points on a sphere of its radius (placed on its orbit by the shader).
+        const mb = materiaBuilder(603);
+        for (let k = 0; k < 5000; k++) {
+          const [mx, my, mz] = mb.onSphere();
+          const crater = 0.75 + 0.25 * Math.sin(mx * 9 + my * 7) * Math.cos(my * 11 - mz * 5);
+          mb.push(mx * 1.737, my * 1.737, mz * 1.737, 0xd8d4cc, 0.05, 0.75 * crater, { star: true });
+        }
+        return { earth: b.data(), ll: new Float32Array(ll), land: new Float32Array(landA), stars: sb.data(), moon: mb.data() };
       },
       assemble(data) {
         const uni = {
@@ -299,6 +288,8 @@ export function ahora(): EraModule {
           extra: { aLL: [data.ll as Float32Array, 2], aLand: [data.land as Float32Array, 1] },
         });
         const stars = materia(data.stars as MateriaData);
+        const mu = { uMoonTh: { value: 0 }, uMoonBlur: { value: 0 }, uE1: { value: new THREE.Vector3(1, 0, 0) }, uE2: { value: new THREE.Vector3(0, 0, -1) }, uSun: uni.uSun };
+        const moon = materia(data.moon as MateriaData, { pre: 'uniform float uMoonTh, uMoonBlur;\nuniform vec3 uE1, uE2, uSun;', move: MOON_MOVE, uniforms: mu });
         const sunWorld = { value: new THREE.Vector3() };
         const atmo = new THREE.Mesh(
           new THREE.SphereGeometry(R * 1.025, 96, 64),
@@ -314,32 +305,24 @@ export function ahora(): EraModule {
         );
         const planet = new THREE.Group();
         planet.quaternion.copy(TURN);
-        planet.add(earth.points, atmo);
-
-        const rgeo = new THREE.BufferGeometry();
-        rgeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((data.ang as Float32Array).length * 3), 3));
-        rgeo.setAttribute('aAng', new THREE.BufferAttribute(data.ang as Float32Array, 1));
-        rgeo.setAttribute('aPow', new THREE.BufferAttribute(data.pw as Float32Array, 1));
-        rgeo.setAttribute('aMajor', new THREE.BufferAttribute(data.major as Float32Array, 1));
-        const ru = { uLb: { value: LB0 }, uAlpha: { value: 0 }, uPx: { value: 3 }, uSP: { value: SP }, uRad: { value: RAD } };
-        const rings = new THREE.Points(rgeo, new THREE.ShaderMaterial({ vertexShader: RING_VERT, fragmentShader: RING_FRAG, uniforms: ru, transparent: true, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending }));
-        rings.frustumCulled = false;
+        planet.add(earth.points, atmo, moon.points);
 
         const object = new THREE.Group();
-        object.add(stars.points, planet, rings);
+        object.add(stars.points, planet);
         let prevL = Math.pow(10, LB0);
-        const st = { L: prevL, ice: 0, drift: 0, lb: LB0, reloj: 1, tunel: 0 };
+        const st = { L: prevL, ice: 0, drift: 0, lb: LB0, reloj: 1 };
         const you = new THREE.Vector3();
-        const tmp = new THREE.Vector3();
         const q = new THREE.Quaternion();
+        const lam0 = ((2 * Math.PI) / 365.25) * (SOL.doy - 80);
+        const elong0 = 2 * Math.PI * ((((NOW_MS - NEW_MOON) / 86400000 / SYNODIC) % 1) + 1);
         return {
           object,
-          clouds: [earth, stars],
+          clouds: [earth, stars, moon],
           update(f) {
             const reloj = Math.round(f.tl.get('reloj', f.p));
             const lb = f.tl.get('lb', f.p);
             const L = reloj === 1 ? Math.pow(10, lb) : reloj === 3 ? -Math.pow(10, f.tl.get('ah', f.p)) : 0;
-            // How fast time runs on screen decides what blurs (days, seasons, ice ages).
+            // How fast time runs on screen decides what blurs (days, months, seasons, ice ages).
             const rate = Math.abs(L - prevL) / Math.max(f.dt, 1e-3);
             prevL = L;
             const blur = smoothstep(0.4, 4, rate * 365.25);
@@ -352,47 +335,45 @@ export function ahora(): EraModule {
             uni.uDrift.value = drift;
             uni.uIce.value = ice;
             uni.uAntarctic.value = 1 - smoothstep(33e6, 35e6, L);
-            const doy = SOL.doy - L * 365.2422;
-            const decl = 23.44 * Math.sin(((2 * Math.PI) / 365.25) * (doy - 80)) * (1 - smoothstep(0.3, 3, rate));
+            const seasons = 1 - smoothstep(0.3, 3, rate);
+            const lam = lam0 - 2 * Math.PI * ((L % 1) + 1);
+            const decl = (Math.asin(Math.sin(EPS) * Math.sin(lam)) / D2R) * seasons;
             dirOf(decl, 0, 0, uni.uSun.value);
             planet.getWorldQuaternion(q);
             sunWorld.value.copy(uni.uSun.value).applyQuaternion(q);
             (atmo.material as THREE.ShaderMaterial).uniforms.uAlpha.value = f.alpha;
-            const tunel = f.tl.get('ahora.tunel', f.p);
-            ru.uLb.value = lb;
-            ru.uAlpha.value = tunel * f.alpha;
-            ru.uPx.value = 3.2 * f.dpr;
+            // The Moon: its orbit drawn in the frame that turns with the Sun; its place from its phase.
+            const raSun = Math.atan2(Math.cos(EPS) * Math.sin(lam), Math.cos(lam));
+            eclipticDir(0, raSun, mu.uE1.value);
+            eclipticDir(Math.PI / 2, raSun, mu.uE2.value);
+            const months = (L * 365.25) / SYNODIC;
+            const elong = elong0 - 2 * Math.PI * (months % 1);
+            mu.uMoonTh.value = lam + elong;
+            mu.uMoonBlur.value = smoothstep(0.3, 3, (rate * 365.25) / SYNODIC);
+            moon.u.uMaxPx.value = 26 * f.dpr;
             // You, on the turning planet.
             dirOf(HERE.lat, HERE.lon, uni.uRot.value, you).applyQuaternion(TURN).multiplyScalar(R * 1.004);
-            Object.assign(st, { L, ice, drift, lb, reloj, tunel });
+            Object.assign(st, { L, ice, drift, lb, reloj });
           },
           proton: () => you,
           placa(g, f, on, toScreen) {
-            const { u, W, H, camera } = f;
-            const now = f.tl.get('reloj', f.p) > 1.5 && f.tl.get('reloj', f.p) < 2.5 ? 1 : 0;
-            // The rings say their power of ten; the milestones sit on the walls, at their time.
-            if (st.tunel > 0.01 && st.reloj === 1) {
-              const proj = (x: number, y: number, z: number) => {
-                const v = tmp.set(x, y, z).applyMatrix4(camera.projectionMatrix);
-                return { x: ((v.x + 1) / 2) * W, y: ((1 - v.y) / 2) * H };
-              };
-              for (const v of RINGS) {
-                const ahead = st.lb - v.lb;
-                if (ahead < -0.05 || ahead > 4) continue;
-                const top = proj(0, RAD * 0.82, -0.25 - ahead * SP);
-                const a = smoothstep(-0.05, 0.4, ahead) * (1 - smoothstep(2.6, 4, ahead)) * st.tunel * f.alpha;
-                rotuloPot(g, u, top.x, top.y - 12 * u, 'hace ', v.n, ` ${v.unit}`, 12, 0, a * 0.9);
+            const { u, W, H } = f;
+            const now = st.reloj === 2 ? 1 : 0;
+            // The milestone of this moment, written above the planet as it passes.
+            if (st.reloj === 1) {
+              let best: Hito | null = null;
+              let bd = 0.45;
+              for (const h of HITOS) {
+                const d = Math.abs(Math.log10(h.L()) - st.lb);
+                if (d < bd) {
+                  bd = d;
+                  best = h;
+                }
               }
-              HITOS.forEach((h, i) => {
-                const ahead = st.lb - Math.log10(h.L());
-                if (ahead < -0.05 || ahead > 2.8) return;
-                const angle = (i % 2 ? 0.35 : Math.PI - 0.35) + ((i * 0.37) % 0.5) - 0.25;
-                const P = proj(Math.cos(angle) * RAD, Math.sin(angle) * RAD * 0.82 * 0.6, -0.25 - ahead * SP);
-                const a = smoothstep(-0.05, 0.3, ahead) * (1 - smoothstep(2.0, 2.8, ahead)) * st.tunel * f.alpha;
-                nota(g, u, P.x, P.y, h.texto, i % 2 ? 30 : -30, -18, 0, a);
-              });
-              if (st.ice > 0.25 && st.lb > 3.9 && st.lb < 6.5) rotulo(g, u, W * 0.5, H * 0.1, 'edad de hielo', 9.5, 0, smoothstep(0.25, 0.6, st.ice) * 0.8 * f.alpha);
-              if (st.drift > 0.3) rotulo(g, u, W * 0.5, H * 0.1, 'los continentes estaban en otro lugar', 9.5, 0, smoothstep(0.3, 0.7, st.drift) * 0.7 * f.alpha);
+              const a = f.alpha * (best ? 1 - bd / 0.45 : 0);
+              if (best) rotulo(g, u, W * 0.5, H * 0.1, best.texto, 13, 0, a, false);
+              if (st.ice > 0.25 && st.lb > 3.9 && st.lb < 6.5) rotulo(g, u, W * 0.5, H * 0.1 + 24 * u, 'edad de hielo', 9.5, 0, smoothstep(0.25, 0.6, st.ice) * 0.8 * f.alpha);
+              if (st.drift > 0.3) rotulo(g, u, W * 0.5, H * 0.1 + 24 * u, 'los continentes estaban en otro lugar', 9.5, 0, smoothstep(0.3, 0.7, st.drift) * 0.7 * f.alpha);
             }
             // At now: you, and the water our proton is in.
             const P = toScreen(you);
@@ -402,31 +383,30 @@ export function ahora(): EraModule {
               agua(g, u, P.x, P.y, now * f.alpha, 0, 1.4);
             }
             void on;
-            void ink;
           },
         };
       },
     },
     choreo(tl, era) {
-      // From the Sun's disk down to the young Earth; the clocks now count back from today.
+      // From the Sun's disk down to the young Earth, the Moon's orbit a ring of light around it; the
+      // clocks now count back from today. The camera circles the turning planet as it comes closer.
       tl.with(0.02, { reloj: 1 });
-      tl.set({ 'ahora.tunel': 0, 'ahora.cam': 0 });
-      tl.to(3.4, { era: era.index, e: era.home + 0.35, lb: LB0 - 0.25, fov: 52, yaw: 0, pitch: 0, roll: 0, fondo: 1, horno: 0, 'ahora.tunel': 1, bloom: 0.45, umbral: 0.4 });
+      tl.to(3.4, { era: era.index, e: era.home + 1.35, lb: LB0 - 0.25, fov: 50, yaw: -1.1, pitch: 0.42, roll: 0.05, fondo: 1, horno: 0, bloom: 0.45, umbral: 0.4 });
       tl.label('ahora');
       tl.caption(10.6, 'Hacia ahora', 'Cada gesto, diez veces menos tiempo: mil millones de años, un millón, mil, un año, un segundo.');
-      tl.to(4.4, { lb: 3.0, e: era.home + 0.15 });
-      tl.to(3.0, { lb: -2.6, e: era.home + 0.02 });
-      tl.to(3.2, { lb: LB1, e: era.home });
+      tl.to(4.4, { lb: 3.0, e: era.home + 0.45, yaw: -0.55, pitch: 0.22, roll: 0 });
+      tl.to(3.0, { lb: -2.6, e: era.home + 0.1, yaw: -0.2, pitch: 0.08 });
+      tl.to(3.2, { lb: LB1, e: era.home, yaw: 0, pitch: 0 });
       // Now: down to where you are.
       tl.with(0.02, { reloj: 2 });
       tl.caption(4.4, 'Este protón está en ti', 'Nació en la primera millonésima de segundo. Hoy es parte del agua de tu cuerpo.');
-      tl.to(1.2, { 'ahora.tunel': 0, 'ahora.fx': YOU.x * 0.85, 'ahora.fy': YOU.y * 0.85, 'ahora.fz': YOU.z * 0.85, e: era.home - 0.36, fov: 46 });
-      tl.wait(3.2);
-      // And time goes on: the axis opens towards the future.
+      tl.to(1.4, { 'ahora.fx': YOU.x * 0.85, 'ahora.fy': YOU.y * 0.85, 'ahora.fz': YOU.z * 0.85, e: era.home - 0.36, fov: 46, roll: -0.04 });
+      tl.wait(3.0);
+      // And time goes on: the axis opens towards the future; the camera rises and turns away.
       tl.set({ ah: LB1 });
       tl.with(0.02, { reloj: 3 });
       tl.caption(3.2, 'Y el tiempo sigue', 'Desde aquí el eje se abre de nuevo, hacia el futuro.');
-      tl.to(3.2, { ah: 0.3, 'ahora.fx': 0, 'ahora.fy': 0, 'ahora.fz': 0, e: era.home + 0.1, fov: 50, bloom: 0.7, umbral: 0.12 });
+      tl.to(3.2, { ah: 0.3, 'ahora.fx': 0, 'ahora.fy': 0, 'ahora.fz': 0, e: era.home + 0.5, fov: 50, yaw: 0.5, pitch: 0.15, roll: 0, bloom: 0.7, umbral: 0.12 });
     },
   };
 }
