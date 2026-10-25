@@ -324,7 +324,7 @@ export const futuro = marcar(
     reloj: { reloj: 3, from: 0.5, to: 14 },
     fondo: 1,
     turn: [0.3, 0.2],
-    fadeE: [-1.2, -0.6, 2.6, 4],
+    fadeE: [-2.2, -1.2, 2.6, 4],
   }),
 );
 

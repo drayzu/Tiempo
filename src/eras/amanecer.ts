@@ -318,13 +318,13 @@ export function amanecer(): EraModule {
             const scale = tmp.setFromMatrixColumn(object.matrixWorld, 0).length();
             gu.uR.value = R * scale * (sn > 0 ? 1 - 0.55 * smoothstep(0.2, 1, sn) : 1);
             // The flood (Horno): the star's light fills the screen for a moment; then a bright point.
-            const starL = on * (0.5 + 0.25 * flood) * (1 + 1.0 * (1 - smoothstep(0, 0.3, R)));
+            const starL = on * (0.26 + 0.22 * flood) * (1 + 0.8 * (1 - smoothstep(0, 0.3, R)));
             gu.uStarL.value = starL * f.alpha;
             gu.uScatter.value = 0.06 + 0.5 * flood;
-            gu.uFlashL.value = flash * (1.6 + 0.6 * flood) * f.alpha;
+            gu.uFlashL.value = flash * (1.0 + 0.4 * flood) * f.alpha;
             gu.uBubble.value = (0.42 + 0.45 * flood) * ionK * f.alpha;
             // Against the flood, the gas is a silhouette.
-            const light = Math.min(1, flood * (starL / 0.9) + flash);
+            const light = Math.min(1, flood * (starL / 0.45) + flash);
             gas.u.uInk.value = 0.95 * smoothstep(0.05, 0.5, light);
             gas.u.uGain.value = 1 - 0.85 * smoothstep(0.1, 0.6, light);
             wmat.opacity = 0.22 * smoothstep(0.05, 0.6, k1) * (1 - 0.6 * light) * f.alpha;
@@ -378,8 +378,8 @@ export function amanecer(): EraModule {
       tl.to(2.4, { lt: LT(1.5e8), 'ama.col': 1, e: era.home - 0.22, 'amanecer.fx': 0.4, 'amanecer.fy': 0.25, yaw: 0, pitch: 0 });
       tl.caption(4.6, 'La primera estrella', 'Cien veces el Sol, tan caliente que brilla azul. Vivirá unos tres millones de años.');
       // It lights: its light floods everything (Horno), then settles into a bright point in its bubble.
-      tl.to(0.7, { lt: LT(1.5003e8), 'ama.star': 1, 'ama.flood': 1 });
-      tl.to(3.6, { lt: LT(1.525e8), 'ama.R': 3.4, 'ama.flood': 0.15, e: era.home - 0.05, roll: 0.06 });
+      tl.to(0.7, { lt: LT(1.5003e8), 'ama.star': 1, 'ama.flood': 1, bloom: 0.3, umbral: 0.6 });
+      tl.to(3.6, { lt: LT(1.525e8), 'ama.R': 3.4, 'ama.flood': 0.15, e: era.home - 0.05, roll: 0.06, bloom: 0.6, umbral: 0.15 });
       tl.caption(3.8, 'Muere joven', 'Estalla y siembra el gas con los primeros átomos pesados: carbono, oxígeno, hierro.');
       tl.to(0.5, { lt: LT(1.5255e8), 'ama.star': 0, 'ama.sn': 0.12, 'ama.flood': 0.6 });
       tl.to(3.2, { lt: LT(1.6e8), 'ama.sn': 1, 'ama.R': 3.9, 'ama.flood': 0, e: era.home + 0.05, 'amanecer.fx': 0, 'amanecer.fy': 0, roll: 0 });
