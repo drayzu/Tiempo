@@ -220,6 +220,81 @@ body {
   white-space: nowrap;
 }
 
+/* ---------- The fork: how does it end? ---------- */
+#finales {
+  position: fixed;
+  left: 50%;
+  top: 11vh;
+  transform: translate(-50%, 10px);
+  width: min(900px, calc(100% - 32px));
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s, transform 0.8s;
+  text-shadow: 0 0 14px rgba(0, 0, 0, 0.95);
+}
+
+#finales.is-in {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+.fin-k {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.fin-t {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 30px;
+  margin-bottom: 16px;
+}
+
+.fin-b {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 720px) {
+  .fin-b {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.fin-b button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 9px 10px;
+  font: 500 13px var(--sans);
+  color: var(--ink);
+  background: rgba(8, 8, 12, 0.6);
+  border: 1px dashed rgba(236, 231, 219, 0.35);
+  border-radius: 10px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.fin-b button small {
+  font: 10.5px var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--dim);
+}
+
+.fin-b button:hover,
+.fin-b button.is-on {
+  border: 1px solid var(--accent);
+}
+
 /* ---------- Outro ---------- */
 #outro {
   position: fixed;

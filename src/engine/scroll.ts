@@ -33,11 +33,15 @@ export function createScroll(spacer: HTMLElement, length: number) {
   let frozen = params.has('ver') ? clamp(Number(params.get('ver')), 0, length) : null;
   if (params.has('p')) {
     const start = clamp(Number(params.get('p')), 0, length);
-    // Wait a frame so the spacer has its height.
-    requestAnimationFrame(() => {
+    const go = () => {
       scrollTo(0, start * PX_PER_BEAT);
       p = target = start;
-    });
+    };
+    // Now, a frame later, and once loaded (a reload would otherwise put back the old position).
+    history.scrollRestoration = 'manual';
+    go();
+    requestAnimationFrame(go);
+    addEventListener('load', go, { once: true });
   }
 
   return {

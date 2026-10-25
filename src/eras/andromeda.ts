@@ -71,7 +71,7 @@ function spiral(b: ReturnType<typeof materiaBuilder>, r: () => number, n: number
   }
 }
 
-export function andromeda(): EraModule {
+export function andromeda(conUltima = true): EraModule {
   return {
     spec: {
       id: 'andromeda',
@@ -172,8 +172,16 @@ export function andromeda(): EraModule {
       tl.label('andromeda');
       tl.to(5.2, { 'and.k': 0.62, ah: 9.85, e: era.home - 0.45, yaw: 0.8, pitch: 0.5 });
       tl.to(3.6, { 'and.k': 1, ah: 10.2, e: era.home - 0.6, yaw: 1.3, pitch: 0.4 });
+      // The fork: from here on, physics is not sure (the page offers the endings).
+      tl.label('bifurcacion');
+      // The other endings come sooner (some twenty billion years): the clock holds while one is chosen.
+      if (!conUltima) {
+        tl.to(4.2, { ah: 10.2, e: era.home + 0.5, yaw: 1.5, pitch: 0.3 });
+        return;
+      }
       tl.caption(4.2, 'Un cielo con una sola galaxia', 'Las demás galaxias se alejan cada vez más rápido y cruzan el horizonte. Un astrónomo del futuro no podría saber que hubo un Big Bang.');
       tl.to(4.2, { 'and.sky': 1, ah: 11.4, e: era.home + 1.1, yaw: 1.6, pitch: 0.2 });
+      // The last star belongs to the cold ending.
       tl.caption(4.6, 'La última estrella', 'Las estrellas se apagan una a una, las más grandes primero. Hacia los 10¹⁴ años se apaga la última enana roja.');
       tl.to(4.6, { 'and.last': 1, ah: 14, e: era.home - 0.7, yaw: 1.9, pitch: 0.45 });
     },

@@ -1,4 +1,4 @@
-import { crearEras } from '../eras';
+import { todasLasEras } from '../eras';
 import type { EraData } from './eras';
 
 /**
@@ -7,7 +7,7 @@ import type { EraData } from './eras';
  * typed arrays over without copying them. Generation may be async (an era that loads data).
  */
 
-const specs = new Map(crearEras().map((m) => [m.spec.id, m.spec]));
+const specs = new Map(todasLasEras().map((m) => [m.spec.id, m.spec]));
 
 function buffers(v: unknown, out = new Set<ArrayBuffer>()) {
   if (ArrayBuffer.isView(v)) out.add(v.buffer as ArrayBuffer);

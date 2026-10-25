@@ -107,17 +107,18 @@ export function createFondo() {
     /**
      * Per frame. `lt`: log10 of seconds since the beginning; `gain` dims it (0 for eras drawn as a
      * plate: before the time we can speak of a temperature); `horno` mixes in the full-bleed way.
+     * `over`: what an era says instead (the crunch heats the sky again, and makes it opaque).
      */
-    update(lt: number, dt: number, time: number, camera: THREE.PerspectiveCamera, gain: number, horno: number) {
+    update(lt: number, dt: number, time: number, camera: THREE.PerspectiveCamera, gain: number, horno: number, over?: { logT?: number; clear?: number }) {
       u.uCamRot.value.setFromMatrix4(m4.extractRotation(camera.matrixWorld));
       u.uTanHalf.value = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
       u.uAspect.value = camera.aspect;
       u.uTime.value = time;
       const t = Math.pow(10, lt);
-      const logT = logTemperature(t);
+      const logT = over?.logT ?? logTemperature(t);
       const T = Math.pow(10, Math.min(logT, 30));
       const vis = bbVisible(T) * gain;
-      const clear = transparency(t);
+      const clear = over?.clear ?? transparency(t);
       bbColor(T, bb);
       // Brasa: a modest glow, so the hue survives the tone curve.
       const kb = 0.55 * Math.pow(vis, 1.2);
@@ -126,7 +127,7 @@ export function createFondo() {
       u.uWall.value = 0.42 * smoothstep(0.1, 0.8, clear);
       // Horno: the screen itself, as bright as the eye would take it.
       const bgL = Math.pow(vis, 1.25);
-      const kh = 0.02 * gain + 1.2 * Math.pow(bgL, 1.1);
+      const kh = 0.02 * gain * smoothstep(2.4, 3, logT) + 1.2 * Math.pow(bgL, 1.1);
       u.uBBH.value.set(bb.r * kh, bb.g * kh, bb.b * kh);
       u.uFogA.value = 1 - clear;
       u.uWallH.value = clear;
@@ -141,7 +142,7 @@ export function createFondo() {
       state.clear = clear;
       state.bgL = bgL * horno;
       // Over a bright full-bleed screen the interface ink turns dark.
-      state.tinta = horno * smoothstep(0.25, 0.45, bgL);
+      state.tinta = horno * smoothstep(0.31, 0.37, bgL);
     },
   };
 }

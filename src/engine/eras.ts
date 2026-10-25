@@ -74,8 +74,9 @@ export interface EraContent {
   /**
    * What the clocks should read instead of the standard history, where it does not apply (during
    * inflation the patch grows 10²⁶ times and the temperature falls to almost nothing: NaN).
+   * `logTCielo` and `claro` change only the sky (its colour, and how opaque it is).
    */
-  lectura?(f: EraFrame): { logSize?: number; logT?: number };
+  lectura?(f: EraFrame): { logSize?: number; logT?: number; logTCielo?: number; claro?: number };
 }
 
 export interface EraSpec {

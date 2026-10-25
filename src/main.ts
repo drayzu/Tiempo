@@ -17,7 +17,7 @@ import { createFondo } from './engine/fondo';
 import { createProtagonista } from './engine/protagonista';
 import { anillo, cono, hud, nota, proyectar, rotulo, CONO, type Cono, type Lectura } from './engine/placa';
 import { contactSheet } from './engine/contactos';
-import { crearEras } from './eras';
+import { crearEras, FINALES, type Final } from './eras';
 import { lang, switchLang, tx } from './i18n';
 
 /**
@@ -31,9 +31,11 @@ import { lang, switchLang, tx } from './i18n';
  * through it), and the background (`fondo`: its gain; `horno`: full-bleed light).
  */
 
-const MODULES = crearEras();
-const VIEW_H = 2;
 const params = new URLSearchParams(location.search);
+/** The ending chosen at the fork (`?final=`); the cold, the most likely, by default. */
+const FINAL: Final = (FINALES as string[]).includes(params.get('final') ?? '') ? (params.get('final') as Final) : 'frio';
+const MODULES = crearEras(FINAL);
+const VIEW_H = 2;
 
 const post = createPost(document.querySelector<HTMLCanvasElement>('#scene')!);
 const { renderer, scene, camera } = post;
@@ -162,8 +164,7 @@ const conoData: Cono = (() => {
     const gam = (x: number) => Math.round(255 * Math.pow(Math.min(1, x * kk), 1 / 2.2));
     colors.push(v > 0.002 ? `rgba(${gam(bb.r)},${gam(bb.g)},${gam(bb.b)},${0.25 + 0.6 * v})` : 'rgba(143,180,255,0.05)');
   }
-  const fin = eras.list.findIndex((e) => e.id === 'futuro');
-  return { length: tl.length, ticks, colors, fork: fin >= 0 ? tl.at('futuro') / tl.length : undefined };
+  return { length: tl.length, ticks, colors, fork: tl.at('bifurcacion') / tl.length };
 })();
 
 // The cone's eras as buttons: they jump, and they tell the canvas what the pointer is on.
@@ -207,6 +208,19 @@ addEventListener('keydown', (ev) => {
   if (k === 'i') showToggle(plateBtn, (plateOn = !plateOn));
   if (k === 'l') switchLang();
 });
+
+// The fork: from here on physics is not sure; the visitor chooses how it ends (kept in the URL).
+const finales = $('#finales');
+const forkAt = tl.at('bifurcacion');
+for (const b of finales.querySelectorAll<HTMLButtonElement>('button[data-final]')) {
+  b.classList.toggle('is-on', b.dataset.final === FINAL);
+  b.addEventListener('click', () => {
+    const url = new URL(location.href);
+    url.searchParams.set('final', b.dataset.final!);
+    url.searchParams.set('p', (forkAt + 4.4).toFixed(2));
+    location.href = url.toString();
+  });
+}
 
 const plate = $<HTMLCanvasElement>('#placa');
 const g = plate.getContext('2d')!;
@@ -290,8 +304,11 @@ function step(now: number) {
   root.updateMatrixWorld();
   camera.updateMatrixWorld();
 
-  // The background: the temperature of the universe.
-  fondo.update(l.lt, dt, time, camera, tl.get('fondo', p), tl.get('horno', p));
+  // The background: the temperature of the universe (or what an era says it is: the crunch heats it).
+  const eraNow = eras.list[eras.segment + (eras.blend > 0.5 ? 1 : 0)];
+  const over0 = eraNow.content?.lectura?.(({ tl, p, e, alpha: eraNow.alpha } as unknown) as EraFrame);
+  const cielo = over0?.logTCielo ?? over0?.logT;
+  fondo.update(l.lt, dt, time, camera, tl.get('fondo', p), tl.get('horno', p), { logT: cielo !== undefined && Number.isFinite(cielo) ? cielo : undefined, clear: over0?.claro });
 
   // Eras.
   const W = renderer.domElement.width;
@@ -393,6 +410,7 @@ function step(now: number) {
   intro.style.transform = `translateY(${-introOut * 40}px)`;
   ruler.style.opacity = String(introOut);
   outro.classList.toggle('is-in', p > tl.length - 0.6);
+  finales.classList.toggle('is-in', p > forkAt - 0.3 && p < forkAt + 4.4);
   // The loop: the end draws the cover again; a moment there, and the journey begins anew.
   if (p > tl.length - 0.03 && scroll.held === null) {
     atEnd += dt;

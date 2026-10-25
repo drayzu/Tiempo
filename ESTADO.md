@@ -7,7 +7,7 @@ Un solo scroll que recorre todo el tiempo, de antes del Big Bang a la última lu
 - **Nombre:** «Tiempo», por ahora (puede cambiar más adelante). Repo propuesto: `drayzu/Tiempo` → drayzu.github.io/Tiempo; confirmar al publicar.
 - **Protón protagonista:** sí. Un punto azul que el viaje nunca pierde, desde que los quarks quedan presos hasta el agua de tu cuerpo y después.
 - **«Ahora»:** un solo momento fuerte (el zoom temporal), no un capítulo sobre la vida y lo humano.
-- **Finales:** bifurcación que elige el visitante, con la elección en la URL (`?final=rip`).
+- **Finales:** bifurcación que elige el visitante, con la elección en la URL (`?final=frio|desgarro|colapso|vacio`).
 - **Bucle final** con Penrose: sí.
 - **Duración:** largo, sin miedo al largo (Potencias dura ~11 minutos en autoplay; Tiempo puede durar más).
 
@@ -22,13 +22,19 @@ Heredado del brief: Vite + TypeScript + Three.js sin React; Instrument Serif, Ge
 
 **25 de octubre de 2026, tarde (Diego, tras ver la fase 1):** el túnel de anillos de «Ahora» no se ve natural: quitarlo y dejar la Tierra girando. «El resto va por buen camino.» Pide seguir con espectacularidad, efecto wow y movimiento de cámara.
 
-## La aplicación (`index.html`, `npm run dev`, puerto 5191) · fases 1 a 3
-El viaje entero ya corre con el motor de Tiempo, de punta a punta: **16 eras**, unos **145 beats** (~67 000 px de scroll), del «t = ?» de la portada a «Después del tiempo».
+## La aplicación (`index.html`, `npm run dev`, puerto 5191) · fases 1 a 4
+El viaje entero corre con el motor de Tiempo, de punta a punta y en bucle: **20 eras** en el final por defecto, unos **271 beats** (~125 000 px de scroll; ~8 minutos con **A**), del «t = ?» de la portada a «Después del tiempo», que vuelve a la portada.
 
-antes del tiempo (provisional) → **época de Planck** (la espuma de Potencias) → inflación → plasma de quarks → una de cada mil millones → veinte minutos de cocina (provisionales) → **la niebla / se hace la luz** → el gas se enfría (provisional) → **la edad oscura / la primera estrella / el amanecer** → las burbujas se tocan → la Vía Láctea → nace el Sol (provisionales) → **ahora** → el Sol se apaga → el largo final → después del tiempo (provisionales).
+antes del tiempo → época de Planck → inflación → plasma de quarks → una de cada mil millones → veinte minutos de cocina → la niebla / se hace la luz → el gas se enfría → la primera estrella / el amanecer → las burbujas se tocan → la Vía Láctea → nace el Sol → **ahora** → el Sol se apaga → Andrómeda → **bifurcación** → (frío: las estrellas muertas → ¿mueren los protones? → la última luz → oscuridad) → después del tiempo → portada.
+
+**Los finales** (la bifurcación, rótulo `bifurcacion` en Andrómeda): un panel «De aquí en adelante, la física no está segura · ¿Cómo termina?» con cuatro botones; elegir recarga con `?final=…&p=…` y sigue desde ese punto.
+- **Frío** (por defecto, lo más probable): un cielo con una sola galaxia, la última estrella, enanas negras, el protón que quizá decae («Adiós»), los agujeros negros que se evaporan, oscuridad.
+- **Gran Desgarro** (`desgarro`): Potencias al revés (Caldwell, Kamionkowski y Weinberg 2003, w = −1,5, a ~22 000 millones de años): la galaxia se deshace con la cámara entre sus estrellas, los planetas se sueltan de su estrella, un planeta se rompe en pedazos, el átomo se desgarra: «el tiempo se acaba».
+- **Gran Colapso** (`colapso`, si la energía oscura se debilita, como insinúa DESI): las galaxias vuelven, corridas al azul, y el cielo se enciende otra vez como el Horno de la niebla al revés: rojo, naranja, blanco; el termómetro sube hasta la temperatura de Planck, un destello y nada. «¿Un final, o el comienzo de un rebote?»
+- **Vacío que decae** (`vacio`): una burbuja de vacío verdadero nace adelante y crece a la velocidad de la luz (su pared, dibujada, violeta), traga galaxias que destellan al tocarla y nos alcanza: destello blanco que se enfría a naranja, rojo y negro.
 
 - Eras **reales** (12): Planck · **inflación** (lámina: la retícula de la espuma estirándose sin fin, arrugas que se congelan, semillas en azul; los relojes muestran el trozo de universo creciendo 10²⁶ veces y la temperatura ≈ 0; al terminar, el destello del recalentamiento) · **el plasma de quarks** (vuelo en primera persona entre quarks rojos, verdes y azules y gluones; al enfriarse quedan presos de a tres, los colores se apagan en blanco y la «Y» de tubos de gluones de nuestro protón se forma mientras la cámara lo rodea) · **una de cada mil millones** (materia y antimateria se aniquilan en destellos; quedan sobrevivientes; después la ola de electrones y positrones; la lámina avisa que el dibujo deja 1 de cada 30 y la realidad 1 de cada 1 000 millones) · **veinte minutos de cocina** (deuterio y luego helio dorado entre protones blancos; nuestro protón queda solo: hidrógeno) · **la niebla / se hace la luz** · **el gas se enfría** (puente de 20 órdenes de magnitud: zoom infinito por un gas que se agrumó en hilos y nudos) · **la primera estrella** · **las burbujas se tocan** (reionización: galaxias que se encienden en la red y burbujas rosadas que se funden) · **la Vía Láctea se arma** (enanas que caen en espiral, disco que crece de adentro hacia afuera con cuatro brazos, viveros rosados, polvo oscuro, bulbo; «la expansión acelera») · **nace el Sol** (nube molecular, onda de supernova que la siembra, colapso en disco con chorros, anillos vistos de frente como en ALMA, el Sol se enciende) · **ahora** (sin túnel: la Tierra girando y la cámara rodeándola; la órbita de la Luna como anillo de luz que se condensa en la Luna en su fase real; los hitos pasan arriba).
-- Las **provisionales** (antes del tiempo, el Sol se apaga, el largo final, después del tiempo) dicen «era provisional» arriba en pantalla y se reemplazan en la fase 4.
+- **Fase 4:** el Sol se apaga (gigante roja que hierve, nebulosa planetaria, enana blanca; nuestro protón escapa con el agua), Andrómeda (acercamiento, colas de marea, fusión en una elíptica; «≈ 50 % en 10 000 millones de años», Sawala et al. 2025), el largo final y los cuatro finales; «antes del tiempo» y «después del tiempo» comparten las figuras de hipótesis (burbujas de una inflación eterna, el final de un universo anterior, un rebote) y cierran el bucle.
 - El plasma (quarks, aniquilación, núcleos) tiene **profundidad**: es opaco, así que lo cercano es nítido y lo lejano se disuelve en su resplandor (`uFog`).
 - Scroll nativo; **A** reproduce, **S** sonido, **I** lámina (`?lamina` la abre encendida), **L** idioma. `?ver=N` congela en el beat N; `?p=N` arranca ahí; `?debug` deja `tiempo` en la consola: `tiempo.sheet([beats], columnas, ancho, 'docs/…/x.jpg')` guarda una hoja de contactos (película + lámina) en el proyecto; `tiempo.seek(b)`, `tiempo.at('niebla')`.
 - Capturas de la fase 1: `docs/fase1/viaje.jpg` (el viaje entero) y `docs/fase1/momentos.jpg`.
@@ -42,8 +48,8 @@ antes del tiempo (provisional) → **época de Planck** (la espuma de Potencias)
 - `post.ts`, `scroll.ts`, `polvo.ts` (de Potencias); `sonido.ts` (el tono baja con la temperatura); `taller.ts` (workers); `contactos.ts` (hoja de contactos que guarda en `docs/`).
 - Pistas globales: `era`, `e`, `lt`, `lb`, `ah`, `reloj`, `yaw`/`pitch`/`roll`/`fov`, `<era>.fx/fy/fz` (volar por la era: primera persona), `<era>.keep`, `fondo`, `horno`, `bloom`/`umbral`. Sobre un cielo Horno brillante el bloom cede solo (si no, rellena las motas oscuras).
 - `src/eras/`: un módulo por era y `provisional.ts` + `provisionales.ts` para las que faltan. `infinito.ts`: zoom infinito (capas del mismo patrón a décadas fijas alrededor de la cámara; en puntos o en líneas de lámina) para las eras que cruzan muchos órdenes sin un objeto de un solo tamaño (inflación, el gas).
-- Las eras pueden corregir los relojes donde la historia estándar no vale (`lectura()`: en la inflación el tamaño y una temperatura ≈ 0).
-- Regla de GLSL: las variables internas del shader de la materia llevan prefijo `m` (`mK`, `mPx`…); el código de una era puede usar cualquier nombre corto. `tiempo.errores()` (con `?debug`) lista los shaders que no compilaron: una era con un error simplemente no se ve. Para agregar una era: su módulo y sumarla a `crearEras()` en `src/eras/index.ts` (la usan la página y los workers).
+- Las eras pueden corregir los relojes donde la historia estándar no vale (`lectura()`: en la inflación el tamaño y una temperatura ≈ 0; en el colapso la temperatura que sube). `logTCielo` y `claro` cambian solo el cielo (su color y su opacidad): el colapso vuelve a ser niebla; el vacío destella.
+- Regla de GLSL: las variables internas del shader de la materia llevan prefijo `m` (`mK`, `mPx`…); el código de una era puede usar cualquier nombre corto. `tiempo.errores()` (con `?debug`) lista los shaders que no compilaron: una era con un error simplemente no se ve. Para agregar una era: su módulo y sumarla a `crearEras(final)` en `src/eras/index.ts` (la página usa la rama elegida; los workers, `todasLasEras()`).
 
 ## Fase 0 · estudios de estilo (`prototypes/`)
 `prototypes/index.html` (laboratorio) enlaza `prototypes/estudio.html`: tres momentos clave, cada uno de tres maneras. El scroll es el tiempo; **A** reproduce, **1–3** cambian de estilo.
@@ -106,11 +112,16 @@ antes del tiempo (provisional) → **época de Planck** (la espuma de Potencias)
 - Fase 3: las burbujas se tocan, la Vía Láctea se arma, nace el Sol.
 - Correcciones: el destello de la primera estrella vuelve a ser azul lavanda con siluetas (era una pantalla blanca); hueco negro antes del futuro; shaders que no compilaban por nombres repetidos (de ahí la regla del prefijo).
 
+**Sesión del 25 de octubre de 2026, noche (fase 4):**
+- El Sol se apaga, Andrómeda, el largo final (frío) y el bucle.
+- La bifurcación: panel de finales, `crearEras(final)`, y los otros tres finales (Desgarro, Colapso, Vacío), revisados con hojas de contactos (`docs/fase4/`).
+- Correcciones: en los finales que no son el frío el reloj ya no retrocede (la bifurcación espera en ~16 000 millones de años); planetas del Desgarro que no se veían (su `delay` > 1 los escondía en el revelado); el cielo Horno de 3 K ya no tiñe de rojo oscuro; la tinta de la interfaz cambia más rápido (menos texto gris sobre gris); `?p=` funciona también al recargar.
+
 ## Siguiente paso
-0. Fase 4: el futuro (el Sol se apaga, Andrómeda, la última estrella), el largo final (enanas negras, ¿mueren los protones? —el fin del hilo—, la última luz de los agujeros negros), la bifurcación de finales (`?final=`), después del tiempo y el bucle; y antes del tiempo (portada).
-1. Que Diego recorra el viaje (mejor con **A**) y diga qué funciona.
-2. Fase 2 · prueba de fuego: del plasma a la primera estrella en un tramo continuo, volando dentro. Reemplazar las provisionales del Acto I y II por eras reales: la inflación (arrugas estiradas, «serán galaxias»), el plasma de quarks y el nacimiento de nuestro protón (enlace con «Nadie ha visto un quark solo» de Potencias), la aniquilación (un destello y el sobrante), la nucleosíntesis (dos tonos) y el gas que se enfría (un puente que se vea a toda escala). Hoy esas tres eras del plasma se parecen demasiado (todo es tinta blanca azulada).
-3. Pendientes del motor: tono exacto del fondo bajo ACES (hoy el naranja tira a dorado cuando es muy brillante; se puede corregir invirtiendo la curva solo para el fondo), y transiciones de gran salto de escala sin nada en medio (Vía Láctea → Sol, futuro → final).
+1. Que Diego recorra el viaje (mejor con **A**) y los cuatro finales, y diga qué funciona.
+2. Fase 5: sonido (el plasma que suena, silencio al final), los textos en inglés (las leyendas nuevas aún no tienen traducción), la lámina (notas por era), enlaces cruzados con Potencias y AstroIngeniería.
+3. Pendientes del motor: tono exacto del fondo bajo ACES (el naranja tira a dorado cuando es muy brillante), legibilidad del texto sobre el naranja del Horno (en el cruce de tinta clara a oscura).
+4. Fase 6: móvil, rendimiento, README con capturas y publicar (preguntar a Diego el nombre del repo antes).
 
 ## Plan de fases
-0 Dirección (biblia, estudios de estilo) ✓ · 1 Motor ✓ · 2 Prueba de fuego (Acto I a III + Ahora) ✓ · 3 Acto IV ✓ (V y momentos con nombre: en curso) · 4 Los extremos (Acto 0, VI, finales, bucle) · 5 Sonido, lámina, bilingüe, enlaces cruzados · 6 Pulido, móvil, deploy y README.
+0 Dirección (biblia, estudios de estilo) ✓ · 1 Motor ✓ · 2 Prueba de fuego (Acto I a III + Ahora) ✓ · 3 Acto IV ✓ · 4 Los extremos (Acto 0, VI, finales, bucle) ✓ · 5 Sonido, lámina, bilingüe, enlaces cruzados · 6 Pulido, móvil, deploy y README.
