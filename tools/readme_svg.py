@@ -88,7 +88,7 @@ def header(t):
     dark = t is THEMES['dark']
     x0, x1, ay = 330, 870, 296
     X = lambda b: x0 + (x1 - x0) * b / LEN
-    D = 20.0
+    D = 16.0
     rng = random.Random(7)
     style = ('.s{animation:tw 7s ease-in-out infinite}@keyframes tw{0%,100%{opacity:.08}50%{opacity:.55}}'
              '.rise{animation:rise 2.4s cubic-bezier(.2,.7,.2,1) both}'
@@ -96,21 +96,35 @@ def header(t):
     b = []
     if dark:
         b.append(f'<rect width="{W}" height="{H}" fill="{t["page"]}"/>')
-    # a cloud of embers around the title, the colours of a cooling universe
-    for _ in range(420):
-        a = rng.uniform(0, 6.283)
-        r = abs(rng.gauss(0, 1)) ** .8
-        x = 600 + math.cos(a) * r * 330 * rng.uniform(.6, 1.1)
-        y = 175 + math.sin(a) * r * 95 * rng.uniform(.6, 1.1)
-        if not (10 < x < W - 10 and 10 < y < H - 10):
-            continue
-        c = rng.choice(['#ffe9cf', '#ffc68a', '#ff9a5c', '#cfd8ff', ink, ink])
-        b.append(f'<circle class="s" cx="{x:.0f}" cy="{y:.0f}" r="{rng.uniform(.5, 1.6):.2f}" fill="{c}" '
-                 f'style="animation-delay:-{rng.uniform(0, 7):.1f}s"/>')
-    for _ in range(90):
+    # The beginning, every loop: a point, a flash, and the embers flying out as the universe expands,
+    # cooling from white to orange to red until they go out; then the cold stars, one by one.
+    cx, cy = 600, 172
+    style += (f'.bang{{transform-origin:{cx}px {cy}px;animation:bang {D}s cubic-bezier(.1,.7,.2,1) infinite}}'
+              '@keyframes bang{0%{transform:scale(.02);opacity:0}0.6%{opacity:1}6%{opacity:.9}14%{transform:scale(7);opacity:0}100%{transform:scale(7);opacity:0}}')
+    for k, (sc, dur) in enumerate(((1.0, 1), (1.25, 1.15), (1.6, 1.3))):
+        style += (f'.e{k}{{transform-origin:{cx}px {cy}px;animation:e{k} {D}s cubic-bezier(.08,.75,.25,1) infinite,heat {D}s linear infinite}}'
+                  f'@keyframes e{k}{{0%{{transform:scale(.01);opacity:0}}0.5%{{opacity:1}}{22 * dur:.0f}%{{opacity:.9}}'
+                  f'{40 * dur:.0f}%{{transform:scale({sc});opacity:0}}100%{{transform:scale({sc});opacity:0}}}}')
+    style += ('@keyframes heat{0%{fill:#ffffff}5%{fill:#fff4e0}12%{fill:#ffc27a}22%{fill:#ff7a3d}34%{fill:#8a2a18}100%{fill:#8a2a18}}'
+              f'.cold{{animation:cold {D}s ease-in infinite}}@keyframes cold{{0%,30%{{opacity:0}}55%,92%{{opacity:1}}100%{{opacity:0}}}}')
+    b.append(f'<defs><radialGradient id="fl"><stop offset="0" stop-color="#ffffff"/><stop offset=".35" stop-color="#e8eeff" stop-opacity=".8"/>'
+             f'<stop offset="1" stop-color="{acc}" stop-opacity="0"/></radialGradient></defs>')
+    for k in range(3):
+        dots = []
+        for _ in range(170):
+            a = rng.uniform(0, 6.283)
+            r = rng.random() ** .5
+            x = cx + math.cos(a) * r * 470
+            y = cy + math.sin(a) * r * 150
+            dots.append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{rng.uniform(.6, 1.9):.2f}"/>')
+        b.append(f'<g class="e{k}">{"".join(dots)}</g>')
+    b.append(f'<circle class="bang" cx="{cx}" cy="{cy}" r="34" fill="url(#fl)"/>')
+    stars = []
+    for _ in range(110):
         x, y = rng.uniform(10, W - 10), rng.uniform(10, H - 10)
-        b.append(f'<circle class="s" cx="{x:.0f}" cy="{y:.0f}" r="{rng.uniform(.4, 1):.2f}" fill="{ink}" '
-                 f'style="animation-delay:-{rng.uniform(0, 7):.1f}s"/>')
+        stars.append(f'<circle class="s" cx="{x:.0f}" cy="{y:.0f}" r="{rng.uniform(.4, 1.1):.2f}" fill="{ink}" '
+                     f'style="animation-delay:-{rng.uniform(0, 7):.1f}s"/>')
+    b.append(f'<g class="cold">{"".join(stars)}</g>')
     b.append(f'<text class="rise" x="600" y="196" text-anchor="middle" font-family="S,serif" font-size="128" fill="{ink}">Tiempo</text>')
     b.append(f'<text class="rise" x="600" y="244" text-anchor="middle" font-family="I,serif" font-style="italic" font-size="29" '
              f'fill="{ink}" fill-opacity=".72" style="animation-delay:.4s">From before the Big Bang to the last light.</text>')
