@@ -402,7 +402,7 @@ function step(now: number) {
   const introOut = Math.min(1, Math.max(0, (p - 0.05) / 0.55));
   cono(g, u, W, H, conoData, p, inkT, hovered, here, introOut);
   const named = tl.captionAt(p) ?? (cur ? { name: cur.name, fact: cur.fact } : null);
-  if (hud(g, u, H, l, named, inkT, now, introOut)) {
+  if (hud(g, u, H, l, named, inkT, now, introOut, Math.min(1, fondo.state.vis * 1.6) * (1 - inkT))) {
     sound.chime();
     clearTimeout(speakTimer);
     speakTimer = window.setTimeout(() => (leer.textContent = named ? `${named.name}. ${named.fact}` : ''), 400);

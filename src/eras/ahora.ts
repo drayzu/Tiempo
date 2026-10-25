@@ -4,6 +4,7 @@ import { YEAR } from '../lib/cosmo';
 import { materia, materiaBuilder, type MateriaData } from '../engine/materia';
 import type { EraModule } from '../engine/eras';
 import { ink, nota, rotulo } from '../engine/placa';
+import { tx } from '../i18n';
 
 /**
  * Ahora: the time zoom (the time counterpart of Potencias' dolly zoom). 1 unit = 1 000 km.
@@ -384,7 +385,7 @@ export function ahora(): EraModule {
             const P = toScreen(you);
             if (P.z < 1) {
               const near = smoothstep(1.2, -1.5, st.lb) * f.alpha;
-              if (now > 0 || st.reloj === 3) nota(g, u, P.x + 10 * u, P.y - 10 * u, `tú, ahora${HERE.lugar ? ' · ' + HERE.lugar : ''}`, 40, -34, 0, near);
+              if (now > 0 || st.reloj === 3) nota(g, u, P.x + 10 * u, P.y - 10 * u, `${tx('tú, ahora')}${HERE.lugar ? ' · ' + HERE.lugar : ''}`, 40, -34, 0, near);
               agua(g, u, P.x, P.y, now * f.alpha, 0, 1.4);
             }
             void on;

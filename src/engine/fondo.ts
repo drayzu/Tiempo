@@ -143,7 +143,7 @@ export function createFondo() {
       state.clear = clear;
       state.bgL = bgL * horno;
       // Over a bright full-bleed screen the interface ink turns dark.
-      state.tinta = horno * smoothstep(0.31, 0.37, bgL);
+      state.tinta = smoothstep(0.335, 0.35, bgL * horno);
     },
   };
 }

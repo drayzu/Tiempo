@@ -119,10 +119,12 @@ antes del tiempo → época de Planck → inflación → plasma de quarks → un
 
 **Fase 5 · sonido:** «El universo sonaba»: mientras el universo es un plasma opaco (desde sus primeros segundos hasta que se hace la luz) suena un rugido de ruido filtrado con sus armónicos en las razones de los picos acústicos del fondo de microondas (ℓ ≈ 220, 537, 810, 1 120, 1 420), unas cincuenta octavas más agudo, que respira con el plasma y baja de tono al enfriarse; en el Gran Colapso vuelve, subiendo. La pista `silencio` vacía el sonido en el futuro lejano y el momento en que llega a 1 suena la última campana (la última luz de cada final). Volumen calibrado midiendo con un `OfflineAudioContext` (`buildSound` sirve para eso).
 
+**Fase 5 · inglés y legibilidad:** diccionario inglés completo en `src/i18n.ts` (≈ 230 textos: nombres, frases, leyendas, rótulos, hitos de «Ahora», finales, página); `rotulo`, `rotuloPot` y `nota` traducen solos. La tinta de la interfaz cambia según el brillo real del cielo (antes se quedaba gris mientras el Horno subía) y, sobre un cielo que brilla sin llegar a la tinta oscura, un velo suave detrás de los textos (`hud(…, velo)`).
+
 ## Siguiente paso
 1. Que Diego recorra el viaje (mejor con **A**) y los cuatro finales, y diga qué funciona.
-2. Fase 5 (resto): los textos en inglés (las leyendas nuevas aún no tienen traducción), la lámina (notas por era), enlaces cruzados con Potencias y AstroIngeniería.
-3. Pendientes del motor: tono exacto del fondo bajo ACES (el naranja tira a dorado cuando es muy brillante), legibilidad del texto sobre el naranja del Horno (en el cruce de tinta clara a oscura).
+2. Fase 5 (resto): la lámina (notas por era) y enlaces cruzados con Potencias y AstroIngeniería.
+3. Pendiente del motor: tono exacto del fondo bajo ACES (el naranja tira a dorado cuando es muy brillante).
 4. Fase 6: móvil, rendimiento, README con capturas y publicar (preguntar a Diego el nombre del repo antes).
 
 ## Plan de fases

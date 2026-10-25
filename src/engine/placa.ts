@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { smoothstep } from '../lib/math';
 import { AGE, LY, YEAR, cosmicCalendar } from '../lib/cosmo';
-import { lang } from '../i18n';
+import { lang, tx as tr } from '../i18n';
 import type { Certeza } from './eras';
 
 /**
@@ -201,6 +201,7 @@ function wrap(g: CanvasRenderingContext2D, text: string, maxW: number) {
 /** A note: a dot on the thing, a leader out to (x + dx, y + dy) in layout units, and its label. */
 export function nota(g: CanvasRenderingContext2D, u: number, x: number, y: number, text: string, dx: number, dy: number, inkT = 0, alpha = 1, accent = ACCENT) {
   if (alpha <= 0.01) return;
+  text = tr(text);
   g.save();
   g.globalAlpha = alpha;
   const lx = x + dx * u;
@@ -232,6 +233,7 @@ export function nota(g: CanvasRenderingContext2D, u: number, x: number, y: numbe
 /** A label alone, centred on (x, y). */
 export function rotulo(g: CanvasRenderingContext2D, u: number, x: number, y: number, text: string, px = 10.5, inkT = 0, alpha = 1, upper = true, color?: string) {
   if (alpha <= 0.01) return;
+  text = tr(text);
   g.save();
   g.globalAlpha = alpha;
   g.font = FONT.mono(px * u);
@@ -248,6 +250,8 @@ export function rotulo(g: CanvasRenderingContext2D, u: number, x: number, y: num
 /** A centred label «pre 10^exp post», the exponent raised by hand (mono fonts lack ⁴–⁹). */
 export function rotuloPot(g: CanvasRenderingContext2D, u: number, x: number, y: number, pre: string, exp: number, post: string, px = 11, inkT = 0, alpha = 1) {
   if (alpha <= 0.01) return;
+  pre = tr(pre);
+  post = tr(post);
   g.save();
   g.globalAlpha = alpha;
   g.letterSpacing = '0px';
@@ -456,12 +460,25 @@ const loaded = performance.now();
  * The name and sentence of what is on screen (a moment's caption or the era's), then the clocks.
  * Returns true when a new name has just appeared (for the chime).
  */
-export function hud(g: CanvasRenderingContext2D, u: number, H: number, l: Lectura, named: { name: string; fact: string } | null, inkT: number, now: number, fade = 1) {
+export function hud(g: CanvasRenderingContext2D, u: number, H: number, l: Lectura, named: { name: string; fact: string } | null, inkT: number, now: number, fade = 1, velo = 0) {
   const x = 42 * u;
   let y = H - 40 * u;
   let arrived = false;
   g.save();
   g.globalAlpha = fade;
+  // Over a glowing sky that is not yet bright enough for dark ink, a soft shade behind the words.
+  if (velo > 0.01) {
+    g.save();
+    g.translate(x + 170 * u, H - 120 * u);
+    g.scale(1.7, 1);
+    const sh = g.createRadialGradient(0, 0, 0, 0, 0, 190 * u);
+    sh.addColorStop(0, `rgba(0,0,0,${0.5 * velo})`);
+    sh.addColorStop(0.6, `rgba(0,0,0,${0.3 * velo})`);
+    sh.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = sh;
+    g.fillRect(-190 * u, -190 * u, 380 * u, 380 * u);
+    g.restore();
+  }
   g.textBaseline = 'alphabetic';
   g.shadowColor = halo(inkT, 0.85);
   g.shadowBlur = 12 * u;

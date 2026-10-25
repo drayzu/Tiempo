@@ -5,6 +5,7 @@ import { bbColor, bbVisible, planck, wienPeak } from '../lib/cuerpo-negro';
 import { materia, materiaBuilder, type MateriaData } from '../engine/materia';
 import type { EraModule } from '../engine/eras';
 import { ACCENT, FONT, ink, nota, rotulo } from '../engine/placa';
+import { lang, tx } from '../i18n';
 
 /**
  * La niebla → Se hace la luz (≈ 20 minutes → 4 million years). 1 unit = 1 mm (the atoms are about
@@ -352,13 +353,13 @@ function espectro(g: CanvasRenderingContext2D, W: number, H: number, u: number, 
   g.font = FONT.mono(9.5 * u);
   g.letterSpacing = `${u}px`;
   g.fillStyle = ink(0, 0.7);
-  g.fillText('LA LUZ DEL UNIVERSO, POR COLOR', x0, y0 - h - 12 * u);
-  const peakTxt = peak < 1000 ? `${Math.round(peak)} nm` : `${(peak / 1000).toFixed(1).replace('.', ',')} µm`;
+  g.fillText(tx('LA LUZ DEL UNIVERSO, POR COLOR'), x0, y0 - h - 12 * u);
+  const peakTxt = peak < 1000 ? `${Math.round(peak)} nm` : `${(peak / 1000).toFixed(1).replace('.', lang === 'en' ? '.' : ',')} µm`;
   const zone = peak < 380 ? 'ultravioleta' : peak < 750 ? 'visible' : 'infrarrojo';
   g.fillStyle = ACCENT;
   const right = px > x0 + w * 0.6;
   g.textAlign = right ? 'right' : 'left';
-  g.fillText(`pico: ${peakTxt} · ${zone}`.toUpperCase(), px + (right ? -6 : 6) * u, y0 - h + 2 * u);
+  g.fillText(`${lang === 'en' ? 'peak' : 'pico'}: ${peakTxt} · ${tx(zone)}`.toUpperCase(), px + (right ? -6 : 6) * u, y0 - h + 2 * u);
   rotulo(g, u, (X(380) + X(750)) / 2, y0 + 17 * u, 'visible', 9, 0, 0.6 * alpha);
   g.restore();
 }
