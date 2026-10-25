@@ -123,11 +123,12 @@ antes del tiempo → época de Planck → inflación → plasma de quarks → un
 
 **Fase 5 · lámina y enlaces:** con la lámina (I) cada era muestra arriba a la izquierda su ficha: cuán seguro es (la marca del cono: llena observado, media teoría, punteada especulación) y dos o tres cifras con su fuente (`ficha` en cada `spec`, traducidas); abajo, una barra de escala verdadera en el foco (`escala`, `fit · 10^e` metros de alto). Enlaces discretos de la serie (abajo a la derecha): la espuma de Planck, «Nadie ha visto un quark solo», la luz más antigua y Andrómeda abren Potencias en ese beat (`?p=1.5`, `22.5`, `275`, `236`); después del tiempo, AstroIngeniería.
 
+**Fase 6 · publicación, móvil y README:** publicado en drayzu.github.io/Tiempo (cada push a `main` despliega). En pantallas verticales el cono se adelgaza contra el borde, el nombre de la era sube en vertical junto a él y los textos se ajustan al ancho (`hud`, `rotulo`, `ficha`). README visual como el de Potencias: `tools/readme_svg.py` (encabezado animado con el eje del tiempo coloreado por la temperatura, botones) y `tools/readme_media.py` (seis clips AVIF a 1840 px y 30 fps, con WebP de respaldo), a partir de cuadros capturados con `tiempo.pelicula(desde, hasta, n, 'tools/src/frames/x')` en `?debug` a 1280 × 720 (`tools/src/` no se sube). Vista previa local: `tools/preview.html` (`?theme=light`).
+
 ## Siguiente paso
 1. Que Diego recorra el viaje (mejor con **A**) y los cuatro finales, y diga qué funciona.
-2. Fase 6: pulido con hoja de contactos (viaje y finales), móvil y rendimiento.
+2. Pulido con hoja de contactos (viaje y finales) y rendimiento en teléfonos reales.
 3. Pendiente del motor: tono exacto del fondo bajo ACES (el naranja tira a dorado cuando es muy brillante).
-4. README visual (como los de Potencias y AstroIngeniería).
 
 ## Plan de fases
-0 Dirección (biblia, estudios de estilo) ✓ · 1 Motor ✓ · 2 Prueba de fuego (Acto I a III + Ahora) ✓ · 3 Acto IV ✓ · 4 Los extremos (Acto 0, VI, finales, bucle) ✓ · 5 Sonido, lámina, bilingüe, enlaces cruzados ✓ · 6 Pulido, móvil, deploy y README.
+0 Dirección (biblia, estudios de estilo) ✓ · 1 Motor ✓ · 2 Prueba de fuego (Acto I a III + Ahora) ✓ · 3 Acto IV ✓ · 4 Los extremos (Acto 0, VI, finales, bucle) ✓ · 5 Sonido, lámina, bilingüe, enlaces cruzados ✓ · 6 Pulido, móvil, deploy y README (publicado; pulido en curso).
