@@ -243,7 +243,16 @@ export function rotulo(g: CanvasRenderingContext2D, u: number, x: number, y: num
   g.shadowColor = halo(inkT, 0.9);
   g.shadowBlur = 8 * u;
   g.fillStyle = color ?? ink(inkT, 0.85);
-  g.fillText(upper ? text.toUpperCase() : text, x, y);
+  // Too wide for the screen (a phone): a little smaller, then on two lines.
+  const label = upper ? text.toUpperCase() : text;
+  const room = g.canvas.width - 32 * u;
+  const w = g.measureText(label).width;
+  if (w <= room) g.fillText(label, x, y);
+  else {
+    g.font = FONT.mono(Math.max(0.8, room / w) * px * u);
+    const lines = g.measureText(label).width <= room ? [label] : wrap(g, label, room);
+    lines.forEach((ln, i) => g.fillText(ln, x, y + (i - (lines.length - 1) / 2) * px * 1.35 * u));
+  }
   g.restore();
 }
 
@@ -393,9 +402,13 @@ export function ficha(g: CanvasRenderingContext2D, u: number, certeza: Certeza, 
   g.letterSpacing = `${0.3 * u}px`;
   g.font = FONT.mono(10.5 * u);
   g.fillStyle = ink(inkT, 0.82);
+  const room = g.canvas.width - x - (g.canvas.width / g.canvas.height < 0.8 ? 64 : 140) * u;
   for (const line of lines) {
     y += 18 * u;
-    g.fillText(tr(line), x, y);
+    const text = tr(line);
+    const w = g.measureText(text).width;
+    g.font = FONT.mono(Math.max(7.5, w > room ? (10.5 * room) / w : 10.5) * u);
+    g.fillText(text, x, y);
   }
   g.restore();
 }
@@ -419,12 +432,15 @@ export interface Cono {
 }
 
 export const CONO = { top: 0.15, bottom: 0.85, right: 70 };
-const half = (u: number, q: number) => 1.5 * u + 30 * u * Math.pow(Math.max(q, 0), 0.75);
+const halfW = (u: number, q: number) => 1.5 * u + 30 * u * Math.pow(Math.max(q, 0), 0.75);
 
 let gradCache: { key: string; grad: CanvasGradient } | null = null;
 
 export function cono(g: CanvasRenderingContext2D, u: number, W: number, H: number, c: Cono, p: number, inkT: number, hovered: number | null, here: number, fade = 1) {
-  const cx = W - CONO.right * u;
+  // On a portrait screen the cone slims down and hugs the edge, leaving the scene its room.
+  const k = W / H < 0.8 ? 0.55 : 1;
+  const half = (uu: number, q: number) => halfW(uu, q) * k;
+  const cx = W - CONO.right * u * k;
   const y0 = CONO.top * H;
   const y1 = CONO.bottom * H;
   const yAt = (q: number) => y0 + q * (y1 - y0);
@@ -525,7 +541,15 @@ export function cono(g: CanvasRenderingContext2D, u: number, W: number, H: numbe
   g.shadowBlur = 8 * u;
   if (here >= 0) {
     g.fillStyle = ink(inkT, hovered !== null && hovered !== here ? 0.3 : 0.75);
-    g.fillText(c.ticks[here].label.toUpperCase(), cx - hw - 14 * u, ym);
+    if (k < 1) {
+      // On a phone the name runs up along the cone, clear of the words at the bottom.
+      g.save();
+      g.translate(cx - hw - 10 * u, ym - 8 * u);
+      g.rotate(-Math.PI / 2);
+      g.textAlign = 'left';
+      g.fillText(c.ticks[here].label.toUpperCase(), 0, 0);
+      g.restore();
+    } else g.fillText(c.ticks[here].label.toUpperCase(), cx - hw - 14 * u, ym);
   }
   if (hovered !== null && hovered !== here) {
     const q = qOf(c.ticks[hovered].beat);
@@ -571,6 +595,9 @@ export function hud(g: CanvasRenderingContext2D, u: number, H: number, l: Lectur
   const x = 42 * u;
   let y = H - 40 * u;
   let arrived = false;
+  // The room to the right of the text, short of the cone (narrower on a phone).
+  const W = g.canvas.width;
+  const room = Math.min(470 * u, W - x - (W / H < 0.8 ? 78 : 140) * u);
   g.save();
   g.globalAlpha = fade;
   // Over a glowing sky that is not yet bright enough for dark ink, a soft shade behind the words.
@@ -579,8 +606,8 @@ export function hud(g: CanvasRenderingContext2D, u: number, H: number, l: Lectur
     g.translate(x + 170 * u, H - 120 * u);
     g.scale(1.7, 1);
     const sh = g.createRadialGradient(0, 0, 0, 0, 0, 190 * u);
-    sh.addColorStop(0, `rgba(0,0,0,${0.5 * velo})`);
-    sh.addColorStop(0.6, `rgba(0,0,0,${0.3 * velo})`);
+    sh.addColorStop(0, `rgba(0,0,0,${0.62 * velo})`);
+    sh.addColorStop(0.6, `rgba(0,0,0,${0.38 * velo})`);
     sh.addColorStop(1, 'rgba(0,0,0,0)');
     g.fillStyle = sh;
     g.fillRect(-190 * u, -190 * u, 380 * u, 380 * u);
@@ -593,8 +620,15 @@ export function hud(g: CanvasRenderingContext2D, u: number, H: number, l: Lectur
     g.font = FONT.mono(11.5 * u);
     g.letterSpacing = `${0.4 * u}px`;
     g.fillStyle = ink(inkT, a);
-    g.fillText(text, x, y);
-    y -= 19 * u;
+    // Too long for the screen: split at its «·», then shrink what still does not fit.
+    const parts = g.measureText(text).width > room ? text.split('  ·  ') : [text];
+    for (const part of parts.reverse()) {
+      const w = g.measureText(part).width;
+      if (w > room) g.font = FONT.mono(Math.max(8, (11.5 * room) / w) * u);
+      g.fillText(part, x, y);
+      g.font = FONT.mono(11.5 * u);
+      y -= 19 * u;
+    }
   };
   const t = Math.pow(10, l.lt);
   const ago = EN ? 'ago' : 'hace';
@@ -659,7 +693,7 @@ export function hud(g: CanvasRenderingContext2D, u: number, H: number, l: Lectur
     g.globalAlpha = a * fade;
     g.font = FONT.serif(19 * u);
     g.letterSpacing = '0px';
-    const lines = wrap(g, c.fact, 470 * u);
+    const lines = wrap(g, c.fact, room);
     let yy = y - (lines.length - 1) * 24 * u;
     g.fillStyle = ink(inkT, 0.62);
     lines.forEach((ln, i) => g.fillText(ln, x, yy + i * 24 * u));
