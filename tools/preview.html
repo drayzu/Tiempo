@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>README preview</title>
+    <!-- A rough imitation of GitHub's README page, to preview the README locally (?theme=light). -->
+    <style>
+      :root { color-scheme: dark; }
+      body { margin: 0; background: #0d1117; color: #e6edf3; font: 16px/1.5 -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; }
+      body.light { background: #fff; color: #1f2328; color-scheme: light; }
+      .box { max-width: 830px; margin: 32px auto; padding: 32px; border: 1px solid #30363d; border-radius: 6px; }
+      body.light .box { border-color: #d0d7de; }
+      img { max-width: 100%; }
+      p { margin: 0 0 16px; }
+    </style>
+  </head>
+  <body>
+    <div class="box" id="readme"></div>
+    <script type="module">
+      const light = new URLSearchParams(location.search).get('theme') === 'light';
+      document.body.classList.toggle('light', light);
+      const md = await (await fetch('../README.md')).text();
+      // The README is HTML but for its notes; paths are relative to the repository root.
+      let html = md.replaceAll('src="docs/', 'src="../docs/').replaceAll('srcset="docs/', 'srcset="../docs/');
+      // GitHub picks the dark sources by the theme; here, by the query.
+      if (light) html = html.replace(/<source media="\(prefers-color-scheme: dark\)"[^>]*>/g, '');
+      else html = html.replace(/<source type="image\/avif" srcset="[^"]*-light\.avif">/g, '').replace(/<source media="\(prefers-color-scheme: dark\)"/g, '<source');
+      document.getElementById('readme').innerHTML = html;
+    </script>
+  </body>
+</html>
