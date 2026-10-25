@@ -52,7 +52,7 @@ export function degenerada(): EraModule {
         const b = materiaBuilder(1412);
         for (let k = 0; k < 9000; k++) {
           const v = new THREE.Vector3(gauss(r), gauss(r) * 0.7, gauss(r) * 0.85).multiplyScalar(0.85 * Math.pow(r(), 0.6) + 0.06);
-          b.push(v.x, v.y, v.z, 0xe8eeff, 0.01, 0.9, { kind: 0, delay: r(), star: true });
+          b.push(v.x, v.y, v.z, 0xe8eeff, 0.01, 0.32, { kind: 0, delay: r(), star: true });
         }
         for (let k = 0; k < 26; k++) {
           const v = new THREE.Vector3(gauss(r), gauss(r) * 0.7, gauss(r) * 0.85).multiplyScalar(0.6);
@@ -84,9 +84,9 @@ export function degenerada(): EraModule {
     choreo(tl, era) {
       tl.with(0.02, { reloj: 3 });
       tl.set({ 'deg.k': 0 });
-      tl.to(3.0, { era: era.index, e: era.home + 0.1, ah: 14.6, fondo: 1, horno: 0, fov: 54, yaw: 2.0, pitch: 0.4, roll: 0, bloom: 0.6, umbral: 0.12 });
+      tl.to(3.0, { era: era.index, e: era.home - 0.3, ah: 14.6, fondo: 1, horno: 0, fov: 54, yaw: 2.0, pitch: 0.4, roll: 0, bloom: 0.4, umbral: 0.25 });
       tl.label('degenerada');
-      tl.to(3.6, { 'deg.k': 0.45, ah: 17, yaw: 2.3 });
+      tl.to(3.6, { 'deg.k': 0.45, ah: 17, e: era.home - 0.15, yaw: 2.3 });
       tl.caption(3.4, 'Un fuego raro', 'A veces dos enanas marrones chocan y encienden una estrella nueva, por un rato.');
       tl.to(3.4, { 'deg.k': 0.8, ah: 19.5, yaw: 2.6, pitch: 0.3 });
       tl.to(2.6, { 'deg.k': 1, ah: 22, e: era.home + 0.6, yaw: 2.8 });
@@ -242,11 +242,13 @@ const BH_MOVE = /* glsl */ `
   float life = clamp(uK / aDelay, 0.0, 1.0);
   float sc = pow(max(1.0 - life, 0.0), 0.33);
   p = c + (position - c) * sc;
-  float glow = 0.12 + 1.5 * pow(life, 6.0);
+  float glow = 0.15 + 1.1 * pow(life, 6.0);
   float flash = exp(-pow((uK - aDelay) / 0.012, 2.0));
   em = mix(em, vec3(0.85, 0.9, 1.0), smoothstep(0.7, 1.0, life)) * glow * step(uK, aDelay) + vec3(1.0, 0.97, 0.9) * flash * 6.0 * aKind;
   occ *= sc * step(uK, aDelay);
   sz *= mix(1.0, 3.0, flash);
+  // (the dark disc only hides: it never shines)
+  if (aKind < 0.5) em = vec3(0.0);
 `;
 
 export function ultimaLuz(): EraModule {
@@ -272,10 +274,17 @@ export function ultimaLuz(): EraModule {
           const R = 0.12 + 0.35 * h.m;
           // Its edge: a ring of faint light, tilted.
           const tilt = new THREE.Quaternion().setFromEuler(new THREE.Euler(r() * 1.4, r() * 3, 0));
+          for (let k = 0; k < 1400; k++) {
+            const a = (k / 1400) * Math.PI * 2;
+            const v = new THREE.Vector3(Math.cos(a) * R, gauss(r) * 0.006, Math.sin(a) * R).applyQuaternion(tilt).add(c);
+            b.push(v.x, v.y, v.z, 0xffcf90, 0.014, 0.5, { kind: 1, from: c.toArray() as [number, number, number], delay: h.m });
+          }
+          // A faint halo around it: light bent by its gravity (drawn as a soft ring).
           for (let k = 0; k < 500; k++) {
-            const a = (k / 500) * Math.PI * 2;
-            const v = new THREE.Vector3(Math.cos(a) * R, gauss(r) * 0.01, Math.sin(a) * R).applyQuaternion(tilt).add(c);
-            b.push(v.x, v.y, v.z, 0xffcf90, 0.03, 0.5, { kind: 1, from: c.toArray() as [number, number, number], delay: h.m });
+            const a = r() * Math.PI * 2;
+            const rr = R * (1.35 + Math.abs(gauss(r)) * 0.35);
+            const v = new THREE.Vector3(Math.cos(a) * rr, gauss(r) * 0.02, Math.sin(a) * rr).applyQuaternion(tilt).add(c);
+            b.push(v.x, v.y, v.z, 0xa8b8ff, 0.03, 0.05, { kind: 1, from: c.toArray() as [number, number, number], delay: h.m });
           }
           // Its dark disc (it hides what is behind).
           for (let k = 0; k < 300; k++) {
@@ -307,7 +316,7 @@ export function ultimaLuz(): EraModule {
       tl.with(0.02, { reloj: 3 });
       tl.set({ 'luz.k': 0 });
       // Back up from where our proton was, to the black holes.
-      tl.to(3.4, { era: era.index, e: era.home + 0.2, ah: 60, fov: 56, yaw: 0.2, pitch: 0.25, roll: 0 });
+      tl.to(3.4, { era: era.index, e: era.home - 0.15, ah: 60, fov: 56, yaw: 0.2, pitch: 0.25, roll: 0, bloom: 0.4, umbral: 0.3 });
       tl.label('ultima-luz');
       tl.to(3.4, { 'luz.k': 0.56, ah: 80, yaw: 0.6 });
       tl.to(3.0, { 'luz.k': 0.9, ah: 96, 'ultima-luz.fx': 0.4, 'ultima-luz.fy': 0.2, 'ultima-luz.fz': 0.3, e: era.home - 0.4, yaw: 0.9 });
