@@ -122,8 +122,10 @@ export function createPost(canvas: HTMLCanvasElement) {
       composer.setPixelRatio(dpr);
       resize();
     },
-    render(time: number, zoomSpeed: number) {
-      zoomBlur.uniforms.uStrength.value = calm.matches ? 0 : Math.min(Math.abs(zoomSpeed) * 0.05, 0.12);
+    /** `push` (0..1): how hard the hand is driving the journey; it adds blur and lens fringing. */
+    render(time: number, zoomSpeed: number, push = 0) {
+      zoomBlur.uniforms.uStrength.value = calm.matches ? 0 : Math.min(Math.abs(zoomSpeed) * 0.05 + push * 0.07, 0.15);
+      finish.uniforms.uFringe.value = 0.014 + 0.05 * push;
       finish.uniforms.uTime.value = time;
       composer.render();
     },

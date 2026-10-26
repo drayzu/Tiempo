@@ -278,6 +278,10 @@ let speakTimer = 0;
 let atEnd = 0;
 let lastSilencio = 0;
 let lastP = 0;
+let prevP = 0;
+/** How fast the journey moves (beats per second, smoothed), and the push it gives the camera (0..1). */
+let pace = 0;
+let push = 0;
 
 function step(now: number) {
   // (never backwards: a clock that runs behind would turn every damped value into NaN)
@@ -292,9 +296,15 @@ function step(now: number) {
   const timeSpeed = (l.lt - prevLt) / Math.max(dt, 1e-3);
   prevE = e;
   prevLt = l.lt;
+  // The hand on the wheel is felt: the faster the journey goes, the more the camera leans into it
+  // (a wider lens that rushes the near things past, a streak of blur). A jump is not a push.
+  const jumped = Math.abs(p - prevP) > 3;
+  pace = jumped ? 0 : damp(pace, (p - prevP) / Math.max(dt, 1e-3), 7, dt);
+  prevP = p;
+  push = calm.matches ? 0 : Math.tanh(Math.abs(pace) / 2.6);
 
   // Camera: dolly zoom as in Potencias (the field of view changes, the scale at the focus does not).
-  const fov = tl.get('fov', p);
+  const fov = tl.get('fov', p) * (1 + 0.16 * push * Math.sign(pace || 1));
   const tanHalf = Math.tan(THREE.MathUtils.degToRad(fov / 2));
   camera.fov = fov;
   camera.position.set(0, 0, VIEW_H / 2 / tanHalf);
@@ -374,7 +384,7 @@ function step(now: number) {
   const bright = fondo.state.bgL;
   post.bloom.strength = tl.get('bloom', p) * (1 - 0.75 * Math.min(1, bright * 1.5));
   post.bloom.threshold = tl.get('umbral', p) + 1.6 * bright;
-  post.render(time, zoomSpeed);
+  post.render(time, zoomSpeed, push);
 
   // ---- the plate
   if (plate.width !== W || plate.height !== H) {
@@ -467,7 +477,7 @@ function step(now: number) {
   lastP = p;
   sound.update({
     logT: Number.isNaN(l.logT) ? -2 : l.logT,
-    speed: timeSpeed + zoomSpeed,
+    speed: timeSpeed + zoomSpeed + pace * 0.6,
     era: eras.segment + (eras.blend > 0.5 ? 1 : 0),
     plasma: (1 - fondo.state.clear) * smoothstep(-1, 2, l.lt) * Math.min(1, tl.get('fondo', p)),
     wave: fondo.state.wave,
