@@ -36,7 +36,8 @@
 <summary><sub>How it's made</sub></summary>
 <br>
 
-- Twenty eras, each in its own units and anchored in the one before, across some 150 orders of magnitude of time: from the Planck epoch to the evaporation of the last black hole, and a fork into four possible endings (cold, Big Rip, Big Crunch, vacuum decay).
+- Twenty-three eras, each in its own units and anchored in the one before, across some 150 orders of magnitude of time: from the Planck epoch and the Higgs field to the evaporation of the last black hole, and a fork into four possible endings (cold, Big Rip, Big Crunch, vacuum decay).
+- Black holes are ray traced (the shadow, the photon ring, the far side of the disk bent over and under it); galaxies are smooth light seen from outside or, for the Milky Way, as a band across the sky from inside.
 - The background is the temperature of the universe: Planck's law through the CIE colour-matching functions, as bright as a dark-adapted eye would see it. White-hot, then the orange of the first light, then dark for almost all of time.
 - The clocks run on a real ΛCDM cosmology (Planck 2018). One proton is followed the whole way, from the quarks to the water in your body and on.
 - Observed, theoretical and speculative are told apart at a glance: solid, dashed and dotted. A plate layer gives each era its numbers and sources, with a scale bar that stays true.
