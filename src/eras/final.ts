@@ -2,7 +2,10 @@ import * as THREE from 'three';
 import { gauss, rng, smoothstep } from '../lib/math';
 import { materia, materiaBuilder, type MateriaData } from '../engine/materia';
 import type { EraModule } from '../engine/eras';
-import { rotulo } from '../engine/placa';
+import { nota, rotulo } from '../engine/placa';
+import { crearAgujero } from '../engine/agujero';
+import { bbColor } from '../lib/cuerpo-negro';
+import { vista } from '../lib/vista';
 import { infinito, infinitoData } from './infinito';
 
 /**
@@ -32,6 +35,10 @@ const DEAD_MOVE = /* glsl */ `
   }
 `;
 
+/** The galaxy's central black hole (some 10¹¹ suns by then): its horizon, in units, and its disk's axis. */
+const HOLE_RS = 2.95e14 / 1e21;
+const HOLE_N = new THREE.Vector3(0.15, 1, -0.1).normalize();
+
 export function degenerada(): EraModule {
   return {
     spec: {
@@ -46,7 +53,7 @@ export function degenerada(): EraModule {
       frame: 6,
       frameCenter: new THREE.Vector3(),
       fade: [0.5, 0.5],
-      fadeE: [-3, -2, 3, 4.5],
+      fadeE: [-8, -7, 3, 4.5],
       tint: 0x8a6a5a,
       generate() {
         const r = rng(1411);
@@ -59,24 +66,44 @@ export function degenerada(): EraModule {
           const v = new THREE.Vector3(gauss(r), gauss(r) * 0.7, gauss(r) * 0.85).multiplyScalar(0.6);
           b.push(v.x, v.y, v.z, 0xff6a3a, 0.02, 2.5, { kind: 1, delay: 0.1 + r() * 0.85, star: true });
         }
-        for (let k = 0; k < 900; k++) {
-          const a = (k / 900) * Math.PI * 2;
-          b.push(Math.cos(a) * 0.03, Math.sin(a) * 0.012, Math.sin(a) * 0.03, 0xffd8a0, 0.004, 0.5, { kind: 2 });
-        }
         return { main: b.data() };
       },
       assemble(data) {
         const uni = { uK: { value: 0 } };
         const cloud = materia(data.main as MateriaData, { pre: 'uniform float uK;', move: DEAD_MOVE, uniforms: uni });
         cloud.u.uMaxPx.value = 20;
+        cloud.u.uNear.value = 1;
+        // The central black hole, ray traced: what falls in lights a cool, dim disk around it.
+        const hole = crearAgujero();
+        Object.assign(hole.u.uDiskIn, { value: 3 });
+        hole.u.uDiskOut.value = 16;
+        hole.u.uDiskT.value = 3800;
+        hole.u.uStars.value = 0.25;
+        hole.u.uSkyTint.value.setRGB(1, 0.75, 0.6);
         const object = new THREE.Group();
-        object.add(cloud.points);
+        object.add(hole.mesh, cloud.points);
         const ours = new THREE.Vector3(0.3, 0.05, 0.12);
+        const center = new THREE.Vector3();
+        const nW = new THREE.Vector3();
+        const q = new THREE.Quaternion();
+        const sky = new THREE.Matrix3();
+        const tmp = new THREE.Vector3();
         return {
           object,
           clouds: [cloud],
           update(f) {
             uni.uK.value = f.tl.get('deg.k', f.p);
+            object.updateMatrixWorld();
+            center.setFromMatrixPosition(object.matrixWorld);
+            const scale = tmp.setFromMatrixColumn(object.matrixWorld, 0).length();
+            object.getWorldQuaternion(q);
+            nW.copy(HOLE_N).applyQuaternion(q);
+            sky.setFromMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q.clone().invert()));
+            hole.update({ camera: f.camera, center, normal: nW, rs: HOLE_RS * scale, sky, time: f.time, alpha: f.alpha * f.tl.get('deg.hole', f.p) });
+            // A star torn apart now and then flares the disk up (a tidal disruption).
+            const flare = f.tl.get('deg.flare', f.p);
+            hole.u.uDiskL.value = 0.25 + 1.4 * flare;
+            hole.u.uDiskT.value = 3800 + 6000 * flare;
           },
           proton: () => ours,
         };
@@ -84,13 +111,20 @@ export function degenerada(): EraModule {
     },
     choreo(tl, era) {
       tl.with(0.02, { reloj: 3 });
-      tl.set({ 'deg.k': 0 });
+      tl.set({ 'deg.k': 0, 'deg.hole': 0, 'deg.flare': 0 });
       tl.to(3.0, { era: era.index, e: era.home - 0.3, ah: 14.6, fondo: 1, horno: 0, fov: 54, yaw: 2.0, pitch: 0.4, roll: 0, bloom: 0.4, umbral: 0.25, silencio: 0.35 });
       tl.label('degenerada');
       tl.to(3.6, { 'deg.k': 0.45, ah: 17, e: era.home - 0.15, yaw: 2.3 });
       tl.caption(3.4, 'Un fuego raro', 'A veces dos enanas marrones chocan y encienden una estrella nueva, por un rato.');
       tl.to(3.4, { 'deg.k': 0.8, ah: 19.5, yaw: 2.6, pitch: 0.3 });
       tl.to(2.6, { 'deg.k': 1, ah: 22, e: era.home + 0.6, yaw: 2.8, silencio: 0.5 });
+      // What does not escape falls to the centre: down to the black hole that grows there.
+      tl.caption(6.4, 'Todo cae al centro', 'Lo que no escapa de la galaxia cae en su agujero negro central. A veces una estrella muerta se desgarra al caer y el disco se enciende un momento.');
+      const v = vista(new THREE.Vector3(0.2, 0.17, 1), HOLE_N, { yaw: 2.8, roll: 0 });
+      tl.to(3.4, { 'deg.hole': 1, ah: 24, e: 16.6, fov: 56, ...v, roll: v.roll + 0.15 });
+      tl.to(0.7, { 'deg.flare': 1, ah: 24.5, e: 16.0 });
+      const v2 = vista(new THREE.Vector3(-0.35, 0.3, 1), HOLE_N, v);
+      tl.to(2.3, { 'deg.flare': 0, ah: 26, e: 15.6, ...v2 });
     },
   };
 }
@@ -231,13 +265,12 @@ const BH = [
   { at: [-1.6, 1.3, -2.5], m: 0.42 },
   { at: [3.6, 1.1, 1.8], m: 0.55 },
   { at: [-2.8, -1.5, -1.4], m: 0.68 },
-  { at: [0.4, 0.2, 0.3], m: 1.0 },
 ];
 
 /**
  * Black holes evaporating (Hawking radiation): each a dark disc whose edge glows faintly, hotter and
  * brighter as it shrinks, ending in a flash; the smallest first, the largest last. aDelay is when
- * each ends (its mass).
+ * each ends (its mass). The last and largest, the galaxy's central one, is ray traced.
  */
 const BH_MOVE = /* glsl */ `
   vec3 c = aFrom;
@@ -253,6 +286,35 @@ const BH_MOVE = /* glsl */ `
   if (aKind < 0.5) em = vec3(0.0);
 `;
 
+/** The last black hole's flash, in camera space. */
+const FLASH_VERT = /* glsl */ `
+  uniform float uTanHalf, uAspect;
+  varying vec3 vDir;
+  void main() {
+    vec2 s = (uv * 2.0 - 1.0) * vec2(uAspect * uTanHalf, uTanHalf);
+    vDir = vec3(s, -1.0);
+    gl_Position = vec4(position.xy, 0.0, 1.0);
+  }
+`;
+const FLASH_FRAG = /* glsl */ `
+  uniform vec3 uAt, uCol;
+  uniform float uK;
+  varying vec3 vDir;
+  void main() {
+    float a = acos(clamp(dot(normalize(vDir), uAt), -1.0, 1.0));
+    gl_FragColor = vec4(uCol * uK * (1.2 / (1.0 + pow(a / 0.04, 2.0)) + 0.3 / (1.0 + pow(a / 0.35, 2.0)) + 0.12), 1.0);
+  }
+`;
+
+/** The central hole: 10¹¹ suns; how many decades it shrinks while the camera follows it down. */
+const LAST_RS = 2.95e14 / 1e21;
+const SHRINK = 30;
+/** The view (log10 m) where the camera starts following it down. */
+const LAST_E = 15.5;
+const LAST_N = new THREE.Vector3(0.15, 1, -0.1).normalize();
+const SUPER = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+const pot10 = (n: number) => `10${n < 0 ? '⁻' : ''}${String(Math.abs(n)).replace(/\d/g, (d) => SUPER[+d])}`;
+
 export function ultimaLuz(): EraModule {
   return {
     spec: {
@@ -267,7 +329,7 @@ export function ultimaLuz(): EraModule {
       frame: 12,
       frameCenter: new THREE.Vector3(),
       fade: [0.5, 0.5],
-      fadeE: [-34, -32, 4, 5],
+      fadeE: [-40, -38, 4, 5],
       tint: 0xffd8a0,
       generate() {
         const r = rng(1611);
@@ -303,15 +365,67 @@ export function ultimaLuz(): EraModule {
         const cloud = materia(data.main as MateriaData, { pre: 'uniform float uK;', move: BH_MOVE, uniforms: uni });
         cloud.u.uInk.value = 1;
         cloud.u.uMaxPx.value = 40;
+        // The last one, ray traced: dark, its Hawking glow (enormously exaggerated) reddening into
+        // white as it shrinks and heats.
+        const hole = crearAgujero();
+        hole.u.uDiskL.value = 0;
+        hole.u.uStars.value = 0;
+        const fu = { uTanHalf: { value: 0.5 }, uAspect: { value: 1 }, uAt: { value: new THREE.Vector3(0, 0, -1) }, uCol: { value: new THREE.Color(1, 0.96, 0.9) }, uK: { value: 0 } };
+        const flash = new THREE.Mesh(
+          new THREE.PlaneGeometry(2, 2),
+          new THREE.ShaderMaterial({ vertexShader: FLASH_VERT, fragmentShader: FLASH_FRAG, uniforms: fu, transparent: true, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending }),
+        );
+        flash.frustumCulled = false;
+        flash.renderOrder = 20;
         const object = new THREE.Group();
-        object.add(cloud.points);
+        object.add(hole.mesh, cloud.points, flash);
+        const center = new THREE.Vector3();
+        const nW = new THREE.Vector3();
+        const q = new THREE.Quaternion();
+        const sky = new THREE.Matrix3();
+        const tmp = new THREE.Vector3();
+        const bb = { r: 0, g: 0, b: 0 };
+        const st = { shrink: 0, near: 0, k: 0 };
         return {
           object,
           clouds: [cloud],
           update(f) {
-            uni.uK.value = f.tl.get('luz.k', f.p);
+            const k = f.tl.get('luz.k', f.p);
+            // It shrinks as fast as the camera follows it down (its size on screen holds).
+            const shrink = Math.min(Math.max(LAST_E - f.e, 0), SHRINK);
+            uni.uK.value = k;
+            object.updateMatrixWorld();
+            center.setFromMatrixPosition(object.matrixWorld);
+            const scale = tmp.setFromMatrixColumn(object.matrixWorld, 0).length();
+            object.getWorldQuaternion(q);
+            nW.copy(LAST_N).applyQuaternion(q);
+            sky.setFromMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q.clone().invert()));
+            const gone = smoothstep(1.0, 1.006, k);
+            hole.update({ camera: f.camera, center, normal: nW, rs: LAST_RS * Math.pow(10, -shrink) * scale, sky, time: f.time, alpha: f.alpha * (1 - gone) });
+            // Hotter as it shrinks (T ∝ 1/M): from a dull red to white to blue in its last instants.
+            const heat = shrink / SHRINK;
+            bbColor(900 * Math.pow(10, heat * 1.9), bb);
+            const top = Math.max(bb.r, bb.g, bb.b, 1e-6);
+            hole.u.uHawkCol.value.setRGB(bb.r / top, bb.g / top, bb.b / top);
+            hole.u.uHawk.value = 0.14 + 0.7 * Math.pow(heat, 2.2);
+            // The flash: where the hole was.
+            const cam = f.camera;
+            fu.uTanHalf.value = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
+            fu.uAspect.value = cam.aspect;
+            fu.uAt.value.copy(center).sub(cam.position).normalize();
+            fu.uK.value = 4 * Math.exp(-Math.pow((k - 1.003) / 0.006, 2)) * f.alpha;
+            Object.assign(st, { shrink, near: smoothstep(17, 16, f.e), k });
           },
           proton: () => null,
+          placa(g, f, on, toScreen) {
+            if (st.near < 0.5 || st.k >= 1) return;
+            const { u } = f;
+            const c = toScreen(tmp.set(0, 0, 0));
+            if (c.z > 1) return;
+            // Its temperature (Hawking: T ∝ 1/M), from 10⁻¹⁸ K up.
+            const txt = `${on ? 'radiación de Hawking, brillo exagerado · ' : ''}${pot10(Math.round(-18 + st.shrink))} K`;
+            nota(g, u, c.x + 60 * u, c.y - 40 * u, txt, 40, -40, 0, f.alpha * st.near);
+          },
         };
       },
     },
@@ -322,12 +436,16 @@ export function ultimaLuz(): EraModule {
       tl.to(3.4, { era: era.index, e: era.home - 0.15, ah: 60, fov: 56, yaw: 0.2, pitch: 0.25, roll: 0, bloom: 0.4, umbral: 0.3, silencio: 0.7 });
       tl.label('ultima-luz');
       tl.to(3.4, { 'luz.k': 0.56, ah: 80, yaw: 0.6 });
-      tl.to(3.0, { 'luz.k': 0.9, ah: 96, 'ultima-luz.fx': 0.4, 'ultima-luz.fy': 0.2, 'ultima-luz.fz': 0.3, e: era.home - 0.4, yaw: 0.9 });
-      tl.caption(3.0, 'La última luz', 'El último agujero negro se evapora en un destello. Después, nada vuelve a brillar.');
-      tl.to(2.5, { 'luz.k': 1, ah: 99.6, e: era.home - 0.52, yaw: 1.07 });
+      tl.to(2.6, { 'luz.k': 0.9, ah: 96, yaw: 0.9 });
+      // Down to the last one, then after it as it shrinks thirty orders of magnitude, heating.
+      tl.caption(9.6, 'La última luz', 'El último agujero negro se encoge y se calienta: su luz pasa del rojo al blanco. Termina en un destello hacia los 10¹⁰⁰ años. Después, nada vuelve a brillar.');
+      const v = vista(new THREE.Vector3(0.3, 0.12, 1), LAST_N, { yaw: 0.9, roll: 0 });
+      tl.to(3.2, { e: LAST_E, ah: 98, fov: 54, ...v, 'luz.k': 0.95 });
+      const v2 = vista(new THREE.Vector3(-0.5, 0.25, 1), LAST_N, v);
+      tl.to(4.4, { e: LAST_E - SHRINK, ah: 99.9, 'luz.k': 0.999, ...v2, roll: v2.roll + 0.5 });
       // The last light is the last bell; then, silence.
-      tl.with(0.2, { silencio: 1 });
-      tl.to(0.5, { 'luz.k': 1.02, ah: 100, e: era.home - 0.55, yaw: 1.1 });
+      tl.with(0.3, { silencio: 1 });
+      tl.to(1.2, { 'luz.k': 1.02, ah: 100, e: LAST_E - SHRINK - 0.1 });
     },
   };
 }
