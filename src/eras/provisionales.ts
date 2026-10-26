@@ -43,8 +43,10 @@ export const antes = provisional({
     stay: 4.2,
     reloj: { reloj: 4, from: -46, to: -44 },
     fondo: 0,
-    e: [0, 0.12],
-    spin: 0.04,
+    // The first gesture already moves: the figures turn and come closer.
+    e: [0, -0.28],
+    turn: [0.32, 0.12],
+    spin: 0.015,
 });
 
 export const inflacion = marcar(

@@ -129,8 +129,11 @@ const FIELD_FRAG = /* glsl */ `
     }
     float r = length(d.xy);
     vec3 col = uGold * uField * (0.05 + 0.06 * h) * (0.75 + 0.5 * r);
-    // The reheating: the whole view flares as inflation's energy turns into matter.
-    col += uFlashCol * uFlash;
+    // The reheating: the whole view flares as inflation's energy turns into matter, bursting outward.
+    float ang = atan(d.y, d.x);
+    float rad = length(d.xy) / max(-d.z, 0.2);
+    float rays = pow(abs(sin(ang * 11.0 + snoise(vec3(ang * 2.0, uTime * 0.3, 1.0)) * 1.6)), 8.0) + 0.6 * pow(abs(sin(ang * 27.0 + 1.3)), 14.0);
+    col += uFlashCol * uFlash * (0.05 + 0.6 * exp(-rad * 2.4) + rays * 1.1 * exp(-rad * 0.45));
     gl_FragColor = vec4(col, 1.0);
   }
 `;
@@ -307,8 +310,8 @@ export function higgs(): EraModule {
       tl.with(0.02, { reloj: 0 });
       tl.set({ 'hig.s': 0, 'hig.mass': 0, 'hig.field': 0, 'hig.flash': 0, 'higgs.fz': 0 });
       tl.caption(3.0, 'El universo se enciende', 'La inflación termina y su energía se vuelve partículas y luz: el universo se llena de fuego.');
-      tl.to(0.7, { era: era.index - 0.4, 'hig.flash': 0.9, fondo: 0.9, horno: 0.25, lt: -31 });
-      tl.to(0.6, { era: era.index - 0.2, 'hig.flash': 0.25, fondo: 0.45, horno: 0.05, lt: -30.4 });
+      tl.to(0.7, { era: era.index - 0.4, 'hig.flash': 1.1, fondo: 0.35, horno: 0.04, lt: -31, fov: 80 });
+      tl.to(0.6, { era: era.index - 0.2, 'hig.flash': 0.4, fondo: 0.3, horno: 0, lt: -30.4 });
       tl.to(1.7, { era: era.index, e: era.home - 0.1, lt: -29, 'hig.flash': 0, fondo: 0.2, horno: 0, fov: 72, yaw: 0, pitch: 0, roll: 0, bloom: 0.55, umbral: 0.18, 'hig.s': 40, 'higgs.fz': -20 });
       tl.label('higgs');
       // First person through particles at the speed of light; the clock races through twenty orders.

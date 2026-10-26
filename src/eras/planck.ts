@@ -80,6 +80,8 @@ export function planck(): EraModule {
       label: 'Planck',
       unitExp: -35,
       frame: 8,
+      // Centred on the cover's middle figure (a bounce): the camera dives through it into the foam.
+      anchor: new THREE.Vector3(0, -1.2, 0),
       frameCenter: new THREE.Vector3(),
       fade: [0.6, 0.5],
       tint: 0xece7db,
@@ -198,10 +200,12 @@ export function planck(): EraModule {
     },
     choreo(tl, era) {
       tl.with(0.02, { reloj: 0 });
-      tl.to(2.4, { era: era.index, e: era.home + 0.05, lt: -43.27, fondo: 0, horno: 0, yaw: -0.3, pitch: 0.15, roll: 0, fov: 50 });
+      // Through the ring, wide-angle, into the foam; then it opens up around the camera.
+      tl.to(1.6, { era: era.index - 0.25, e: era.home - 0.75, lt: -43.6, fondo: 0, horno: 0, yaw: 0.05, pitch: 0.02, roll: 0.1, fov: 74 });
+      tl.to(1.4, { era: era.index, e: era.home - 0.1, lt: -43.27, yaw: -0.3, pitch: 0.15, roll: 0, fov: 54 });
       tl.label('planck');
       // Drift through the foam.
-      tl.to(3.2, { e: era.home + 0.2, lt: -42.6, yaw: 0.35, pitch: 0.3, 'planck.fz': -1.6 });
+      tl.to(3.2, { e: era.home + 0.2, lt: -42.6, yaw: 0.35, pitch: 0.3, roll: -0.08, fov: 50, 'planck.fz': -1.6 });
     },
   };
 }
