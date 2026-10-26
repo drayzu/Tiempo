@@ -66,7 +66,7 @@ export function gas(): EraModule {
             const t = Math.min(Math.abs(a) + Math.abs(b), Math.abs(b) + Math.abs(c), Math.abs(c) + Math.abs(a));
             if (t > 0.3) return false;
             const knot = Math.abs(a) + Math.abs(b) + Math.abs(c) < 0.45;
-            Object.assign(o, { x, y, z, hex: knot ? 0xc8d4f0 : 0x9fb3d6, size: knot ? 0.006 : 0.0042, light: knot ? 0.6 : 0.34 });
+            Object.assign(o, { x, y, z, hex: knot ? 0xc8d4f0 : 0x9fb3d6, size: knot ? 0.006 : 0.0042, light: knot ? 0.95 : 0.5 });
             return true;
           },
         });
@@ -98,8 +98,8 @@ export function gas(): EraModule {
       // Out of the fading glow, drawing back twenty orders of magnitude while the gas clumps.
       tl.to(2.2, { era: era.index, e: 2, lt: LT(5e6), fondo: 1, horno: 0, fov: 62, yaw: -0.25, pitch: 0.08, roll: 0 });
       tl.label('gas');
-      tl.to(3.2, { e: 9, lt: LT(1.6e7), yaw: 0.15, pitch: 0.16, roll: 0.05 });
-      tl.to(3.2, { e: 16.5, lt: LT(4.5e7), yaw: 0.4, pitch: 0.05, roll: -0.04 });
+      tl.to(3.2, { e: 9, lt: LT(1.6e7), yaw: 0.35, pitch: 0.2, roll: 0.08 });
+      tl.to(3.2, { e: 16.5, lt: LT(4.5e7), yaw: 0.85, pitch: 0.02, roll: -0.06 });
     },
   };
 }
