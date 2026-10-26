@@ -109,6 +109,11 @@ export interface EraSpec {
   notes?: Note[];
   /** Its card on the plate: a few numbers (how sure we are comes from `certeza`). */
   ficha?: string[];
+  /**
+   * Its own travel (its units), worked out from the timeline instead of the `<id>.fx/fy/fz` tracks:
+   * for a camera that must stay exactly somewhere moving (inside a thin galactic disk). Null: tracks.
+   */
+  viaje?(tl: Timeline, p: number): THREE.Vector3 | null;
   generate(): EraData | Promise<EraData>;
   assemble(data: EraData): EraContent;
 }

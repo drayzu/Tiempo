@@ -318,6 +318,8 @@ function step(now: number) {
     VIEW_H / fit,
     (i) => {
       const id = eras.list[i].id;
+      const own = eras.list[i].viaje?.(tl, p);
+      if (own) return travel.copy(own);
       travel.set(tl.get(`${id}.fx`, p), tl.get(`${id}.fy`, p), tl.get(`${id}.fz`, p));
       return travel.lengthSq() > 0 ? travel : null;
     },
