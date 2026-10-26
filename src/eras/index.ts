@@ -7,10 +7,12 @@ import { quarks } from './quarks';
 import { aniquilacion } from './aniquilacion';
 import { nucleos } from './nucleos';
 import { inflacion } from './inflacion';
+import { higgs } from './higgs';
 import { gas } from './gas';
 import { galaxias } from './galaxias';
 import { viaLactea } from './vialactea';
 import { sol } from './sol';
+import { tierra } from './tierra';
 import { solMuere } from './solmuere';
 import { andromeda } from './andromeda';
 import { degenerada, protones, ultimaLuz, oscuridad } from './final';
@@ -27,7 +29,7 @@ export const FINALES: Final[] = ['frio', 'desgarro', 'colapso', 'vacio'];
  * all of them end after time, which draws the cover again (the loop).
  */
 export function crearEras(final: Final = 'frio'): EraModule[] {
-  const comun = [antes, planck(), inflacion(), quarks(), aniquilacion(), nucleos(), niebla(), gas(), amanecer(), galaxias(), viaLactea(), sol(), ahora(), solMuere()];
+  const comun = [antes, planck(), inflacion(), higgs(), quarks(), aniquilacion(), nucleos(), niebla(), gas(), amanecer(), galaxias(), viaLactea(), sol(), tierra(), ahora(), solMuere()];
   const ramas: Record<Final, EraModule[]> = {
     frio: [andromeda(true), degenerada(), protones(), ultimaLuz(), oscuridad()],
     desgarro: [andromeda(false), ripGalaxia(), ripSistema(), ripPlaneta(), ripAtomo()],
