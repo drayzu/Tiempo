@@ -100,8 +100,10 @@ export function provisional(o: ProvisionalOpts): EraModule {
       const clock = { reloj: o.reloj.reloj, [track]: o.reloj.from };
       if (era.index === 0) tl.set({ era: 0, e: era.home + e0, fov: o.fov ?? 50, fondo: o.fondo ?? 1, horno: o.horno ?? 0, ...clock });
       else {
-        // The clock switches mode at the start of the arrival (a step, never a blend between modes).
-        tl.with(0.02, { reloj: o.reloj.reloj });
+        // The clock switches mode at the start of the arrival (a step, never a blend between modes);
+        // an era without a sky drops it at once (else the clock's way back through hot times would
+        // light it up on the way).
+        tl.with(0.02, { reloj: o.reloj.reloj, ...(o.fondo === 0 ? { fondo: 0 } : {}) });
         tl.to(o.arrive, { era: era.index, e: era.home + e0, fov: o.fov ?? 50, fondo: o.fondo ?? 1, horno: o.horno ?? 0, yaw: 0, pitch: 0, roll: 0, [track]: o.reloj.from });
       }
       tl.label(era.id);
