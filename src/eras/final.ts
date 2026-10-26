@@ -60,7 +60,7 @@ export function degenerada(): EraModule {
         const b = materiaBuilder(1412);
         for (let k = 0; k < 9000; k++) {
           const v = new THREE.Vector3(gauss(r), gauss(r) * 0.7, gauss(r) * 0.85).multiplyScalar(0.85 * Math.pow(r(), 0.6) + 0.06);
-          b.push(v.x, v.y, v.z, 0xe8eeff, 0.01, 0.32, { kind: 0, delay: r(), star: true });
+          b.push(v.x, v.y, v.z, 0xe8eeff, 0.0045, 0.32, { kind: 0, delay: r(), star: true });
         }
         for (let k = 0; k < 26; k++) {
           const v = new THREE.Vector3(gauss(r), gauss(r) * 0.7, gauss(r) * 0.85).multiplyScalar(0.6);
@@ -114,10 +114,10 @@ export function degenerada(): EraModule {
       tl.set({ 'deg.k': 0, 'deg.hole': 0, 'deg.flare': 0 });
       tl.to(3.0, { era: era.index, e: era.home - 0.3, ah: 14.6, fondo: 1, horno: 0, fov: 54, yaw: 2.0, pitch: 0.4, roll: 0, bloom: 0.4, umbral: 0.25, silencio: 0.35 });
       tl.label('degenerada');
-      tl.to(3.6, { 'deg.k': 0.45, ah: 17, e: era.home - 0.15, yaw: 2.3 });
+      tl.to(2.8, { 'deg.k': 0.45, ah: 17, e: era.home - 0.15, yaw: 2.3 });
       tl.caption(3.4, 'Un fuego raro', 'A veces dos enanas marrones chocan y encienden una estrella nueva, por un rato.');
-      tl.to(3.4, { 'deg.k': 0.8, ah: 19.5, yaw: 2.6, pitch: 0.3 });
-      tl.to(2.6, { 'deg.k': 1, ah: 22, e: era.home + 0.6, yaw: 2.8, silencio: 0.5 });
+      tl.to(2.8, { 'deg.k': 0.8, ah: 19.5, yaw: 2.6, pitch: 0.3 });
+      tl.to(2.0, { 'deg.k': 1, ah: 22, e: era.home + 0.6, yaw: 2.8, silencio: 0.5 });
       // What does not escape falls to the centre: down to the black hole that grows there.
       tl.caption(6.4, 'Todo cae al centro', 'Lo que no escapa de la galaxia cae en su agujero negro central. A veces una estrella muerta se desgarra al caer y el disco se enciende un momento.');
       const v = vista(new THREE.Vector3(0.2, 0.17, 1), HOLE_N, { yaw: 2.8, roll: 0 });
@@ -244,8 +244,8 @@ export function protones(): EraModule {
       tl.with(0.02, { reloj: 3 });
       tl.set({ 'pro.decay': 0 });
       // Down through the emptiness, thirty-seven orders of magnitude, to our proton.
-      tl.to(2.6, { era: era.index - 0.4, e: 10, ah: 26, fov: 60, yaw: 0, pitch: 0, roll: 0 });
-      tl.to(3.4, { era: era.index, e: era.home - 0.1, ah: 33, roll: 0.2 });
+      tl.to(2.0, { era: era.index - 0.4, e: 10, ah: 26, fov: 60, yaw: 0, pitch: 0, roll: 0 });
+      tl.to(3.0, { era: era.index, e: era.home - 0.1, ah: 33, roll: 0.2 });
       tl.label('protones');
       tl.to(3.0, { ah: 36, e: era.home - 0.3, yaw: 0.5, pitch: 0.15 });
       // If protons decay, ours goes.
@@ -433,10 +433,10 @@ export function ultimaLuz(): EraModule {
       tl.with(0.02, { reloj: 3 });
       tl.set({ 'luz.k': 0 });
       // Back up from where our proton was, to the black holes.
-      tl.to(3.4, { era: era.index, e: era.home - 0.15, ah: 60, fov: 56, yaw: 0.2, pitch: 0.25, roll: 0, bloom: 0.4, umbral: 0.3, silencio: 0.7 });
+      tl.to(3.0, { era: era.index, e: era.home - 0.15, ah: 60, fov: 56, yaw: 0.2, pitch: 0.25, roll: 0, bloom: 0.4, umbral: 0.3, silencio: 0.7 });
       tl.label('ultima-luz');
-      tl.to(3.4, { 'luz.k': 0.56, ah: 80, yaw: 0.6 });
-      tl.to(2.6, { 'luz.k': 0.9, ah: 96, yaw: 0.9 });
+      tl.to(2.8, { 'luz.k': 0.56, ah: 80, yaw: 0.6 });
+      tl.to(2.2, { 'luz.k': 0.9, ah: 96, yaw: 0.9 });
       // Down to the last one, then after it as it shrinks thirty orders of magnitude, heating.
       tl.caption(9.6, 'La última luz', 'El último agujero negro se encoge y se calienta: su luz pasa del rojo al blanco. Termina en un destello hacia los 10¹⁰⁰ años. Después, nada vuelve a brillar.');
       const v = vista(new THREE.Vector3(0.3, 0.12, 1), LAST_N, { yaw: 0.9, roll: 0 });
@@ -506,9 +506,9 @@ export function oscuridad(): EraModule {
       tl.to(3.0, { era: era.index, e: era.home, ah: 130, fov: 56, yaw: 0, pitch: 0, roll: 0, fondo: 1 });
       tl.label('oscuridad');
       // The numbers are the spectacle: 10¹⁰⁰⁰, 10^(10⁶)…
-      tl.to(2.4, { 'osc.z': 3, ah: 1000 });
-      tl.to(2.4, { 'osc.z': 6, ah: 1e6 });
-      tl.to(2.4, { 'osc.z': 9, ah: 1e10, roll: 0.15 });
+      tl.to(2.0, { 'osc.z': 3, ah: 1000 });
+      tl.to(2.0, { 'osc.z': 6, ah: 1e6 });
+      tl.to(2.0, { 'osc.z': 9, ah: 1e10, roll: 0.15 });
     },
   };
 }

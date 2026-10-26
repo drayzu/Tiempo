@@ -147,7 +147,9 @@ const FRAG = /* glsl */ `
     vec2 ll = vec2(atan(sd.z, sd.x), asin(clamp(sd.y, -1.0, 1.0)));
     float band = exp(-pow(sd.y / 0.3, 2.0));
     float st = starField(ll * 70.0, 0.05 + 0.1 * band, 0.0) + 0.7 * starField(ll * 160.0 + 3.0, 0.04 + 0.12 * band, 0.0) + 0.45 * starField(ll * 330.0 + 7.0, 0.04 + 0.16 * band, 0.0);
-    col += age(vec3(0.9, 0.93, 1.0)) * st * uStars * wIn;
+    // (inside the elliptical, its stars are all around too)
+    float wE = step(1e-4, uEL) * smoothstep(4.0, 2.0, length(O - uEC) / uER);
+    col += age(vec3(0.9, 0.93, 1.0)) * st * uStars * max(wIn * (1.0 - wE), wE * 1.4);
     // Disks from outside, the nearer one in front (its dust dims the farther).
     float t0 = dot(uC[0] - O, d);
     float t1 = dot(uC[1] - O, d);

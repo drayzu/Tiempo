@@ -43,7 +43,7 @@ export function gas(): EraModule {
             const z = r() * 2 - 1;
             const d = Math.hypot(x, y, z);
             if (d > 1 || d < 0.1) return false;
-            Object.assign(o, { x, y, z, hex: 0x8ea6c8, size: 0.004, light: 0.22 });
+            Object.assign(o, { x, y, z, hex: 0x8ea6c8, size: 0.004, light: 0.36 });
             return true;
           },
         });
@@ -96,7 +96,7 @@ export function gas(): EraModule {
     choreo(tl, era) {
       tl.with(0.02, { reloj: 0 });
       // Out of the fading glow, drawing back twenty orders of magnitude while the gas clumps.
-      tl.to(2.6, { era: era.index, e: 2, lt: LT(5e6), fondo: 1, horno: 0, fov: 62, yaw: -0.25, pitch: 0.08, roll: 0 });
+      tl.to(2.2, { era: era.index, e: 2, lt: LT(5e6), fondo: 1, horno: 0, fov: 62, yaw: -0.25, pitch: 0.08, roll: 0 });
       tl.label('gas');
       tl.to(3.2, { e: 9, lt: LT(1.6e7), yaw: 0.15, pitch: 0.16, roll: 0.05 });
       tl.to(3.2, { e: 16.5, lt: LT(4.5e7), yaw: 0.4, pitch: 0.05, roll: -0.04 });

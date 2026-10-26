@@ -294,9 +294,9 @@ export function niebla(): EraModule {
       tl.with(2.4, { 'niebla.fx': OURS.x, 'niebla.fy': OURS.y, 'niebla.fz': OURS.z, e: era.home - 0.45, yaw: 0, pitch: 0, roll: 0.05 });
       tl.to(4.6, { lt: LT(4.7e5) });
       // The light cools and goes; the camera pulls back and turns to watch it fly.
-      tl.caption(5.6, 'El universo deja de brillar', 'Esa luz se enfría: naranja, rojo, infrarrojo. Hacia los tres millones de años ya no se ve. Hoy es el fondo de microondas.');
+      tl.caption(4.6, 'El universo deja de brillar', 'Esa luz se enfría: naranja, rojo, infrarrojo. Hacia los tres millones de años ya no se ve. Hoy es el fondo de microondas.');
       tl.with(2.8, { 'niebla.fx': 0, 'niebla.fy': 0, 'niebla.fz': 0, e: era.home + 0.1, yaw: -0.45, pitch: 0.12, roll: 0 });
-      tl.to(5.6, { lt: LT(4.2e6) });
+      tl.to(4.4, { lt: LT(4.2e6) });
       tl.with(1.6, { horno: 0 });
     },
   };

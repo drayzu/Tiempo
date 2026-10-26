@@ -78,7 +78,9 @@ const MOVE = /* glsl */ `
     vec3 star = c + rel;
     float merged = smoothstep(0.82, 1.0, uK);
     p = mix(star, aFrom, merged);
-    em *= 1.0 - 0.45 * merged;
+    // (in the elliptical they are older and packed: a little larger, so the ball of stars reads)
+    em *= 1.0 - 0.6 * merged;
+    sz *= 1.0 + 0.7 * merged;
     if (aKind > 3.5) em *= uBurst * (1.0 - merged);
     // The stars age and go out: the blue (massive) first, the red dwarfs last (aDelay).
     float life = aKind > 3.5 ? 0.2 : aDelay;
@@ -218,7 +220,7 @@ export function andromeda(conUltima = true): EraModule {
             uni.uLast.value = last;
             uni.uBurst.value = smoothstep(0.38, 0.46, k) * (1 - smoothstep(0.9, 1, k));
             // Inside our galaxy, its own stars are drawn as the smooth sky.
-            uni.uMine.value = smoothstep(20.5, 21.3, f.e);
+            uni.uMine.value = smoothstep(20.8, 21.6, f.e);
             cloud.u.uMaxPx.value = 22 * f.dpr;
 
             // The smooth light, in world space.
@@ -233,10 +235,10 @@ export function andromeda(conUltima = true): EraModule {
             glow.disco(1, { center: toW(L.m31).clone(), normal: dirW(uni.uNB.value), x: dirW(xB), rd: RD_M31 * scale, light: disks * 0.9 * dying, twist: -tide * 1.4, dust: 1.0, h: 0.08, phase: 2.0 });
             glow.u.uEC.value.copy(toW(new THREE.Vector3()));
             glow.u.uER.value = 0.16 * scale;
-            glow.u.uEL.value = smoothstep(0.8, 1, k) * dying * (0.22 + 0.5 * smoothstep(20.8, 21.6, f.e));
+            glow.u.uEL.value = smoothstep(0.8, 1, k) * dying * (0.45 + 0.3 * smoothstep(20.8, 21.6, f.e));
             glow.u.uBurst.value = uni.uBurst.value;
             glow.u.uRed.value = smoothstep(0.05, 0.6, last);
-            glow.u.uStars.value = (1 - smoothstep(0.8, 0.95, k)) * dying * 0.8;
+            glow.u.uStars.value = dying * 0.8;
             qi.copy(q).multiply(RA).invert();
             sky.setFromMatrix4(m4.makeRotationFromQuaternion(qi));
             glow.u.uSky.value.copy(sky);
@@ -295,7 +297,7 @@ export function andromeda(conUltima = true): EraModule {
       tl.label('bifurcacion');
       // The other endings come sooner (some twenty billion years): the clock holds while one is chosen.
       if (!conUltima) {
-        tl.to(4.2, { ah: 10.2, e: 22.0, fov: 56, yaw: 1.5, pitch: 0.3, roll: 0, 'and.dentro': 0, ...viajeA('andromeda', new THREE.Vector3()) });
+        tl.to(4.2, { ah: 10.2, e: 21.4, fov: 56, yaw: 1.5, pitch: 0.3, roll: 0, 'and.dentro': 0, ...viajeA('andromeda', new THREE.Vector3()) });
         return;
       }
       // Out again: one galaxy alone, while every other one reddens and crosses the horizon.
@@ -303,7 +305,7 @@ export function andromeda(conUltima = true): EraModule {
       tl.to(4.4, { 'and.sky': 1, 'and.dentro': 0, ah: 11.4, e: 21.3, fov: 54, yaw: 1.6, pitch: 0.2, roll: 0, ...viajeA('andromeda', new THREE.Vector3()) });
       // The last star belongs to the cold ending: back in, among the red dwarfs, until the last.
       tl.caption(5.2, 'La última estrella', 'Las estrellas se apagan una a una, las más grandes primero. Hacia los 10¹⁴ años se apaga la última enana roja.');
-      tl.to(5.2, { 'and.last': 1, 'and.dentro': 0.85, ah: 14, e: 20.4, fov: 62, yaw: 1.9, pitch: 0.45, silencio: 0.25, ...viajeA('andromeda', OURS_END.clone().multiplyScalar(0.9)) });
+      tl.to(5.2, { 'and.last': 1, 'and.dentro': 0.5, ah: 14, e: 20.95, fov: 60, yaw: 1.9, pitch: 0.45, silencio: 0.25, ...viajeA('andromeda', OURS_END.clone().multiplyScalar(0.9)) });
     },
   };
 }

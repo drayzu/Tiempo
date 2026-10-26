@@ -113,7 +113,7 @@ export function viaLactea(anchor?: THREE.Vector3): EraModule {
             const s = 0.6 + Math.pow(r(), 0.7) * 4.6;
             const v = r() < 0.6 ? arm(s, k % 2, r) : new THREE.Vector3(Math.cos(r() * 6.283) * s, gauss(r) * 0.06, Math.sin(r() * 6.283) * s);
             const off: [number, number, number] = [gauss(r) * 0.35, gauss(r) * 0.25, gauss(r) * 0.35];
-            b.push(v.x, v.y, v.z, r() < 0.5 ? 0xbcd2ff : 0xffe2b0, 0.03, 0.3, { kind: 3, delay: i, from: off, star: true });
+            b.push(v.x, v.y, v.z, r() < 0.5 ? 0xbcd2ff : 0xffe2b0, 0.03, 0.17, { kind: 3, delay: i, from: off, star: true });
           }
         }
         // Globular clusters in the halo.
