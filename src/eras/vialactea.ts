@@ -45,7 +45,7 @@ const MOVE = /* glsl */ `
   }
 `;
 
-export function viaLactea(): EraModule {
+export function viaLactea(anchor?: THREE.Vector3): EraModule {
   return {
     spec: {
       id: 'via-lactea',
@@ -57,6 +57,7 @@ export function viaLactea(): EraModule {
       label: 'Vía Láctea',
       unitExp: 20,
       frame: 14,
+      anchor,
       frameCenter: new THREE.Vector3(),
       fade: [0.55, 0.5],
       fadeE: [-2.4, -1.4, 3, 4.2],

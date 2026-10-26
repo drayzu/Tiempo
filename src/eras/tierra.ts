@@ -9,6 +9,7 @@ import { nota } from '../engine/placa';
 import { rocas, rocasData, type RocasData } from '../engine/rocas';
 import { NORTE, SOL_DESDE_TIERRA } from './ahora';
 import { infinito, infinitoData } from './infinito';
+import { vista } from '../lib/vista';
 
 /**
  * La Tierra se forma (≈ 4 570 to 4 200 million years ago). 1 unit = 1 000 km, as «Ahora».
@@ -65,20 +66,8 @@ const OUR_ROCK = new THREE.Vector3(18, 12, 132);
 const PATH = new THREE.Vector3(0, 0.06, 1);
 const OUR_FALL = 0.46;
 
-/**
- * The camera's angles to sit on the side `dir` (local) of the focus with the axis up on screen,
- * unwrapped near `ref` (angles are interpolated one by one, so they must not jump by 2π).
- */
-function vista(dir: THREE.Vector3, ref = { yaw: 0, roll: 0 }, roll = 0) {
-  const z = toEra(dir.clone().normalize());
-  const up = N.clone();
-  const x = new THREE.Vector3().crossVectors(up, z).normalize();
-  const y = new THREE.Vector3().crossVectors(z, x);
-  const m = new THREE.Matrix4().makeBasis(x, y, z).transpose();
-  const e = new THREE.Euler().setFromRotationMatrix(m, 'YXZ');
-  const near = (a: number, r: number) => a + Math.round((r - a) / (Math.PI * 2)) * Math.PI * 2;
-  return { yaw: near(e.y, ref.yaw), pitch: e.x, roll: near(e.z + roll, ref.roll) };
-}
+/** The camera on the side `dir` (local) of the focus, the axis up on screen (see `vista`). */
+const vistaL = (dir: THREE.Vector3, ref = { yaw: 0, roll: 0 }, roll = 0) => vista(toEra(dir), N, ref, roll);
 /** A travel offset (era units) for a focus at `v` (local). */
 const viaje = (v: THREE.Vector3) => {
   const t = toEra(v);
@@ -617,18 +606,18 @@ export function tierra(): EraModule {
       tl.with(0.02, { reloj: 1 });
       tl.set({ lb: lbAgo(4.548), 'tie.grow': 0.55, 'tie.sweep': 0, 'tie.melt': 1, 'tie.heat': 0, 'tie.shock': 0, 'tie.sea': 0, 'tie.cloud': 0, 'tie.imp': 0, 'tie.orbit': 0, 'tie.moon': 0, 'tie.moonD': MOON_R0, 'tie.cool': 0, 'tie.rain': 0, 'tie.flash': 0, 'tie.flood': 0, 'tie.rot': 0, 'tie.theia': 0 });
       // Into the disk, falling through its dust, to the swarm of rocks.
-      const v0 = vista(PATH, { yaw: 0, roll: 1.2 });
+      const v0 = vistaL(PATH, { yaw: 0, roll: 1.2 });
       tl.to(3.6, { era: era.index, e: 9.5, lb: lbAgo(4.545), fondo: 1, horno: 0, fov: 62, ...v0, bloom: 0.42, umbral: 0.3, ...viaje(PATH.clone().multiplyScalar(500)) });
       tl.label('tierra');
       tl.caption(4.6, 'Polvo, piedras, planetas', 'En el disco, el polvo se pega en piedras y las piedras en rocas que chocan y se juntan. Una trae a nuestro protón, en un poco de hielo.');
       // Through the swarm, first person, towards the young Earth.
-      const v1 = vista(new THREE.Vector3(0.05, 0.1, 1), v0);
+      const v1 = vistaL(new THREE.Vector3(0.05, 0.1, 1), v0);
       tl.to(4.6, { e: 8.0, lb: lbAgo(4.53), 'tie.grow': 0.85, 'tie.sweep': 0.62, ...v1, roll: v1.roll + 0.12, ...viaje(PATH.clone().multiplyScalar(26)) });
       // The young Earth: molten. Time almost stands still; the camera circles it.
       tl.caption(4.4, 'La Tierra, al rojo', 'Cada choque la calienta: la joven Tierra es un océano de roca fundida.');
-      const v2 = vista(new THREE.Vector3(0.45, 0.32, 0.85), v1);
+      const v2 = vistaL(new THREE.Vector3(0.45, 0.32, 0.85), v1);
       tl.to(2.4, { e: 7.5, lb: lbAgo(4.512), 'tie.grow': 1, 'tie.sweep': 0.97, ...v2, ...viaje(new THREE.Vector3(0, 0, 0)) });
-      const v3 = vista(VD, v2);
+      const v3 = vistaL(VD, v2);
       tl.to(2.0, { e: 7.62, lb: lbAgo(4.5101), 'tie.sweep': 1, 'tie.rot': 0.5, ...v3 });
       // Theia: it comes from the left and hits at an angle; the flash, the arm of molten rock.
       tl.caption(6.0, 'Tea', 'Un planeta del tamaño de Marte choca con la Tierra. El golpe funde a los dos y lanza roca al espacio.');
@@ -637,18 +626,18 @@ export function tierra(): EraModule {
       tl.to(2.8, { e: 7.95, lb: lbAgo(4.51), 'tie.imp': 0.1, 'tie.rot': 0.62, ...viaje(focusD), fov: 56 });
       tl.to(0.35, { 'tie.imp': 0.16, 'tie.flash': 1, 'tie.flood': 0.55, 'tie.heat': 1, 'tie.shock': 1, fov: 66, bloom: 0.3, umbral: 0.5, ...viaje(CONTACT.clone().multiplyScalar(0.3)) });
       tl.to(1.4, { 'tie.imp': 0.36, 'tie.flash': 0.25, 'tie.flood': 0, 'tie.shock': 0.4, e: 7.98, fov: 58, bloom: 0.42, umbral: 0.3, ...viaje(new THREE.Vector3(0, 0, 0)) });
-      tl.to(1.5, { 'tie.imp': 0.62, 'tie.flash': 0, 'tie.shock': 0, 'tie.heat': 0.6, 'tie.orbit': 0.6, 'tie.cool': 0.25, 'tie.rot': 1.2, e: 8.05, ...vista(new THREE.Vector3(0.35, 0.7, 0.62), v3) });
+      tl.to(1.5, { 'tie.imp': 0.62, 'tie.flash': 0, 'tie.shock': 0, 'tie.heat': 0.6, 'tie.orbit': 0.6, 'tie.cool': 0.25, 'tie.rot': 1.2, e: 8.05, ...vistaL(new THREE.Vector3(0.35, 0.7, 0.62), v3) });
       // Into the ring, first person: the Moon gathers ahead.
       tl.caption(5.0, 'Nace la Luna', 'Los restos forman un anillo que, lejos de la Tierra, se junta en la Luna: unas quince veces más cerca que hoy.');
       const ringCam = A.clone().multiplyScalar(Math.cos(PHI_M - 1.3)).addScaledVector(B, Math.sin(PHI_M - 1.3)).multiplyScalar(MOON_R0 * 1.05);
       const toMoon = A.clone().multiplyScalar(Math.cos(PHI_M + 0.25)).addScaledVector(B, Math.sin(PHI_M + 0.25)).multiplyScalar(MOON_R0 * 0.95);
-      const vRing = vista(ringCam.clone().sub(toMoon).setY(3.5), v3);
+      const vRing = vistaL(ringCam.clone().sub(toMoon).setY(3.5), v3);
       tl.to(2.4, { 'tie.imp': 0.9, 'tie.orbit': 2.4, 'tie.rain': 0.6, 'tie.heat': 0.3, 'tie.rot': 2.0, 'tie.moon': 0.12, 'tie.cool': 0.38, e: 7.4, bloom: 0.32, umbral: 0.4, ...vRing, ...viaje(toMoon.clone().lerp(ringCam, 0.35)) });
-      tl.to(2.6, { 'tie.imp': 1, 'tie.orbit': 4.2, 'tie.rain': 1, 'tie.heat': 0, 'tie.moon': 0.8, 'tie.cool': 0.5, bloom: 0.42, umbral: 0.3, 'tie.rot': 2.8, lb: lbAgo(4.5099), e: 7.25, ...vista(ringCam.clone().sub(toMoon).setY(5).applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.5), vRing), ...viaje(toMoon) });
+      tl.to(2.6, { 'tie.imp': 1, 'tie.orbit': 4.2, 'tie.rain': 1, 'tie.heat': 0, 'tie.moon': 0.8, 'tie.cool': 0.5, bloom: 0.42, umbral: 0.3, 'tie.rot': 2.8, lb: lbAgo(4.5099), e: 7.25, ...vistaL(ringCam.clone().sub(toMoon).setY(5).applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.5), vRing), ...viaje(toMoon) });
       // It cools, it rains: the oceans. Time runs again (the days blur into bands, the Moon into a
       // ring of light that draws back); the camera pulls out to where «Ahora» begins.
       tl.caption(6.2, 'Llueve', 'La Tierra se enfría, su vapor cae como lluvia y nacen los océanos. Nuestro protón cae con ella.');
-      tl.to(2.8, { 'tie.moon': 1, 'tie.melt': 0.25, 'tie.cool': 1, 'tie.cloud': 1, 'tie.sea': 0.4, 'tie.moonD': MOON_R0 * 2.0, lb: lbAgo(4.47), e: 7.65, ...vista(new THREE.Vector3(0.6, 0.35, 0.72), vRing), ...viaje(new THREE.Vector3(0, 0, 0)) });
+      tl.to(2.8, { 'tie.moon': 1, 'tie.melt': 0.25, 'tie.cool': 1, 'tie.cloud': 1, 'tie.sea': 0.4, 'tie.moonD': MOON_R0 * 2.0, lb: lbAgo(4.47), e: 7.65, ...vistaL(new THREE.Vector3(0.6, 0.35, 0.72), vRing), ...viaje(new THREE.Vector3(0, 0, 0)) });
       tl.to(3.4, { 'tie.melt': 0, 'tie.sea': 1, 'tie.cloud': 0.8, 'tie.moonD': 150, lb: lbAgo(4.25), e: 8.3, yaw: -1.1, pitch: 0.42, roll: 0.05, fov: 50 });
     },
   };

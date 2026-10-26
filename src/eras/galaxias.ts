@@ -50,6 +50,12 @@ const GAL = (() => {
   return WEB.nodes.map((n, i) => ({ at: n, delay: i === 0 ? 0.02 : 0.05 + r() * 0.55, R: 6 + r() * 5 }));
 })();
 const OURS = new THREE.Vector3(1.4, 0.4, 1.0);
+/** A knot nearby whose galaxy holds a quasar (the next era sits there). */
+export const CUASAR_EN_RED = WEB.nodes
+  .slice(1)
+  .filter((n) => n.length() > 7 && n.length() < 16)
+  .sort((a, b) => a.length() - b.length())[0]
+  .clone();
 
 const GAS_MOVE = /* glsl */ `
   if (aKind < 0.5) {
