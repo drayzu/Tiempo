@@ -131,11 +131,10 @@ export function quarks(): EraModule {
       },
     },
     choreo(tl, era) {
-      // Reheating: out of the cold dark of inflation, a flash, and the universe is full of hot matter.
+      // Out of the Higgs' medium (zooming out a hundredfold), into the soup of quarks and gluons.
       tl.with(0.02, { reloj: 0 });
       tl.set({ 'qrk.bind': 0, 'qrk.bound': 0 });
-      tl.to(1.7, { era: era.index - 0.35, fondo: 1.5, horno: 0.55, lt: -20 });
-      tl.to(1.5, { era: era.index, e: era.home - 0.1, lt: -11, fondo: 0.5, horno: 0, fov: 64, yaw: 0, pitch: 0, roll: 0, bloom: 0.5, umbral: 0.25 });
+      tl.to(2.4, { era: era.index, e: era.home - 0.1, lt: -10.8, fondo: 0.5, horno: 0, fov: 64, yaw: 0, pitch: 0, roll: 0, bloom: 0.5, umbral: 0.25 });
       tl.label('quarks');
       // First person through the soup, weaving.
       tl.to(2.6, { lt: -8.5, 'quarks.fz': -16, yaw: 0.18, pitch: -0.06, roll: 0.05 });
