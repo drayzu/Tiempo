@@ -357,6 +357,7 @@ function step(now: number) {
     return f;
   };
   let eraInk = 0;
+  let eraVelo = 0;
   for (const era of eras.list) {
     if (!era.content || !era.group.visible) continue;
     for (const c of era.content.clouds) {
@@ -370,6 +371,7 @@ function step(now: number) {
     const f = frameOf(era);
     era.content.update?.(f);
     eraInk = Math.max(eraInk, (era.content.tinta?.(f) ?? 0) * era.alpha);
+    eraVelo = Math.max(eraVelo, (era.content.velo?.(f) ?? 0) * era.alpha);
   }
   const inkT = Math.max(fondo.state.tinta, eraInk);
 
@@ -442,7 +444,7 @@ function step(now: number) {
   const introOut = Math.min(1, Math.max(0, (p - 0.05) / 0.55));
   cono(g, u, W, H, conoData, p, inkT, hovered, here, introOut);
   const named = tl.captionAt(p) ?? (cur ? { name: cur.name, fact: cur.fact } : null);
-  if (hud(g, u, H, l, named, inkT, now, introOut, Math.min(1, fondo.state.vis * 1.6) * (1 - inkT))) {
+  if (hud(g, u, H, l, named, inkT, now, introOut, Math.max(Math.min(1, fondo.state.vis * 1.6), eraVelo) * (1 - inkT))) {
     sound.chime();
     clearTimeout(speakTimer);
     speakTimer = window.setTimeout(() => (leer.textContent = named ? `${named.name}. ${named.fact}` : ''), 400);

@@ -182,6 +182,8 @@ export function cuasar(): EraModule {
             cerca = smoothstep(15, 14.3, e);
           },
           proton: () => CASA_DESDE_CUASAR,
+          // Through the young galaxy the view is full of light: a shade behind the words.
+          velo: (f) => smoothstep(20.8, 19.9, f.e) * smoothstep(17.0, 18.0, f.e) * 0.8,
           placa(g, f, on, toScreen) {
             if (!on || cerca < 0.5 || f.alpha < 0.5) return;
             const { u } = f;

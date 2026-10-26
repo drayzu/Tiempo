@@ -248,6 +248,8 @@ export function andromeda(conUltima = true): EraModule {
             shown = { k, sky: skyK, last };
           },
           proton: () => ours,
+          // The close pass and the merger fill the view with light: a shade behind the words.
+          velo: () => smoothstep(0.26, 0.36, shown.k) * (1 - smoothstep(0.5, 0.6, shown.k)) + smoothstep(0.86, 0.94, shown.k) * (1 - smoothstep(0.985, 1, shown.k)) * 0.7,
           placa(g, f) {
             // Honest about the collision: even odds, and maybe later than once thought.
             const a1 = smoothstep(0.02, 0.1, shown.k) * (1 - smoothstep(0.32, 0.4, shown.k)) * f.alpha;
