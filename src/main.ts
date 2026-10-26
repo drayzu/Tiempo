@@ -223,16 +223,16 @@ for (const b of finales.querySelectorAll<HTMLButtonElement>('button[data-final]'
   });
 }
 
-// The series: where Tiempo passes a place Potencias also shows, a quiet link opens Potencias right
-// there (its `?p=` beat); at the end, AstroIngeniería (could a civilisation outlast the end?).
+// The series: where Tiempo passes a place Espacio also shows, a quiet link opens Espacio right
+// there (its `?p=` beat); at the end, the Atlas (could a civilisation outlast the end?).
 const enlace = $<HTMLAnchorElement>('#enlace');
-const POTENCIAS = (beat: number) => `https://drayzu.github.io/Potencias/?p=${beat}&lang=${lang}`;
+const ESPACIO = (beat: number) => `https://drayzu.github.io/Espacio/?p=${beat}&lang=${lang}`;
 const ENLACES = [
-  { from: tl.at('planck') - 1, to: tl.at('inflacion') - 1, href: POTENCIAS(1.5), text: 'La espuma de Planck, en Potencias' },
-  { from: tl.at('quarks') + 2, to: tl.at('aniquilacion') - 1, href: POTENCIAS(22.5), text: '«Nadie ha visto un quark solo», en Potencias' },
-  { from: tl.at('niebla') + 4, to: tl.at('gas') - 1, href: POTENCIAS(275), text: 'La luz más antigua, en Potencias' },
-  { from: tl.at('andromeda'), to: forkAt - 0.5, href: POTENCIAS(236), text: 'Andrómeda, en Potencias' },
-  { from: tl.at('despues') - 1, to: tl.length - 1, href: 'https://drayzu.github.io/AstroIngenieria/', text: '¿Podría una civilización escapar del final? AstroIngeniería' },
+  { from: tl.at('planck') - 1, to: tl.at('inflacion') - 1, href: ESPACIO(1.5), text: 'La espuma de Planck, en Espacio' },
+  { from: tl.at('quarks') + 2, to: tl.at('aniquilacion') - 1, href: ESPACIO(22.5), text: '«Nadie ha visto un quark solo», en Espacio' },
+  { from: tl.at('niebla') + 4, to: tl.at('gas') - 1, href: ESPACIO(275), text: 'La luz más antigua, en Espacio' },
+  { from: tl.at('andromeda'), to: forkAt - 0.5, href: ESPACIO(236), text: 'Andrómeda, en Espacio' },
+  { from: tl.at('despues') - 1, to: tl.length - 1, href: 'https://drayzu.github.io/Atlas/', text: '¿Podría una civilización escapar del final? En el Atlas' },
 ].filter((x) => x.to > x.from);
 let enlaceOn = -1;
 

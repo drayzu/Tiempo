@@ -58,7 +58,7 @@ export function ripGalaxia(): EraModule {
       acto: 'El final',
       certeza: 'E',
       name: 'El Gran Desgarro',
-      fact: 'Si la energía oscura crece sin freno, la expansión acaba rompiéndolo todo, de lo más grande a lo más pequeño: Potencias al revés.',
+      fact: 'Si la energía oscura crece sin freno, la expansión acaba rompiéndolo todo, de lo más grande a lo más pequeño: Espacio al revés.',
       ficha: ['exige que la energía oscura crezca (w < −1)', 'con w = −1,5: en ~22 000 millones de años (Caldwell et al., 2003)', 'DESI (2024–2025) apunta más bien a que se debilita'],
       label: 'desgarro',
       unitExp: 21,

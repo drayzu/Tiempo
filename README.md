@@ -44,6 +44,6 @@
 - English and Spanish. Keys: `I` plate, `S` sound, `A` autoplay, `L` language.
 - TypeScript, Three.js and Vite, no framework. `npm install`, `npm run dev`; pushing to `main` deploys to GitHub Pages.
 
-A sibling of [Potencias](https://github.com/drayzu/Potencias), which travels through size.
+A sibling of [Espacio](https://github.com/drayzu/Espacio), which travels through space.
 
 </details>

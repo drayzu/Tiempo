@@ -260,7 +260,7 @@ const EN: Record<string, string> = {
   // ---- The other endings.
   'El Gran Desgarro': 'The Big Rip',
   'desgarro': 'rip',
-  'Si la energía oscura crece sin freno, la expansión acaba rompiéndolo todo, de lo más grande a lo más pequeño: Potencias al revés.': 'If dark energy keeps growing, the expansion ends up tearing everything apart, from the largest to the smallest: Potencias in reverse.',
+  'Si la energía oscura crece sin freno, la expansión acaba rompiéndolo todo, de lo más grande a lo más pequeño: Espacio al revés.': 'If dark energy keeps growing, the expansion ends up tearing everything apart, from the largest to the smallest: Space in reverse.',
   'Faltan 60 millones de años': '60 million years to go',
   'La galaxia se deshace: sus estrellas se alejan unas de otras cada vez más rápido.': 'The galaxy comes apart: its stars fly away from each other faster and faster.',
   'planetas': 'planets',
@@ -291,11 +291,11 @@ const EN: Record<string, string> = {
   'Dentro, las leyes de la física serían otras. Nada de lo que conocemos podría existir.': 'Inside, the laws of physics would be different. Nothing we know could exist.',
 
   // ---- The series.
-  'La espuma de Planck, en Potencias': 'The Planck foam, in Potencias',
-  '«Nadie ha visto un quark solo», en Potencias': '“Nobody has seen a lone quark”, in Potencias',
-  'La luz más antigua, en Potencias': 'The oldest light, in Potencias',
-  'Andrómeda, en Potencias': 'Andromeda, in Potencias',
-  '¿Podría una civilización escapar del final? AstroIngeniería': 'Could a civilisation escape the end? AstroIngeniería',
+  'La espuma de Planck, en Espacio': 'The Planck foam, in Space',
+  '«Nadie ha visto un quark solo», en Espacio': '“Nobody has seen a lone quark”, in Space',
+  'La luz más antigua, en Espacio': 'The oldest light, in Space',
+  'Andrómeda, en Espacio': 'Andromeda, in Space',
+  '¿Podría una civilización escapar del final? En el Atlas': 'Could a civilisation escape the end? In the Atlas',
 
   // ---- The plate's cards.
   '(Super-Kamiokande, 2020: p → e⁺ π⁰)': '(Super-Kamiokande, 2020: p → e⁺ π⁰)',
