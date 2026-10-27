@@ -1,4 +1,4 @@
-// Copia de horizontes-cuerpos (d8c2cda) hecha por tools/copiar.mjs. Se edita allá, no aquí.
+// Copia de horizontes-cuerpos (d352f41) hecha por tools/copiar.mjs. Se edita allá, no aquí.
 /**
  * GLSL every body shares: value noise, directions and map coordinates, and the treatment of the
  * series (a dark, muted grade; a soft terminator where there is air, a sharp one on rock).

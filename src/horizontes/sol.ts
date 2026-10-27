@@ -1,4 +1,4 @@
-// Copia de horizontes-cuerpos (d8c2cda) hecha por tools/copiar.mjs. Se edita allá, no aquí.
+// Copia de horizontes-cuerpos (d352f41) hecha por tools/copiar.mjs. Se edita allá, no aquí.
 import * as THREE from 'three';
 import { GLSL_COMUN, GLSL_SIMPLEX } from './glsl';
 import { azar, pausa } from './mapas';
@@ -27,6 +27,16 @@ export interface SolOpts {
   llamaradas?: number;
   /** How it is seen (see `EstiloSol`). */
   estilo?: EstiloSol;
+  /**
+   * Its surface temperature in kelvin (the Sun's, 5 772, by default). Cooler, the palette slides
+   * towards its embers (a red giant, about 3 000 K); hotter, towards white. Each frame: `u.uTemp`.
+   */
+  temperatura?: number;
+  /**
+   * How large its convection cells are against the Sun's (1). A red giant has a few, each as big as
+   * a good part of its face (about 0.1). Each frame: `u.uCeldas`.
+   */
+  celdas?: number;
 }
 
 /**
@@ -42,60 +52,67 @@ export type EstiloSol = 'visible' | 'viva' | 'cromosfera';
 
 const GRANOS = /* glsl */ `
     float t = uT * 0.02;
+    // Everything on the surface scales with its cells (q); a cooler star burns lower in the palette.
+    vec3 q = n * uCeldas;
+    float tono = clamp(log2(uTemp / 5772.0), -1.5, 1.0) * 0.22;
     // Granulation: bright cells and thin dark lanes; a finer size once the points are fine enough.
-    float g1 = smoothstep(0.0, 0.32, abs(snoise(n * 30.0 + vec3(t * 2.0, -t * 1.4, t))));
-    float g2 = smoothstep(0.0, 0.32, abs(snoise(n * 64.0 + vec3(-t * 1.7, t * 2.2, -t))));
-    float g3 = smoothstep(0.0, 0.32, abs(snoise(n * 520.0 + vec3(t * 3.1, t * 2.3, -t * 2.7))));
-    float fino = 1.0 - smoothstep(0.0006, 0.0018, paso);
+    float s1 = snoise(q * 30.0 + vec3(t * 2.0, -t * 1.4, t));
+    float g1 = smoothstep(0.0, 0.32, abs(s1));
+    float g2 = smoothstep(0.0, 0.32, abs(snoise(q * 64.0 + vec3(-t * 1.7, t * 2.2, -t))));
+    float g3 = smoothstep(0.0, 0.32, abs(snoise(q * 520.0 + vec3(t * 3.1, t * 2.3, -t * 2.7))));
+    float fino = 1.0 - smoothstep(0.0006, 0.0018, paso * uCeldas);
     float gran = mix(g1 * 0.65 + g2 * 0.35, g1 * 0.4 + g2 * 0.25 + g3 * 0.35, fino);
+    // A giant's cells are few and huge: each one brighter or darker than the next, and no spots.
+    float gigante = 1.0 - smoothstep(0.2, 0.6, uCeldas);
+    gran += gigante * 0.4 * s1;
     float mu = clamp(dot(n, V), 0.0, 1.0);`;
 
 const CUERPO_SOL: Record<EstiloSol, string> = {
   visible: /* glsl */ `
     // Supergranulation and active regions: broad swells of brightness; spots where activity peaks.
-    float sup = snoise(n * 6.0 + vec3(0.0, t * 0.8, t * 0.5));
-    float act = snoise(n * 1.7 + vec3(t * 0.3, 0.0, -t * 0.25));
-    float man = smoothstep(0.8, 0.92, snoise(n * 2.2 + vec3(4.1, t * 0.2, 1.7)));
-    float calor = 0.42 + gran * 0.28 + sup * 0.08 + act * 0.14 - man * 0.3;
+    float sup = snoise(q * 6.0 + vec3(0.0, t * 0.8, t * 0.5));
+    float act = snoise(q * 1.7 + vec3(t * 0.3, 0.0, -t * 0.25));
+    float man = smoothstep(0.8, 0.92, snoise(q * 2.2 + vec3(4.1, t * 0.2, 1.7))) * (1.0 - gigante);
+    float calor = 0.42 + gran * 0.28 + sup * 0.08 + act * 0.14 - man * 0.3 + tono;
     // Darker towards the limb, with a reddish edge.
     vec3 c = paleta(calor) * (0.3 + 0.7 * pow(max(mu, 0.0), 0.55)) * 1.12;
     c += vec3(1.0, 0.24, 0.05) * pow(max(1.0 - mu, 0.0), 2.4) * 0.38;
     return c;`,
   viva: /* glsl */ `
-    float sup = snoise(n * 6.0 + vec3(0.0, t * 0.8, t * 0.5));
+    float sup = snoise(q * 6.0 + vec3(0.0, t * 0.8, t * 0.5));
     // Broad orange mottling.
-    float mot = snoise(n * 3.2 + vec3(t * 0.2, 1.3, -t * 0.15)) * 0.6 + snoise(n * 8.5 + vec3(-t * 0.3, 0.0, 2.1)) * 0.4;
+    float mot = snoise(q * 3.2 + vec3(t * 0.2, 1.3, -t * 0.15)) * 0.6 + snoise(q * 8.5 + vec3(-t * 0.3, 0.0, 2.1)) * 0.4;
     // The supergranulation's network: bright lanes where its cells meet.
-    float red = 1.0 - smoothstep(0.0, 0.1, abs(snoise(n * 11.0 + vec3(t * 0.4, -t * 0.3, 0.0))));
+    float red = 1.0 - smoothstep(0.0, 0.1, abs(snoise(q * 11.0 + vec3(t * 0.4, -t * 0.3, 0.0))));
     // Active regions: bright plages, and spots with a dark umbra inside a lighter penumbra.
-    float act = snoise(n * 1.7 + vec3(t * 0.3, 0.0, -t * 0.25)) * 0.5 + 0.5;
+    float act = snoise(q * 1.7 + vec3(t * 0.3, 0.0, -t * 0.25)) * 0.5 + 0.5;
     float region = smoothstep(0.55, 0.8, act);
-    float plage = region * smoothstep(0.45, 0.8, snoise(n * 14.0 + vec3(2.3, t * 0.3, 0.0)) * 0.5 + 0.5);
-    float sp = snoise(n * 7.0 + vec3(4.1, t * 0.1, 1.7)) * 0.5 + 0.5;
-    float pen = smoothstep(0.7, 0.78, sp) * region;
-    float umb = smoothstep(0.8, 0.86, sp) * region;
+    float plage = region * smoothstep(0.45, 0.8, snoise(q * 14.0 + vec3(2.3, t * 0.3, 0.0)) * 0.5 + 0.5);
+    float sp = snoise(q * 7.0 + vec3(4.1, t * 0.1, 1.7)) * 0.5 + 0.5;
+    float pen = smoothstep(0.7, 0.78, sp) * region * (1.0 - gigante);
+    float umb = smoothstep(0.8, 0.86, sp) * region * (1.0 - gigante);
     float calor = 0.4 + gran * 0.3 + sup * 0.08 + mot * 0.2 + (act - 0.5) * 0.24 + red * 0.08 + plage * 0.11 - pen * 0.22 - umb * 0.32;
     // Faculae show best near the limb.
     calor += plage * 0.1 * (1.0 - mu);
     // Bright, but warm: never past the palette's yellow (white would read as a hole).
-    calor = min(calor, 0.78);
+    calor = min(calor, 0.78) + tono;
     vec3 c = paleta(calor) * (0.3 + 0.7 * pow(max(mu, 0.0), 0.55)) * 1.12;
     c += vec3(1.0, 0.24, 0.05) * pow(max(1.0 - mu, 0.0), 2.4) * 0.38;
     return c;`,
   cromosfera: /* glsl */ `
     // The chromosphere's mottling: its network and the grass of spicules, at three sizes.
-    float m1 = abs(snoise(n * 18.0 + vec3(t, -t, t * 0.5)));
-    float m2 = abs(snoise(n * 45.0 + vec3(-t * 1.3, t, 0.0)));
-    float m3 = abs(snoise(n * 110.0 + vec3(t * 2.0)));
+    float m1 = abs(snoise(q * 18.0 + vec3(t, -t, t * 0.5)));
+    float m2 = abs(snoise(q * 45.0 + vec3(-t * 1.3, t, 0.0)));
+    float m3 = abs(snoise(q * 110.0 + vec3(t * 2.0)));
     float moteado = 1.0 - (m1 * 0.45 + m2 * 0.35 + m3 * 0.2);
     // Active regions burn brighter; dark filaments lie along the lines between them.
-    float act = snoise(n * 1.6 + vec3(t * 0.3, 0.0, -t * 0.25)) * 0.5 + 0.5;
-    float plage = smoothstep(0.6, 0.85, act) * smoothstep(0.3, 0.8, snoise(n * 9.0 + vec3(0.7, t * 0.2, 0.0)) * 0.5 + 0.5);
+    float act = snoise(q * 1.6 + vec3(t * 0.3, 0.0, -t * 0.25)) * 0.5 + 0.5;
+    float plage = smoothstep(0.6, 0.85, act) * smoothstep(0.3, 0.8, snoise(q * 9.0 + vec3(0.7, t * 0.2, 0.0)) * 0.5 + 0.5);
     // Filaments: soft, broken ribbons.
-    float fil = (1.0 - smoothstep(0.0, 0.07, abs(snoise(n * 2.6 + vec3(1.3, t * 0.1, 0.0)))))
-      * smoothstep(0.35, 0.75, snoise(n * 7.0 + vec3(3.3)) * 0.5 + 0.5)
+    float fil = (1.0 - smoothstep(0.0, 0.07, abs(snoise(q * 2.6 + vec3(1.3, t * 0.1, 0.0)))))
+      * smoothstep(0.35, 0.75, snoise(q * 7.0 + vec3(3.3)) * 0.5 + 0.5)
       * smoothstep(0.3, 0.5, act) * (1.0 - smoothstep(0.7, 0.85, act));
-    float calor = 0.1 + moteado * 0.46 + gran * 0.06 + plage * 0.32 - fil * 0.3 + (act - 0.5) * 0.18;
+    float calor = 0.1 + moteado * 0.46 + gran * 0.06 + plage * 0.32 - fil * 0.3 + (act - 0.5) * 0.18 + tono;
     // Its colour: dark red to orange, yellow only where it burns most; the limb brightens into a rim.
     vec3 c = mix(vec3(0.3, 0.04, 0.0), vec3(0.85, 0.25, 0.02), smoothstep(0.1, 0.4, calor));
     c = mix(c, vec3(1.0, 0.5, 0.08), smoothstep(0.4, 0.66, calor));
@@ -106,7 +123,7 @@ const CUERPO_SOL: Record<EstiloSol, string> = {
 };
 
 const fotosferaGLSL = (estilo: EstiloSol) => /* glsl */ `
-  uniform float uT, uBrillo;
+  uniform float uT, uBrillo, uTemp, uCeldas;
   vec3 paleta(float h) {
     vec3 deep = vec3(0.36, 0.03, 0.01);
     vec3 ember = vec3(0.82, 0.17, 0.03);
@@ -123,14 +140,20 @@ const fotosferaGLSL = (estilo: EstiloSol) => /* glsl */ `
   }
   vec3 fotosfera(vec3 n, vec3 V, float paso) { return superficieSol(n, V, paso) * uBrillo; }`;
 
+/** The options given (an option left `undefined` keeps its default). */
+const dadas = <T extends object>(x: T) => Object.fromEntries(Object.entries(x).filter(([, v]) => v !== undefined)) as T;
+
 export function sol(opts: SolOpts = {}) {
-  const o = { puntos: 500000, corona: 220000, semilla: 3, fondo: 0.3, llamaradas: 14, estilo: 'visible' as EstiloSol, ...opts };
+  const o = { puntos: 500000, corona: 220000, semilla: 3, fondo: 0.3, llamaradas: 14, estilo: 'visible' as EstiloSol, temperatura: 5772, celdas: 1, ...dadas(opts) };
   const group = new THREE.Group();
   const capas: Puntos[] = [];
   const u = {
     uCamL: { value: new THREE.Vector3(0, 0, 5) },
     uT: { value: 0 },
     uBrillo: { value: 1 },
+    uTemp: { value: o.temperatura },
+    uCeldas: { value: o.celdas },
+    uCorona: { value: 0.13 },
     uFocoLat: { value: 0 },
     uFocoLon: { value: 0 },
     uNivel: { value: 0 },
@@ -253,7 +276,7 @@ export function sol(opts: SolOpts = {}) {
         // Fading out at its far edge.
         em *= 1.0 - smoothstep(0.7, 1.4, h);
       }`,
-      uniforms: { uCamL: u.uCamL, uFlareDir: u.uFlareDir, uT: u.uT, uBrillo: u.uBrillo, uFlareAge: u.uFlareAge, uCorona: { value: 0.13 } },
+      uniforms: { uCamL: u.uCamL, uFlareDir: u.uFlareDir, uT: u.uT, uBrillo: u.uBrillo, uFlareAge: u.uFlareAge, uCorona: u.uCorona },
     });
     group.add(corona.points);
     capas.push(corona, parche);
@@ -264,7 +287,10 @@ export function sol(opts: SolOpts = {}) {
   return {
     group,
     listo,
-    /** Uniforms worth touching: `uBrillo` (all of it). */
+    /**
+     * Uniforms worth touching: `uBrillo` (all of it), `uTemp` and `uCeldas` (as the options), `uCorona`
+     * (the corona and the spicules, 0.13).
+     */
     u,
     /** Per frame: the camera in the star's frame (radii), the time; `sol` is not used. */
     update(m: Marco) {

@@ -4,6 +4,7 @@ import { bbColor } from '../lib/cuerpo-negro';
 import { materia, materiaBuilder, type MateriaData } from '../engine/materia';
 import type { EraModule } from '../engine/eras';
 import { NORTE, SOL_DESDE_TIERRA } from './ahora';
+import { sol as solReal } from '../horizontes';
 
 /**
  * El Sol se apaga (from now to about 8 billion years ahead). 1 unit = 10¹¹ m (two thirds of an AU).
@@ -14,9 +15,15 @@ import { NORTE, SOL_DESDE_TIERRA } from './ahora';
  * that swallows Mercury and Venus, maybe the Earth. Then it lets go of its outer layers in a
  * planetary nebula (blue-green inside, red at its edges) and what is left is a white dwarf the size
  * of the Earth, cooling for billions of years. (Figures to verify; see ESTADO.md.)
+ *
+ * Once the swelling Sun is a disc on screen, it is the series' Sun (horizontes-cuerpos: the Atlas's
+ * living star in points), cooling and coarsening with it into a red giant's few huge cells; until
+ * then, and again once it lets go of its layers, it is this era's glow.
  */
 
 const AU = 1.496;
+/** How bright the series' Sun is here (its own scale; this era's bloom is low). */
+const BRILLO = 0.8;
 /** The Earth, in this era's units, where it is now (opposite the Sun's direction). */
 const TIERRA = SOL_DESDE_TIERRA.clone().multiplyScalar(-1e6 / 1e11);
 const E1 = TIERRA.clone().normalize();
@@ -31,13 +38,32 @@ const PLANETS = [
   { name: 'Júpiter', r: 5.2 * AU, ang: -2.4, hex: 0xffd8a8, size: 0.06 },
 ];
 
+/**
+ * The Sun of horizontes-cuerpos, built once and kept (the era can be freed and built again without
+ * building its points anew).
+ */
+let real: { sol: ReturnType<typeof solReal>; listoEn: number } | null = null;
+function solDeLaSerie() {
+  if (real) return real;
+  const r = { sol: solReal({ llamaradas: 0 }), listoEn: Infinity };
+  r.sol.group.visible = false;
+  // Its axis on the planets' pole.
+  r.sol.group.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), N3);
+  r.sol.listo.then(
+    () => (r.listoEn = performance.now()),
+    (err) => console.error('[tiempo] futuro: el Sol', err),
+  );
+  real = r;
+  return r;
+}
+
 const MOVE = /* glsl */ `
   if (aKind < 0.5) {
     // The Sun: a ball of points whose radius is its size now; a slow boil of cells on its surface.
     vec3 dir = normalize(position + 1e-5);
     float cell = 0.6 + 0.4 * sin(dot(dir, vec3(7.1, 5.3, 6.7)) * uCells + uTime * 0.3 + seed * 2.0);
     p = dir * uSunR * (0.94 + 0.06 * seed);
-    em = uSunCol * uSunL * 0.6 * mix(1.0, cell, uBoil);
+    em = uSunCol * uSunL * 0.6 * mix(1.0, cell, uBoil) * (1.0 - uReal);
     // (sized so the points just cover the sphere)
     sz *= max(uSunR * 0.07, 0.004);
     em *= 1.0 - uNeb;
@@ -122,18 +148,22 @@ export function solMuere(): EraModule {
           uNebR: { value: 0 },
           uNebGlow: { value: 0 },
           uDry: { value: 0 },
+          uReal: { value: 0 },
           uAxis: { value: N3.clone().applyAxisAngle(E1, 0.5) },
         };
         const cloud = materia(data.main as MateriaData, {
-          pre: 'uniform float uSunR, uSunL, uBoil, uCells, uNeb, uNebR, uNebGlow, uDry;\nuniform vec3 uSunCol, uAxis;',
+          pre: 'uniform float uSunR, uSunL, uBoil, uCells, uNeb, uNebR, uNebGlow, uDry, uReal;\nuniform vec3 uSunCol, uAxis;',
           move: MOVE,
           uniforms: uni,
         });
         cloud.u.uMaxPx.value = 60;
+        // The Sun of the series, at the centre.
+        const S = solDeLaSerie();
         const object = new THREE.Group();
-        object.add(cloud.points);
+        object.add(S.sol.group, cloud.points);
         const bb = { r: 0, g: 0, b: 0 };
         const ours = new THREE.Vector3();
+        const cam = new THREE.Vector3();
         return {
           object,
           clouds: [cloud],
@@ -155,6 +185,26 @@ export function solMuere(): EraModule {
             uni.uNebR.value = (1.1 * AU) * Math.pow(30, neb) * smoothstep(0, 0.05, neb);
             uni.uNebGlow.value = smoothstep(0, 0.15, neb) * (1 - 0.6 * smoothstep(0.6, 1, neb));
             uni.uDry.value = dry;
+            // The series' Sun, once it is a disc (a few pixels of radius), until it lets go of its
+            // layers; at the giant's temperature, its cells grown to a few across its face.
+            // (Built while the journey runs: if it is late, it fades in rather than pops.)
+            const sg = S.sol.group;
+            sg.scale.setScalar(uni.uSunR.value);
+            sg.updateMatrixWorld();
+            f.camera.getWorldPosition(cam);
+            sg.worldToLocal(cam);
+            const rPx = f.focal / f.dpr / Math.sqrt(Math.max(cam.lengthSq() - 1, 1e-6));
+            const ya = smoothstep(0, 1200, performance.now() - S.listoEn);
+            const k = ya * smoothstep(2.5, 9, rPx) * (1 - smoothstep(0, 0.1, neb));
+            uni.uReal.value = k;
+            sg.visible = k * f.alpha > 0.002;
+            if (sg.visible) {
+              S.sol.u.uTemp.value = T;
+              S.sol.u.uCeldas.value = Math.pow(0.1, smoothstep(0.25, 0.9, giant));
+              S.sol.u.uCorona.value = 0.13 * (1 - 0.5 * giant);
+              S.sol.u.uBrillo.value = BRILLO;
+              S.sol.update({ sol: N3, camara: cam, focal: f.focal, dpr: f.dpr, tiempo: f.time, presencia: k * f.alpha });
+            }
             // Our proton leaves the Earth with its water and drifts out, then rides the nebula's wind.
             ours.copy(TIERRA).multiplyScalar(1 + 0.6 * smoothstep(0.3, 1, dry) + 1.5 * neb);
             ours.addScaledVector(N3, 0.25 * smoothstep(0.3, 1, dry));

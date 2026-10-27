@@ -1,4 +1,4 @@
-// Copia de horizontes-cuerpos (d8c2cda) hecha por tools/copiar.mjs. Se edita allá, no aquí.
+// Copia de horizontes-cuerpos (d352f41) hecha por tools/copiar.mjs. Se edita allá, no aquí.
 import * as THREE from 'three';
 import { geometria, type DatosPuntos } from './puntos';
 import { azar, pausa } from './mapas';

@@ -1,4 +1,4 @@
-// Copia de horizontes-cuerpos (d8c2cda) hecha por tools/copiar.mjs. Se edita allá, no aquí.
+// Copia de horizontes-cuerpos (d352f41) hecha por tools/copiar.mjs. Se edita allá, no aquí.
 /**
  * Horizontes · cuerpos: the Sun and the planets in points, the style of the series (Espacio, Tiempo,
  * Destino, Infinito). Copied into each piece by tools/copiar.mjs; edit it here, never there.
