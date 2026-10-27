@@ -24,6 +24,8 @@ Heredado del brief: Vite + TypeScript + Three.js sin React; Instrument Serif, Ge
 
 **26 de octubre de 2026 (Diego, antes de dejar trabajando solo):** pulir la obra; que dure **igual o más que Potencias**; efecto wow, dinamismo de cámara e inmersión; que **el scroll se sienta** al hacerlo («que la persona sienta que está controlando y pasando cosas geniales»), cuidando el ritmo; visualmente asombroso.
 
+**27 de octubre de 2026 (Diego):** usar los cuerpos de `horizontes-cuerpos` (el Sol y los planetas en puntitos con mapas reales, la biblioteca compartida de la serie) donde Tiempo muestre la Tierra, la Luna o el Sol, «pero que se vea natural en nuestra obra». Se empezó por «Ahora».
+
 ## La aplicación (`index.html`, `npm run dev`, puerto 5191) · fases 1 a 7
 El viaje entero corre con el motor de Tiempo, de punta a punta y en bucle: **23 eras** en el final por defecto, unos **351 beats** (~161 000 px de scroll; ~10,6 minutos con **A**; Potencias: 328 beats), del «t = ?» de la portada a «Después del tiempo», que vuelve a la portada.
 
@@ -47,6 +49,7 @@ antes del tiempo → época de Planck → inflación → **el campo de Higgs** �
   - **El largo final:** lo que queda de la galaxia cae a su agujero negro central (trazado con rayos, disco tenue que se enciende cuando una estrella muerta se desgarra); en «la última luz» la cámara sigue al último agujero negro treinta órdenes hacia abajo mientras se encoge y su radiación de Hawking (brillo exagerado, la lámina lo dice) pasa del rojo al blanco azulado, hasta el destello.
   - Ritmo: tramos oscuros más cortos (la luz que se apaga, la galaxia que se evapora, la caída al protón, la oscuridad); el gas frío más visible; velo detrás del texto cuando una era llena la pantalla de luz.
   - Capturas: `docs/fase7/viaje.jpg` (el viaje entero cada 3 beats) y `docs/fase7/momentos.jpg` (los momentos nuevos).
+- **Los cuerpos reales (27 de octubre):** en «Ahora», la Tierra y la Luna son las de `horizontes-cuerpos` (copiadas con `node tools/copiar.mjs ../tiempo --cuerpos tierra,luna` desde ese repo: el código en `src/horizontes/`, que no se edita aquí, y los mapas de Solar System Scope, CC BY 4.0, en `public/texturas/`). Para que sea natural no reemplazan de golpe: la exposición larga (los días en bandas, las edades de hielo, la deriva) sigue siendo la Tierra de puntos de Tiempo, pero coloreada desde los mismos mapas y con el mismo tratamiento, así que al frenar el tiempo solo se enfoca. La Tierra real entra cuando los días dejan de borrarse y solo desde la última edad de hielo (antes el mapa sería falso); la Luna, cuando deja de ser anillo y solo después de que se formaron sus mares. El hielo del mapa va un poco más gris (con el Sol de verano austral se quemaba en el bloom). Las estrellas prueban profundidad: la foto de la Tierra las tapa. Los cuerpos se construyen una vez (~1,4 s, en trozos) y, si llegan tarde, aparecen con un fundido. Capturas: `docs/cuerpos/ahora.jpg`; `exposicion.jpg` y `real.jpg` comparan las dos Tierras en los mismos beats. Quedan para después: el Sol (al encenderse en «nace el Sol» y al comienzo de «el Sol se apaga»; la gigante roja necesitaría temperatura y tamaño de celdas en la biblioteca) y el planeta que se rompe en el Desgarro (sus pedazos con los colores de la Tierra). No se usan en «la Tierra se forma» (sus continentes y los mares de la Luna aún no existían) ni para los planetas de «el Sol se apaga» (a escala son menos de un píxel).
 - El plasma (quarks, aniquilación, núcleos) tiene **profundidad**: es opaco, así que lo cercano es nítido y lo lejano se disuelve en su resplandor (`uFog`).
 - Scroll nativo; **A** reproduce, **S** sonido, **I** lámina (`?lamina` la abre encendida), **L** idioma. `?ver=N` congela en el beat N; `?p=N` arranca ahí; `?debug` deja `tiempo` en la consola: `tiempo.sheet([beats], columnas, ancho, 'docs/…/x.jpg')` guarda una hoja de contactos (película + lámina) en el proyecto; `tiempo.seek(b)`, `tiempo.at('niebla')`.
 - Capturas de la fase 1: `docs/fase1/viaje.jpg` (el viaje entero) y `docs/fase1/momentos.jpg`.
@@ -146,6 +149,9 @@ antes del tiempo → época de Planck → inflación → **el campo de Higgs** �
 **Sesión del 26 de octubre de 2026 (fase 7 · pulido; Diego dejó trabajando solo):**
 - El scroll empuja la cámara; tres eras nuevas (el campo de Higgs, un cuásar, la Tierra se forma); Andrómeda vista desde dentro; el agujero negro central y la última luz que se calienta; apertura con más movimiento; ritmo de los tramos oscuros; traducciones; revisado en escritorio y en teléfono con hojas de contactos (también los finales Desgarro y Vacío).
 - Rendimiento medido en este equipo: ~1–1,5 ms por cuadro en las escenas nuevas más pesadas (el agujero negro de cerca, la galaxia desde dentro); falta probar en teléfonos reales.
+
+**Sesión del 27 de octubre de 2026 (los cuerpos de la serie):**
+- La Tierra y la Luna de `horizontes-cuerpos` en «Ahora» (ver «Los cuerpos reales»), revisadas con hojas de contactos quietas y con un clip en movimiento (la exposición larga que se enfoca en la Tierra real).
 
 ## Siguiente paso
 1. Que Diego recorra el viaje (mejor con **A**, y también a mano para sentir el empuje del scroll) y los cuatro finales, y diga qué funciona, sobre todo las eras nuevas (Higgs, cuásar, la Tierra con Tea, Andrómeda desde dentro, la última luz).

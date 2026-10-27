@@ -5,6 +5,8 @@ import { materia, materiaBuilder, type MateriaData } from '../engine/materia';
 import type { EraModule } from '../engine/eras';
 import { ink, nota, rotulo } from '../engine/placa';
 import { tx } from '../i18n';
+import { GLSL_COMUN, luna as lunaReal, tierra as tierraReal, type Planeta } from '../horizontes';
+import { cargar } from '../horizontes/mapas';
 
 /**
  * Ahora: the time zoom (the time counterpart of Potencias' dolly zoom). 1 unit = 1 000 km.
@@ -16,6 +18,10 @@ import { tx } from '../i18n';
  * Moon, in its phase of this very moment. At now the Sun lights the Earth as it does right now, the
  * camera goes down to where you are, and our proton is in the water of your body. Then the axis
  * opens towards the future. (A tunnel of rings was tried and dropped: it did not look natural.)
+ *
+ * Whenever time crawls (since the last ice age) the Earth and the Moon are the real ones, the
+ * series' bodies (horizontes-cuerpos: real maps in points, finer points under the camera). The long
+ * exposure is coloured from the same maps, so it only sharpens into them.
  */
 
 const LOADED = typeof performance !== 'undefined' ? performance.now() : 0;
@@ -135,6 +141,9 @@ export const SOL_DESDE_TIERRA = SUN0.clone().applyQuaternion(TURN).multiplyScala
 /** The direction of the Earth's north pole in this era's frame (close enough to the ecliptic's for the planets' plane). */
 export const NORTE = new THREE.Vector3(0, 1, 0).applyQuaternion(TURN);
 
+/** The ice sheets, a little greyer than the map's white: in summer sun they would burn out in the bloom. */
+const HIELO = /* glsl */ `alb *= 1.0 - 0.3 * smoothstep(0.45, 0.85, dot(alb, vec3(0.2126, 0.7152, 0.0722)));`;
+
 const EARTH_MOVE = /* glsl */ `
   // The surface turns under a fixed Sun; fast, its days blur into bands (a long exposure).
   float lon = aLL.y + uRot + (seed - 0.5) * 6.2832 * uBlur;
@@ -147,13 +156,24 @@ const EARTH_MOVE = /* glsl */ `
   lat = clamp(lat + uDrift * 0.18 * dp * cos(lat), -1.55, 1.55);
   vec3 n = vec3(cos(lat) * cos(lon), sin(lat), -cos(lat) * sin(lon));
   p = n * ${R.toFixed(3)} * (1.0 + aLand * 0.004);
+  // Once the maps are in, each point takes its colour from them (the real Earth's, graded the same
+  // way), so the long exposure and the sharp Earth that follows it are one planet. Today's clouds
+  // go as the continents drift; Antarctica was green before its ice.
+  if (uMapa > 0.5) {
+    vec2 uv = uvLL(aLL.x, aLL.y);
+    vec3 alb = texture2D(uMapaT, uv).rgb;
+    alb = mix(vec3(0.16, 0.2, 0.09), alb, mix(1.0, uAntarctic, aLand * step(aLL.x, radians(-62.0))));
+    float cl = smoothstep(0.2, 0.9, texture2D(uNubesT, uv).r) * (1.0 - uDrift);
+    ${HIELO}
+    em = grado(mix(alb, vec3(0.62, 0.64, 0.66), cl * 0.8));
+  }
   float iceN = aLand * step(radians(72.0 - 26.0 * uIce), aLL.x) * (1.0 - uDrift);
   float iceS = aLand * step(aLL.x, radians(-62.0)) * uAntarctic * (1.0 - uDrift);
   float seaIce = (1.0 - aLand) * step(radians(78.0 - 14.0 * uIce), abs(aLL.x)) * 0.7 * (1.0 - uDrift);
   em = mix(em, vec3(0.86, 0.9, 0.96) * 0.62, clamp(iceN + iceS + seaIce, 0.0, 1.0));
   em = mix(em, vec3(0.16, 0.26, 0.42), uDrift * 0.55);
   float ndl = dot(n, uSun);
-  em *= 0.025 + 0.975 * smoothstep(-0.06, 0.28, ndl);
+  em *= mix(0.025 + 0.975 * smoothstep(-0.06, 0.28, ndl), 0.003 + 0.9 * smoothstep(-0.14, 0.42, ndl), uMapa);
   // The far side is hidden by the planet itself.
   vec3 nV = normalize(normalMatrix * n);
   vec3 pV = (modelViewMatrix * vec4(p, 1.0)).xyz;
@@ -184,6 +204,31 @@ function eclipticDir(lam: number, raSun: number, out: THREE.Vector3) {
   const dec = Math.asin(Math.sin(EPS) * Math.sin(lam));
   const ra = Math.atan2(Math.cos(EPS) * Math.sin(lam), Math.cos(lam));
   return dirOf(dec / D2R, (ra - raSun) / D2R, 0, out);
+}
+
+/**
+ * The Earth and the Moon of horizontes-cuerpos (the series' bodies, real maps, in points), built
+ * once and kept: the era can be freed and built again without loading and sampling the maps anew.
+ */
+let reales: { tierra: Planeta; luna: Planeta; listoEn: number; mapa: THREE.Texture | null; nubes: THREE.Texture | null } | null = null;
+function cuerposReales() {
+  if (reales) return reales;
+  const base = `${import.meta.env.BASE_URL}texturas/`;
+  const r = { tierra: tierraReal(base, { superficie: { glsl: HIELO } }), luna: lunaReal(base), listoEn: Infinity, mapa: null as THREE.Texture | null, nubes: null as THREE.Texture | null };
+  // The same maps for the long-exposure Earth (from the browser's cache).
+  Promise.all([cargar(base + '2k_earth_daymap.jpg', true), cargar(base + '2k_earth_clouds.jpg', false)]).then(([m, n]) => {
+    r.mapa = m;
+    r.nubes = n;
+  });
+  r.tierra.group.visible = r.luna.group.visible = false;
+  r.tierra.group.scale.setScalar(R);
+  r.luna.group.scale.setScalar(1.737);
+  Promise.all([r.tierra.listo, r.luna.listo]).then(
+    () => (r.listoEn = performance.now()),
+    (err) => console.error('[tiempo] ahora: los cuerpos', err),
+  );
+  reales = r;
+  return r;
 }
 
 export function ahora(): EraModule {
@@ -286,9 +331,12 @@ export function ahora(): EraModule {
           uIce: { value: 0 },
           uAntarctic: { value: 1 },
           uSun: { value: SUN0.clone() },
+          uMapa: { value: 0 },
+          uMapaT: { value: null as THREE.Texture | null },
+          uNubesT: { value: null as THREE.Texture | null },
         };
         const earth = materia(data.earth as MateriaData, {
-          pre: 'attribute vec2 aLL;\nattribute float aLand;\nuniform float uRot, uBlur, uDrift, uIce, uAntarctic;\nuniform vec3 uSun;',
+          pre: `attribute vec2 aLL;\nattribute float aLand;\nuniform float uRot, uBlur, uDrift, uIce, uAntarctic, uMapa;\nuniform vec3 uSun;\nuniform sampler2D uMapaT, uNubesT;\n${GLSL_COMUN}`,
           move: EARTH_MOVE,
           uniforms: uni,
           extra: { aLL: [data.ll as Float32Array, 2], aLand: [data.land as Float32Array, 1] },
@@ -312,6 +360,11 @@ export function ahora(): EraModule {
         const planet = new THREE.Group();
         planet.quaternion.copy(TURN);
         planet.add(earth.points, atmo, moon.points);
+        // The Earth and the Moon as they are (horizontes-cuerpos): they take over once time crawls.
+        const real = cuerposReales();
+        planet.add(real.tierra.group, real.luna.group);
+        // The stars test depth, so the bodies' photographs hide those behind them.
+        (stars.points.material as THREE.ShaderMaterial).depthTest = true;
 
         const object = new THREE.Group();
         object.add(stars.points, planet);
@@ -319,6 +372,7 @@ export function ahora(): EraModule {
         const st = { L: prevL, ice: 0, drift: 0, lb: LB0, reloj: 1 };
         const you = new THREE.Vector3();
         const q = new THREE.Quaternion();
+        const cam = new THREE.Vector3();
         const lam0 = ((2 * Math.PI) / 365.25) * (SOL.doy - 80);
         const elong0 = 2 * Math.PI * ((((NOW_MS - NEW_MOON) / 86400000 / SYNODIC) % 1) + 1);
         return {
@@ -347,7 +401,6 @@ export function ahora(): EraModule {
             dirOf(decl, 0, 0, uni.uSun.value);
             planet.getWorldQuaternion(q);
             sunWorld.value.copy(uni.uSun.value).applyQuaternion(q);
-            (atmo.material as THREE.ShaderMaterial).uniforms.uAlpha.value = f.alpha;
             // The Moon: its orbit drawn in the frame that turns with the Sun; its place from its phase.
             const raSun = Math.atan2(Math.cos(EPS) * Math.sin(lam), Math.cos(lam));
             eclipticDir(0, raSun, mu.uE1.value);
@@ -357,6 +410,42 @@ export function ahora(): EraModule {
             mu.uMoonTh.value = lam + elong;
             mu.uMoonBlur.value = smoothstep(0.3, 3, (rate * 365.25) / SYNODIC);
             moon.u.uMaxPx.value = 26 * f.dpr;
+            // The real bodies. A long exposure cannot be a photograph: they show only once the
+            // days stop blurring, the Earth only since the last ice age (before it the map is wrong)
+            // and the Moon once its seas have formed.
+            // (Built while the journey runs: if it is late, they fade in rather than pop.)
+            const ya = smoothstep(0, 1200, performance.now() - real.listoEn);
+            const kE = ya * (1 - blur) * (1 - smoothstep(3.6, 4.05, lb));
+            const kM = ya * (1 - mu.uMoonBlur.value) * (1 - smoothstep(9.0, 9.5, lb));
+            earth.u.uGain.value = 1 - kE;
+            if (real.mapa && !uni.uMapa.value) {
+              uni.uMapaT.value = real.mapa;
+              uni.uNubesT.value = real.nubes;
+              uni.uMapa.value = 1;
+            }
+            moon.u.uGain.value = 1 - kM;
+            (atmo.material as THREE.ShaderMaterial).uniforms.uAlpha.value = f.alpha * (1 - kE);
+            f.camera.getWorldPosition(cam);
+            const T = real.tierra;
+            T.group.visible = kE * f.alpha > 0.002;
+            if (T.group.visible) {
+              T.cuerpo.rotation.y = uni.uRot.value;
+              T.update({ sol: uni.uSun.value, camara: T.group.worldToLocal(cam.clone()), focal: f.focal, dpr: f.dpr, tiempo: f.time, presencia: kE * f.alpha });
+            }
+            const M = real.luna;
+            M.group.visible = kM * f.alpha > 0.002;
+            if (M.group.visible) {
+              // On its orbit, as the points' shader puts it, its near side towards the Earth.
+              const th = mu.uMoonTh.value;
+              const c = M.group.position.copy(mu.uE1.value).multiplyScalar(Math.cos(th)).addScaledVector(mu.uE2.value, Math.sin(th)).multiplyScalar(384.4);
+              const x = c.clone().negate().normalize();
+              const pole = new THREE.Vector3().crossVectors(mu.uE1.value, mu.uE2.value);
+              if (pole.y < 0) pole.negate();
+              const y = pole.addScaledVector(x, -pole.dot(x)).normalize();
+              M.cuerpo.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, new THREE.Vector3().crossVectors(x, y)));
+              M.group.updateMatrixWorld();
+              M.update({ sol: uni.uSun.value, camara: M.group.worldToLocal(cam.clone()), focal: f.focal, dpr: f.dpr, tiempo: f.time, presencia: kM * f.alpha });
+            }
             // You, on the turning planet.
             dirOf(HERE.lat, HERE.lon, uni.uRot.value, you).applyQuaternion(TURN).multiplyScalar(R * 1.004);
             Object.assign(st, { L, ice, drift, lb, reloj });

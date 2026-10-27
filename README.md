@@ -41,6 +41,7 @@
 - The background is the temperature of the universe: Planck's law through the CIE colour-matching functions, as bright as a dark-adapted eye would see it. White-hot, then the orange of the first light, then dark for almost all of time.
 - The clocks run on a real ΛCDM cosmology (Planck 2018). One proton is followed the whole way, from the quarks to the water in your body and on.
 - Observed, theoretical and speculative are told apart at a glance: solid, dashed and dotted. A plate layer gives each era its numbers and sources, with a scale bar that stays true.
+- The Earth and the Moon of «Now» are the series' bodies (points coloured from real maps, finer under the camera), from Solar System Scope's maps (CC BY 4.0, from NASA data). They come into focus only once time slows to a crawl; before that the long exposure blurs the days into bands.
 - Sound is synthesized in the browser: the plasma rings at the ratios of the acoustic peaks, and the end falls silent.
 - English and Spanish. Keys: `I` plate, `S` sound, `A` autoplay, `L` language.
 - TypeScript, Three.js and Vite, no framework. `npm install`, `npm run dev`; pushing to `main` deploys to GitHub Pages.
