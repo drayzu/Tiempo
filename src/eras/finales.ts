@@ -3,6 +3,8 @@ import { gauss, rng, smoothstep } from '../lib/math';
 import { materia, materiaBuilder, type MateriaData } from '../engine/materia';
 import type { EraModule } from '../engine/eras';
 import { rotulo } from '../engine/placa';
+import { GLSL_COMUN } from '../horizontes';
+import { cargar } from '../horizontes/mapas';
 
 /**
  * The other endings, chosen at the fork («De aquí en adelante, la física no está segura»). The
@@ -205,6 +207,80 @@ export function ripSistema(): EraModule {
 
 // ---------------------------------------------------------------- the Big Rip: a planet
 
+/** The Earth's radius (1 unit = 1 000 km) and how many pieces it breaks into. */
+const RT = 6.371;
+const PIEZAS = 40;
+
+/**
+ * The Earth breaking. Its ground is the series' Earth (horizontes-cuerpos: the same maps, sampled per
+ * point, graded and lit the same way); each point belongs to a piece (a Voronoi cell of directions,
+ * a wedge from the centre to the ground). First its cracks glow, then the pieces drift apart,
+ * tumbling, and show their faces: crust, mantle glowing red, the core white-hot. Then they crumble.
+ *
+ * Attributes: `aFrom` is the piece's direction times its speed; `aGiro` its tumble (axis, rate);
+ * `aN` the normal a point is lit and seen by (the ground's, or its face's); `aBorde` how far a point of
+ * the ground is from its piece's edge (radii). The faces are drawn first and the ground covers them
+ * (ink): they show only where the ground has gone.
+ */
+const RIP_TIERRA = /* glsl */ `
+  vec3 girar(vec3 v, vec3 k, float a) { float c = cos(a), s = sin(a); return v * c + cross(k, v) * s + k * dot(k, v) * (1.0 - c); }`;
+
+const RIP_TIERRA_MOVE = ripMove(/* glsl */ `
+  vec3 dir = normalize(aFrom);
+  float gap = tear * 40.0 * length(aFrom);
+  // Each piece drifts out along its own direction and tumbles about its middle.
+  float ang = tear * 5.0 * aGiro.w;
+  vec3 piv = dir * ${(RT * 0.7).toFixed(3)};
+  p = girar(position - piv, aGiro.xyz, ang) + piv + dir * gap;
+  // Late, the pieces themselves crumble into dust.
+  vec3 rd = vec3(fract(seed * 17.31), fract(seed * 31.73), fract(seed * 47.11)) - 0.5;
+  p += rd * tear * 9.0 * smoothstep(0.45, 1.0, uK);
+  vec3 nR = girar(aN, aGiro.xyz, ang);
+  vec3 V = normalize(uCamL - p);
+  float cara = dot(nR, V);
+  float lit = luzSol(nR, nR, uSun, 1.0);
+  float abierta = smoothstep(0.3, 2.2, gap);
+  if (aKind < 0.5) {
+    // The ground: the map and its clouds, as the series' Earth (fallback: a dim blue-grey).
+    vec3 n0 = normalize(position);
+    vec3 alb = vec3(0.12, 0.16, 0.24);
+    float mar = 0.0;
+    if (uMapa > 0.5) {
+      // (read at the level of detail of the points' spacing: a single texel would sparkle)
+      vec2 uv = uvDe(n0);
+      vec3 base = textureLod(uMapaT, uv, 1.6).rgb;
+      float cl = smoothstep(0.2, 0.9, textureLod(uNubesT, uv, 1.6).r);
+      alb = mix(base, vec3(0.62, 0.64, 0.66), cl * 0.8);
+      alb *= 1.0 - 0.3 * smoothstep(0.45, 0.85, dot(alb, vec3(0.2126, 0.7152, 0.0722)));
+      mar = esMar(base) * (1.0 - cl);
+    }
+    // (the points overlap: a little dimmer than the series' Earth, so they add up to it)
+    em = grado(alb) * (lit * 0.4 + 0.0013) * mix(vec3(1.0), color, 0.5) + brilloMar(nR, uSun, V, 60.0) * lit * mar;
+    // Its air, a thin blue rim on the day side, torn away with the first cracks.
+    em += vec3(0.32, 0.55, 1.0) * pow(max(1.0 - cara, 0.0), 2.6) * 0.12 * smoothstep(-0.2, 0.5, dot(nR, uSun)) * (1.0 - smoothstep(0.02, 0.3, uK));
+    // The cracks: lines of light along the pieces' edges, widening, then the glowing rims of the pieces.
+    float ancho = mix(0.008, 0.03, smoothstep(0.04, 0.35, uK));
+    float linea = (1.0 - smoothstep(0.3 * ancho, ancho, aBorde)) * smoothstep(0.02, 0.12, uK);
+    em = mix(em, vec3(1.0, 0.42, 0.12) * 0.45 * (1.0 - 0.6 * smoothstep(0.5, 1.0, uK)) * color, linea);
+    // (seen edge on, the points crowd: they dim a little, or the limb would burn out)
+    float ve = smoothstep(-0.02, 0.12, cara);
+    em *= ve * (0.5 + 0.5 * smoothstep(0.0, 0.35, cara));
+    occ *= ve * (1.0 - linea);
+  } else {
+    // A face inside: crust, then the mantle glowing red, the outer core orange, the inner core white-hot.
+    float r = length(position) / ${RT.toFixed(3)};
+    vec3 glow = mix(vec3(1.0, 0.86, 0.62) * 1.5, vec3(1.0, 0.52, 0.18), smoothstep(0.15, 0.24, r));
+    glow = mix(glow, vec3(0.8, 0.22, 0.05) * 0.6, smoothstep(0.5, 0.6, r));
+    glow = mix(glow, vec3(0.5, 0.1, 0.03) * 0.3, smoothstep(0.8, 0.95, r));
+    glow *= 1.0 - 0.55 * smoothstep(0.55, 1.0, uK);
+    vec3 roca = grado(vec3(0.3, 0.25, 0.21)) * (luzSol(nR, nR, uSun, 0.0) * 0.9 + 0.003);
+    float corteza = smoothstep(0.93, 0.995, r);
+    em = mix(glow, roca, corteza * 0.85) * color;
+    // A face shows once its piece has moved off, and when it faces us.
+    em *= abierta * smoothstep(-0.05, 0.2, cara);
+  }
+`);
+
 export function ripPlaneta(): EraModule {
   return {
     spec: {
@@ -224,41 +300,111 @@ export function ripPlaneta(): EraModule {
       generate() {
         const r = rng(2011);
         const b = materiaBuilder(2012);
-        // A rocky planet; each point belongs to a fragment (aFrom holds the fragment's direction).
-        const frags = Array.from({ length: 40 }, () => new THREE.Vector3(gauss(r), gauss(r), gauss(r)).normalize());
-        for (let k = 0; k < 40000; k++) {
-          const [x, y, z] = b.onSphere();
-          const v = new THREE.Vector3(x, y, z);
-          let best = 0;
-          let bd = -2;
-          frags.forEach((f, i) => {
-            const d = f.dot(v);
-            if (d > bd) {
-              bd = d;
-              best = i;
+        const frags = Array.from({ length: PIEZAS }, () => new THREE.Vector3(gauss(r), gauss(r), gauss(r)).normalize());
+        const vel = frags.map(() => 0.8 + 0.4 * r());
+        const giro = frags.map((f) => {
+          const k = new THREE.Vector3(gauss(r), gauss(r), gauss(r)).cross(f).normalize();
+          return [k.x, k.y, k.z, (r() * 2 - 1) * (0.4 + 0.6 * r())];
+        });
+        const aN: number[] = [];
+        const aGiro: number[] = [];
+        const aBorde: number[] = [];
+        const v = new THREE.Vector3();
+        /** The piece a direction belongs to, and the nearest other one. */
+        const piezas = (x: number, y: number, z: number) => {
+          let i1 = 0;
+          let i2 = 0;
+          let d1 = -2;
+          let d2 = -2;
+          for (let i = 0; i < PIEZAS; i++) {
+            const d = frags[i].x * x + frags[i].y * y + frags[i].z * z;
+            if (d > d1) {
+              d2 = d1;
+              i2 = i1;
+              d1 = d;
+              i1 = i;
+            } else if (d > d2) {
+              d2 = d;
+              i2 = i;
             }
-          });
-          const R = 6.371 * Math.cbrt(0.35 + 0.65 * r());
-          const crater = 0.75 + 0.25 * Math.sin(x * 11 + y * 7) * Math.cos(z * 9);
-          b.push(x * R, y * R, z * R, r() < 0.5 ? 0x9a8a7a : 0x7a6a5e, 0.09, 0.7 * crater, { kind: 0, from: frags[best].toArray() as [number, number, number] });
+          }
+          // (and how far the direction is from the plane between them)
+          return [i1, i2, (d1 - d2) / frags[i1].distanceTo(frags[i2])];
+        };
+        const push = (x: number, y: number, z: number, s: number, kind: number, i: number, nx: number, ny: number, nz: number, borde = 0) => {
+          const f = frags[i];
+          b.push(x, y, z, 0xffffff, s, 1, { kind, ink: kind ? 0 : 1, from: [f.x * vel[i], f.y * vel[i], f.z * vel[i]] });
+          aN.push(nx, ny, nz);
+          aGiro.push(...giro[i]);
+          aBorde.push(borde);
+        };
+        // The faces between pieces (kind 1): points close to the plane between a piece and its
+        // neighbour, facing the neighbour. Denser towards the ground, where the cracks first show.
+        for (let k = 0; k < 30000; ) {
+          const [x, y, z] = b.onSphere();
+          const R = Math.cbrt(r()) * 0.995;
+          v.set(x, y, z).multiplyScalar(R);
+          const [i1, i2] = piezas(x, y, z);
+          const nrm = frags[i2].clone().sub(frags[i1]);
+          const dist = -v.dot(nrm) / nrm.length();
+          if (dist > 0.035) continue;
+          nrm.normalize();
+          // (pressed onto the plane, a little inside the piece: a clean face)
+          v.addScaledVector(nrm, dist - 0.006);
+          push(v.x * RT, v.y * RT, v.z * RT, 0.085, 1, i1, nrm.x, nrm.y, nrm.z);
+          k++;
         }
-        return { main: b.data() };
+        // The ground (kind 0), after the faces: it covers them.
+        for (let k = 0; k < 110000; k++) {
+          const [x, y, z] = b.onSphere();
+          const [i, , borde] = piezas(x, y, z);
+          push(x * RT, y * RT, z * RT, 0.16, 0, i, x, y, z, borde);
+        }
+        return { main: b.data(), aN: new Float32Array(aN), aGiro: new Float32Array(aGiro), aBorde: new Float32Array(aBorde) };
       },
       assemble(data) {
-        const uni = { uK: { value: 0 } };
+        const uni = {
+          uK: { value: 0 },
+          uSun: { value: new THREE.Vector3() },
+          uCamL: { value: new THREE.Vector3() },
+          uMapa: { value: 0 },
+          uMapaT: { value: null as THREE.Texture | null },
+          uNubesT: { value: null as THREE.Texture | null },
+        };
         const cloud = materia(data.main as MateriaData, {
-          pre: 'uniform float uK;',
-          move: ripMove('p = position + aFrom * tear * 40.0 * (0.8 + 0.4 * seed); em *= 0.4 + 0.6 * smoothstep(-0.2, 0.6, dot(normalize(position), vec3(0.6, 0.5, 0.6)));'),
+          pre: `attribute vec3 aN;\nattribute vec4 aGiro;\nattribute float aBorde;\nuniform float uK, uMapa;\nuniform vec3 uSun, uCamL;\nuniform sampler2D uMapaT, uNubesT;\n${GLSL_COMUN}\n${RIP_TIERRA}`,
+          move: RIP_TIERRA_MOVE,
           uniforms: uni,
+          extra: { aN: [data.aN as Float32Array, 3], aGiro: [data.aGiro as Float32Array, 4], aBorde: [data.aBorde as Float32Array, 1] },
         });
         cloud.u.uNear.value = 1;
+        cloud.u.uInk.value = 1;
+        // The maps of the series' Earth (from the browser's cache, if «Ahora» has been through).
+        const base = `${import.meta.env.BASE_URL}texturas/`;
+        Promise.all([cargar(base + '2k_earth_daymap.jpg', true), cargar(base + '2k_earth_clouds.jpg', false)]).then(
+          ([m, n]) => {
+            uni.uMapaT.value = m;
+            uni.uNubesT.value = n;
+            uni.uMapa.value = 1;
+          },
+          (err) => console.error('[tiempo] desgarro: los mapas de la Tierra', err),
+        );
+        // Its axis tilted, turned to show Africa and Europe to the camera; its star to the left (a gibbous).
+        cloud.points.rotation.set(0, -2.13, 0.41, 'ZYX');
         const object = new THREE.Group();
         object.add(cloud.points);
+        const SOL = new THREE.Vector3(-0.95, 0.2, 0.1).normalize();
+        const q = new THREE.Quaternion();
+        const cam = new THREE.Vector3();
         return {
           object,
           clouds: [cloud],
           update(f) {
             uni.uK.value = f.tl.get('rip.p', f.p);
+            // The Sun in the era's frame, carried into the planet's.
+            uni.uSun.value.copy(SOL).applyQuaternion(q.copy(cloud.points.quaternion).invert());
+            f.camera.getWorldPosition(cam);
+            uni.uCamL.value.copy(cloud.points.worldToLocal(cam));
           },
           proton: () => null,
         };
