@@ -134,46 +134,80 @@ body {
 .chips {
   position: fixed;
   top: 26px;
-  right: 32px;
+  right: 28px;
   display: flex;
-  gap: 8px;
+  gap: 4px;
 }
 
+/* Line icons, no frame (the language in letters); the word shows under it on hover. */
 .chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font: 500 12px var(--sans);
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
   color: var(--dim);
-  background: rgba(8, 8, 12, 0.55);
-  border: 1px solid var(--faint);
-  border-radius: 999px;
-  padding: 6px 12px 6px 6px;
+  background: none;
+  border: 0;
   cursor: pointer;
-  backdrop-filter: blur(10px);
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.2s;
 }
 
 .chip:hover,
-.chip.is-on {
+.chip:focus-visible {
   color: var(--ink);
-  border-color: rgba(143, 180, 255, 0.6);
+}
+
+.chip.is-on {
+  color: var(--accent);
 }
 
 .chip-k {
   display: grid;
   place-items: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  font: 500 11px var(--mono);
-  color: var(--ink);
-  background: var(--faint);
+  font: 600 11px var(--mono);
+  letter-spacing: 0.06em;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.8));
 }
 
-.chip.is-on .chip-k {
-  background: var(--accent);
-  color: #0b0b0c;
+.chip-k svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#play .ic-pausa,
+#play.is-on .ic-play {
+  display: none;
+}
+
+#play.is-on .ic-pausa {
+  display: block;
+}
+
+.chip-t {
+  position: absolute;
+  top: 100%;
+  right: 50%;
+  transform: translateX(50%);
+  white-space: nowrap;
+  font: 500 10px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.chip:hover .chip-t,
+.chip:focus-visible .chip-t {
+  opacity: 1;
 }
 
 /* ---------- The plate (HUD, cone, notes): drawn on a canvas over the film ---------- */
@@ -375,9 +409,6 @@ body {
     top: 16px;
     right: 16px;
     gap: 6px;
-  }
-  .chip {
-    padding: 6px;
   }
   .chip-t {
     display: none;
