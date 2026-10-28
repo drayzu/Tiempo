@@ -163,26 +163,13 @@ body {
   color: var(--accent);
 }
 
-/* On reads at a glance: the icon glows a little in the work's colour, a touch bolder, a dot under it. */
+/* On reads at a glance: the icon glows a little in the work's colour, a touch bolder. */
 .chip.is-on .chip-k {
   filter: drop-shadow(0 0 5px var(--accent));
 }
 
 .chip.is-on .chip-k svg {
   stroke-width: 1.8;
-}
-
-.chip.is-on::after {
-  content: '';
-  position: absolute;
-  bottom: 1px;
-  left: 50%;
-  width: 4px;
-  height: 4px;
-  margin-left: -2px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 6px var(--accent);
 }
 
 .chip-k {
@@ -214,7 +201,7 @@ body {
 
 .chip-t {
   position: absolute;
-  top: calc(100% + 4px);
+  top: 100%;
   right: 50%;
   transform: translateX(50%);
   white-space: nowrap;
