@@ -36,16 +36,11 @@
 <summary><sub>How it's made</sub></summary>
 <br>
 
-- Twenty-three eras, each in its own units and anchored in the one before, across some 150 orders of magnitude of time: from the Planck epoch and the Higgs field to the evaporation of the last black hole, and a fork into four possible endings (cold, Big Rip, Big Crunch, vacuum decay).
-- Black holes are ray traced (the shadow, the photon ring, the far side of the disk bent over and under it); galaxies are smooth light seen from outside or, for the Milky Way, as a band across the sky from inside.
-- The background is the temperature of the universe: Planck's law through the CIE colour-matching functions, as bright as a dark-adapted eye would see it. White-hot, then the orange of the first light, then dark for almost all of time.
-- The clocks run on a real ΛCDM cosmology (Planck 2018). One proton is followed the whole way, from the quarks to the water in your body and on.
+- The second piece of Horizontes (Espacio · Tiempo · Destino · Infinito): one scroll, about ten minutes, through 23 eras and some 150 orders of magnitude of time, from the Planck epoch to the last light, with four possible endings (cold, Big Rip, Big Crunch, vacuum decay).
+- Each era runs in its own units, anchored in the one before, and the clocks follow a real ΛCDM cosmology (Planck 2018). One proton is followed the whole way, from the quarks to the water in your body.
+- Black holes are ray traced, with their shadow, photon ring and lensed disk. The background is the temperature of the universe, Planck's law through the CIE colour-matching functions: white-hot, then orange, then dark for almost all of time.
 - Observed, theoretical and speculative are told apart at a glance: solid, dashed and dotted. A plate layer gives each era its numbers and sources, with a scale bar that stays true.
-- The Earth and the Moon of «Now» are the series' bodies (points coloured from real maps, finer under the camera), from Solar System Scope's maps (CC BY 4.0, from NASA data). They come into focus only once time slows to a crawl; before that the long exposure blurs the days into bands.
-- Sound is synthesized in the browser: the plasma rings at the ratios of the acoustic peaks, and the end falls silent.
-- English and Spanish. Keys: `I` plate, `S` sound, `A` autoplay, `L` language.
+- English and Spanish. Keys: `A` autoplay, `I` plate, `L` language.
 - TypeScript, Three.js and Vite, no framework. `npm install`, `npm run dev`; pushing to `main` deploys to GitHub Pages.
-
-A sibling of [Espacio](https://github.com/drayzu/Espacio), which travels through space.
 
 </details>
