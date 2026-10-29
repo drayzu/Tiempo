@@ -80,8 +80,8 @@ export function cuasar(): EraModule {
       acto: 'Oscuridad y amanecer',
       certeza: 'O',
       name: 'Un cuásar',
-      fact: 'Un agujero negro de mil millones de soles se traga gas. Antes de caer, el gas brilla más que su galaxia entera.',
-      ficha: ['cuásares a menos de 800 millones de años del inicio (z ≈ 7,5)', 'agujeros negros de ~10⁹ masas solares', 'sombras fotografiadas: M87* (2019) y Sagitario A* (2022), Event Horizon Telescope'],
+      fact: 'En una galaxia vecina, un agujero negro traga gas. Antes de caer, ese gas brilla más que toda su galaxia.',
+      ficha: ['cuásares a menos de 800 millones de años del inicio (z ≈ 7,5)', 'agujeros negros de ~10⁹ masas solares', 'sombras fotografiadas: M87* (2019) y Sagitario A* (2022), Event Horizon Telescope', 'los chorros llegan más lejos que toda su galaxia'],
       label: 'cuásar',
       unitExp: U,
       frame: 1e6,
@@ -201,7 +201,7 @@ export function cuasar(): EraModule {
       const v0 = vista(side.clone().addScaledVector(NRM, 0.25), NRM, { yaw: 0.8, roll: 0 });
       tl.to(3.4, { era: era.index, e: 21.7, lt: LT(1.04e9), fondo: 1, horno: 0, fov: 52, ...v0, bloom: 0.5, umbral: 0.2 });
       tl.label('cuasar');
-      tl.caption(4.4, 'Un cuásar', 'En una galaxia vecina, un agujero negro de mil millones de soles se traga gas. Antes de caer, el gas brilla más que la galaxia entera.');
+      tl.caption(4.4, 'Un cuásar', 'En una galaxia vecina, un agujero negro traga gas. Antes de caer, ese gas brilla más que toda su galaxia.');
       // Down ten orders of magnitude: the galaxy, the whirl of gas, the disk.
       const v1 = vista(side.clone().addScaledVector(NRM, 0.5).applyAxisAngle(NRM, 0.6), NRM, v0);
       tl.to(2.6, { e: 19.9, lt: LT(1.045e9), 'cua.flow': 0.4, ...v1 });
@@ -209,13 +209,13 @@ export function cuasar(): EraModule {
       const v3 = vista(side.clone().addScaledVector(NRM, 0.2).applyAxisAngle(NRM, 2.2), NRM, v1);
       tl.to(2.4, { e: 15.0, 'cua.flow': 1.2, ...v3 });
       // The edge: light bends over and under the shadow; the camera circles, close.
-      tl.caption(5.2, 'El borde', 'Cerca del agujero la luz se curva: la cara de atrás del disco asoma por arriba y por abajo. Al centro, una sombra de la que nada sale.');
+      tl.caption(5.2, 'El borde', 'Aquí la luz se curva. Al centro, una sombra de la que nada vuelve.');
       const v4 = vista(side.clone().addScaledVector(NRM, 0.14).applyAxisAngle(NRM, 2.9), NRM, v3);
       tl.to(2.4, { e: 14.05, 'cua.flow': 1.5, 'cua.cerca': 1, ...v4, fov: 50, bloom: 0.42, umbral: 0.3 });
       const v5 = vista(side.clone().addScaledVector(NRM, 0.45).applyAxisAngle(NRM, 4.2), NRM, v4);
       tl.to(2.8, { e: 13.95, lt: LT(1.0451e9), 'cua.flow': 1.8, ...v5 });
       // Out along a jet, ten orders of magnitude, nearly at the speed of light.
-      tl.caption(4.6, 'Chorros', 'Parte del gas no cae: sale disparado por los polos, casi a la velocidad de la luz, más lejos que toda la galaxia.');
+      tl.caption(4.6, 'Chorros', 'Parte del gas no cae: sale disparado, casi a la velocidad de la luz.');
       const up = vista(NRM.clone().multiplyScalar(-1).addScaledVector(side, 0.35), side, v5);
       tl.to(1.6, { e: 14.6, ...up, 'cua.cerca': 0, ...viajeA('cuasar', NRM.clone().multiplyScalar(10 ** (14.6 - U) * 1.2)) });
       // (the focus rides the jet a little ahead of the camera, at the scale of the view: keys every

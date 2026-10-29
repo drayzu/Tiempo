@@ -156,8 +156,8 @@ export function amanecer(): EraModule {
       acto: 'Oscuridad y amanecer',
       certeza: 'T',
       name: 'La edad oscura',
-      fact: 'Nada brilla. La materia oscura, que no se ve, arma una red, y el gas cae en ella.',
-      ficha: ['primeras estrellas: hacia 100 a 200 millones de años', 'población III: solo hidrógeno y helio, ~100 masas solares', 'aún no se han observado directamente'],
+      fact: 'Nada brilla en ninguna parte. Así, durante cien millones de años.',
+      ficha: ['primeras estrellas: hacia 100 a 200 millones de años', 'población III: solo hidrógeno y helio, ~100 masas solares', 'aún no se han observado directamente', 'azules (~100 000 K); viven ~3 millones de años'],
       label: 'primera estrella',
       unitExp: 19.5,
       frame: 12,
@@ -373,18 +373,19 @@ export function amanecer(): EraModule {
       tl.set({ 'ama.web': 0, 'ama.col': 0, 'ama.star': 0, 'ama.R': 0, 'ama.sn': 0, 'ama.others': 0, 'ama.flood': 0 });
       tl.to(3.4, { era: era.index, e: era.home + 0.12, lt: LT(6e7), fondo: 1, horno: 0, fov: 50, yaw: 0.2, pitch: 0.1, roll: 0 });
       tl.label('amanecer');
-      tl.caption(6.6, 'La edad oscura', 'Nada brilla. La materia oscura, que no se ve, arma una red, y el gas cae en ella.');
-      tl.to(4.2, { lt: LT(1.1e8), 'ama.web': 1, yaw: 0.05, pitch: 0.05 });
+      // (a pause: the darkness lasts a little longer than the rest)
+      tl.caption(7.8, 'La edad oscura', 'Nada brilla en ninguna parte. Así, durante cien millones de años.');
+      tl.to(5.4, { lt: LT(1.1e8), 'ama.web': 1, yaw: 0.05, pitch: 0.05 });
       // Into the knot, first person: the camera follows the gas in.
       tl.to(2.4, { lt: LT(1.5e8), 'ama.col': 1, e: era.home - 0.22, 'amanecer.fx': 0.4, 'amanecer.fy': 0.25, yaw: 0, pitch: 0 });
-      tl.caption(4.6, 'La primera estrella', 'Cien veces el Sol, tan caliente que brilla azul. Vivirá unos tres millones de años.');
+      tl.caption(4.6, 'La primera estrella', 'Se enciende la primera estrella. Cien veces el Sol, azul de tan caliente.');
       // It lights: its light floods everything (Horno), then settles into a bright point in its bubble.
       tl.to(0.7, { lt: LT(1.5003e8), 'ama.star': 1, 'ama.flood': 1, bloom: 0.3, umbral: 0.6 });
       tl.to(3.6, { lt: LT(1.525e8), 'ama.R': 3.4, 'ama.flood': 0.15, e: era.home - 0.05, roll: 0.06, bloom: 0.6, umbral: 0.15 });
-      tl.caption(3.8, 'Muere joven', 'Estalla y siembra el gas con los primeros átomos pesados: carbono, oxígeno, hierro.');
+      tl.caption(3.8, 'Muere joven', 'Vive unos pocos millones de años y estalla. Deja los primeros átomos pesados: carbono, oxígeno, hierro.');
       tl.to(0.5, { lt: LT(1.5255e8), 'ama.star': 0, 'ama.sn': 0.12, 'ama.flood': 0.6 });
       tl.to(3.2, { lt: LT(1.6e8), 'ama.sn': 1, 'ama.R': 3.9, 'ama.flood': 0, e: era.home + 0.05, 'amanecer.fx': 0, 'amanecer.fy': 0, roll: 0 });
-      tl.caption(3.8, 'El amanecer', 'En otros nudos de la red se encienden otras: el universo vuelve a tener luz propia.');
+      tl.caption(3.8, 'El amanecer', 'En otros nudos se encienden otras. El universo vuelve a tener luz.');
       tl.to(3.6, { lt: LT(2.5e8), 'ama.others': 1, e: era.home + 0.2, yaw: -0.35, pitch: 0.12 });
     },
   };

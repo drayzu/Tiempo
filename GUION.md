@@ -1,6 +1,6 @@
 # Tiempo · guion
 
-*Borrador 1, 29 de octubre de 2026. Para que Diego lo lea antes de tocar el resto del código. Solo la apertura está hecha.*
+*Borrador 1, 29 de octubre de 2026. Diego lo aprobó el mismo día y ya está en la obra entera, salvo la coda hacia Destino, que espera.*
 
 **La idea.** Tiempo responde «¿Cuándo?». Empieza en ti, ahora: llegaste a esta página hace un momento. Pero en tu cuerpo hay un protón mucho más viejo que tú, y la obra corre hacia atrás a buscar dónde empezó. Lo encuentra en el fuego del principio y desde ahí viaja con él: lo ve nacer, cruza con él la niebla, las estrellas, el Sol y la Tierra, y llega de vuelta a ti. Después sigue sin ti, hasta que todo se apaga. Al final queda que, de todo ese tiempo, a ti te tocó un instante. Y una pregunta para Destino: así termina un universo en el que nadie hace nada.
 
@@ -204,7 +204,7 @@ Los momentos marcados **(nuevo)** no existen hoy; los demás reescriben la frase
 72. ***Sin aviso***
     - **Voz:** «Viaja casi a la velocidad de la luz: nadie la vería venir.»
 
-## Cierre · Este instante
+## Cierre · Este instante *(hecho)*
 
 73. ***Después del tiempo***
     - **Voz:** «Quizá, si se espera lo suficiente, todo vuelve a empezar.»
@@ -268,7 +268,7 @@ Sale de `RELEVOS.md` (en drayzu.github.io). Va después de «Este instante» y s
 
 ## Lo que cambia respecto de hoy
 
-- **Apertura (hecha):** ya no hay portada al cargar. Primero el punto, el protón que sale de ti, el reloj hacia atrás y el fuego; el título llega con la luz blanca. La marca, el cono y la lámina aparecen junto con el título. Después sigue la portada de hoy («t = ?» / «Antes del tiempo»).
+- **Apertura:** ya no hay portada al cargar. Primero el punto, el protón que sale de ti, el reloj hacia atrás y el fuego; el título llega con la luz blanca. La marca, el cono y la lámina aparecen junto con el título. Después sigue la portada de hoy («t = ?» / «Antes del tiempo»).
 - **Texto:** las frases de todas las eras y momentos se reescriben con esta voz. Las cifras que no son el punto pasan a la lámina.
 - **Tu protón:** «nuestro protón» pasa a «tu protón» en todas partes (unas 22 menciones, contando las traducciones).
 - **Pausas:** el fuego (4), la edad oscura (23), el reencuentro (44), la última estrella (55), Adiós (60) y Este instante (74).

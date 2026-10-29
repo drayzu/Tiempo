@@ -100,8 +100,8 @@ export function niebla(): EraModule {
       acto: 'La niebla',
       certeza: 'O',
       name: 'La niebla',
-      fact: 'Todo es un plasma incandescente: la luz choca con los electrones libres y no puede avanzar.',
-      ficha: ['recombinación: hacia 380 000 años, a ≈ 3 000 K', 'esa luz llega hoy a 2,725 K: el fondo de microondas', 'sus ondas de sonido dejaron una escala: ~480 millones de años luz'],
+      fact: 'Todo brilla y no se ve nada: la luz choca y choca, y no puede avanzar.',
+      ficha: ['recombinación: hacia 380 000 años, a ≈ 3 000 K', 'esa luz llega hoy a 2,725 K: el fondo de microondas', 'sus ondas de sonido dejaron una escala: ~480 millones de años luz', 'ese sonido: unas cincuenta octavas más grave de lo que alcanza el oído'],
       label: 'la niebla',
       unitExp: -3,
       frame: 6,
@@ -286,15 +286,15 @@ export function niebla(): EraModule {
       tl.with(0.02, { reloj: 0 });
       tl.to(3.2, { era: era.index, e: era.home + 0.05, lt: LT(1.2e5), fondo: 1, horno: 0, fov: 50, yaw: 0, pitch: 0, roll: 0, bloom: 0.7, umbral: 0.12 });
       tl.label('niebla');
-      tl.caption(4.6, 'El universo sonaba', 'Un plasma incandescente donde la luz no puede avanzar, que vibra con ondas de sonido reales, unas cincuenta octavas más graves de lo que alcanza el oído.');
+      tl.caption(4.6, 'El universo sonaba', 'La niebla vibra con ondas de sonido de verdad, demasiado graves para cualquier oído.');
       tl.to(4.4, { lt: LT(2.9e5), 'niebla.fz': -2.5, yaw: 0.12, pitch: 0.04 });
       // Se hace la luz: the sky turns orange (Horno), and the camera leans in to our proton.
-      tl.caption(4.8, 'Se hace la luz', 'Los electrones caen en los protones: nace el hidrógeno, y la luz por fin puede viajar.');
+      tl.caption(4.8, 'Se hace la luz', 'Tu protón atrapa un electrón: ya es hidrógeno. Y la luz, por fin, puede viajar.');
       tl.with(2.0, { horno: 1 });
       tl.with(2.4, { 'niebla.fx': OURS.x, 'niebla.fy': OURS.y, 'niebla.fz': OURS.z, e: era.home - 0.45, yaw: 0, pitch: 0, roll: 0.05 });
       tl.to(4.6, { lt: LT(4.7e5) });
       // The light cools and goes; the camera pulls back and turns to watch it fly.
-      tl.caption(4.6, 'El universo deja de brillar', 'Esa luz se enfría: naranja, rojo, infrarrojo. Hacia los tres millones de años ya no se ve. Hoy es el fondo de microondas.');
+      tl.caption(4.6, 'El universo deja de brillar', 'Esa luz se enfría hasta dejar de verse. Todavía te llega: es el fondo de microondas.');
       tl.with(2.8, { 'niebla.fx': 0, 'niebla.fy': 0, 'niebla.fz': 0, e: era.home + 0.1, yaw: -0.45, pitch: 0.12, roll: 0 });
       tl.to(4.4, { lt: LT(4.2e6) });
       tl.with(1.6, { horno: 0 });

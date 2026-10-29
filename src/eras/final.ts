@@ -46,8 +46,8 @@ export function degenerada(): EraModule {
       acto: 'El largo final',
       certeza: 'T',
       name: 'Las estrellas muertas',
-      fact: 'Quedan enanas blancas que se enfrían hasta volverse negras, estrellas de neutrones y agujeros negros. La galaxia se evapora.',
-      ficha: ['la era degenerada: de 10¹⁴ a 10⁴⁰ años', 'una enana blanca tarda ~10¹⁵ años en volverse negra', 'las galaxias se evaporan hacia 10¹⁹ años'],
+      fact: 'Quedan restos que se enfrían, y la galaxia se evapora.',
+      ficha: ['la era degenerada: de 10¹⁴ a 10⁴⁰ años', 'una enana blanca tarda ~10¹⁵ años en volverse negra', 'las galaxias se evaporan hacia 10¹⁹ años', 'las estrellas fallidas: enanas marrones que chocan'],
       label: 'restos',
       unitExp: 21,
       frame: 6,
@@ -115,11 +115,11 @@ export function degenerada(): EraModule {
       tl.to(3.0, { era: era.index, e: era.home - 0.3, ah: 14.6, fondo: 1, horno: 0, fov: 54, yaw: 2.0, pitch: 0.4, roll: 0, bloom: 0.4, umbral: 0.25, silencio: 0.35 });
       tl.label('degenerada');
       tl.to(2.8, { 'deg.k': 0.45, ah: 17, e: era.home - 0.15, yaw: 2.3 });
-      tl.caption(3.4, 'Un fuego raro', 'A veces dos enanas marrones chocan y encienden una estrella nueva, por un rato.');
+      tl.caption(3.4, 'Un fuego raro', 'A veces dos estrellas fallidas chocan y se encienden un rato.');
       tl.to(2.8, { 'deg.k': 0.8, ah: 19.5, yaw: 2.6, pitch: 0.3 });
       tl.to(2.0, { 'deg.k': 1, ah: 22, e: era.home + 0.6, yaw: 2.8, silencio: 0.5 });
       // What does not escape falls to the centre: down to the black hole that grows there.
-      tl.caption(6.4, 'Todo cae al centro', 'Lo que no escapa de la galaxia cae en su agujero negro central. A veces una estrella muerta se desgarra al caer y el disco se enciende un momento.');
+      tl.caption(6.4, 'Todo cae al centro', 'Lo que no escapa cae en el agujero negro del centro.');
       const v = vista(new THREE.Vector3(0.2, 0.17, 1), HOLE_N, { yaw: 2.8, roll: 0 });
       tl.to(3.4, { 'deg.hole': 1, ah: 24, e: 16.6, fov: 56, ...v, roll: v.roll + 0.15 });
       tl.to(0.7, { 'deg.flare': 1, ah: 24.5, e: 16.0 });
@@ -169,8 +169,8 @@ export function protones(): EraModule {
       acto: 'El largo final',
       certeza: 'E',
       name: '¿Mueren los protones?',
-      fact: 'Nadie ha visto morir uno: viven más de 10³⁴ años. Si mueren, nuestro protón se irá en un destello.',
-      ficha: ['vida media del protón: más de 2,4 × 10³⁴ años', '(Super-Kamiokande, 2020: p → e⁺ π⁰)', 'si no decae, dura para siempre'],
+      fact: 'Nadie ha visto morir uno. Si mueren, el tuyo también.',
+      ficha: ['vida media del protón: más de 2,4 × 10³⁴ años', '(Super-Kamiokande, 2020: p → e⁺ π⁰)', 'si no decae, dura para siempre', 'si decae: unos 10⁴⁰ años desde que nació'],
       label: 'protones',
       unitExp: -16,
       frame: 30,
@@ -249,9 +249,10 @@ export function protones(): EraModule {
       tl.label('protones');
       tl.to(3.0, { ah: 36, e: era.home - 0.3, yaw: 0.5, pitch: 0.15 });
       // If protons decay, ours goes.
-      tl.caption(4.2, 'Adiós', 'Desde la primera millonésima de segundo hasta aquí: unos 10⁴⁰ años. Fue hidrógeno, agua, parte de ti.');
+      // (a pause: it is gone, and nothing else happens for a while)
+      tl.caption(6.6, 'Adiós', 'Fue hidrógeno, luz, agua, parte de ti. Adiós.');
       tl.to(4.2, { 'pro.decay': 1, ah: 40, e: era.home + 0.2, yaw: 0.9, roll: 0.3, silencio: 0.6 });
-      tl.wait(1.2);
+      tl.wait(2.4);
     },
   };
 }
@@ -322,7 +323,7 @@ export function ultimaLuz(): EraModule {
       acto: 'El largo final',
       certeza: 'T',
       name: 'La última luz',
-      fact: 'Solo quedan agujeros negros, que se evaporan muy, muy despacio. El último termina en un destello hacia los 10¹⁰⁰ años.',
+      fact: 'Solo quedan agujeros negros, que se evaporan muy, muy despacio.',
       ficha: ['agujero negro de 1 masa solar: ~10⁶⁷ años', 'los más grandes (10¹¹ soles): ~10¹⁰⁰ años', 'temperatura de Hawking (1 sol): 6 × 10⁻⁸ K'],
       label: 'última luz',
       unitExp: 21,
@@ -438,7 +439,7 @@ export function ultimaLuz(): EraModule {
       tl.to(2.8, { 'luz.k': 0.56, ah: 80, yaw: 0.6 });
       tl.to(2.2, { 'luz.k': 0.9, ah: 96, yaw: 0.9 });
       // Down to the last one, then after it as it shrinks thirty orders of magnitude, heating.
-      tl.caption(9.6, 'La última luz', 'El último agujero negro se encoge y se calienta: su luz pasa del rojo al blanco. Termina en un destello hacia los 10¹⁰⁰ años. Después, nada vuelve a brillar.');
+      tl.caption(9.6, 'La última luz', 'El último agujero negro se encoge, se calienta y termina en un destello. Después, nada vuelve a brillar.');
       const v = vista(new THREE.Vector3(0.3, 0.12, 1), LAST_N, { yaw: 0.9, roll: 0 });
       tl.to(3.2, { e: LAST_E, ah: 98, fov: 54, ...v, 'luz.k': 0.95 });
       const v2 = vista(new THREE.Vector3(-0.5, 0.25, 1), LAST_N, v);
@@ -459,7 +460,7 @@ export function oscuridad(): EraModule {
       acto: 'El largo final',
       certeza: 'T',
       name: 'La oscuridad',
-      fact: 'Un universo frío, vacío y en calma. Ya nada cambia: solo los números siguen corriendo.',
+      fact: 'Frío, vacío y calma. Ya nada cambia.',
       ficha: ['después de 10¹⁰⁰ años: partículas sueltas, cada vez más diluidas', 'el límite: la temperatura del horizonte, ~10⁻³⁰ K', 'nada que marque el tiempo'],
       label: 'oscuridad',
       unitExp: 24,

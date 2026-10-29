@@ -60,7 +60,7 @@ export function ripGalaxia(): EraModule {
       acto: 'El final',
       certeza: 'E',
       name: 'El Gran Desgarro',
-      fact: 'Si la energía oscura crece sin freno, la expansión acaba rompiéndolo todo, de lo más grande a lo más pequeño: Espacio al revés.',
+      fact: 'Si la energía oscura crece sin freno, la expansión lo rompe todo, de lo grande a lo pequeño: Espacio al revés.',
       ficha: ['exige que la energía oscura crezca (w < −1)', 'con w = −1,5: en ~22 000 millones de años (Caldwell et al., 2003)', 'DESI (2024–2025) apunta más bien a que se debilita'],
       label: 'desgarro',
       unitExp: 21,
@@ -109,7 +109,7 @@ export function ripGalaxia(): EraModule {
       tl.set({ 'rip.g': 0 });
       tl.to(3.0, { era: era.index, e: era.home - 0.15, ah: 10.3, fov: 58, yaw: 1.8, pitch: 0.3, roll: 0, fondo: 1, horno: 0, bloom: 0.4, umbral: 0.3 });
       tl.label('rip-galaxia');
-      tl.caption(4.8, 'Faltan 60 millones de años', 'La galaxia se deshace: sus estrellas se alejan unas de otras cada vez más rápido.');
+      tl.caption(4.8, 'Faltan 60 millones de años', 'La galaxia se deshace.');
       tl.to(4.8, { 'rip.g': 1, ah: 10.341, e: era.home - 0.45, yaw: 2.5, pitch: 0.15, roll: 0.25 });
     },
   };
@@ -288,7 +288,7 @@ export function ripPlaneta(): EraModule {
       acto: 'El final',
       certeza: 'E',
       name: 'El Gran Desgarro',
-      fact: 'Faltan treinta minutos: los planetas se rompen en pedazos.',
+      fact: 'Faltan treinta minutos: la Tierra se rompe en pedazos.',
       ficha: ['los planetas se sueltan: 3 meses antes del final', 'la Tierra se rompe: 30 minutos antes', 'los átomos: 10⁻¹⁹ s antes'],
       label: 'planeta',
       unitExp: 6,
@@ -414,7 +414,7 @@ export function ripPlaneta(): EraModule {
       tl.set({ 'rip.p': 0 });
       tl.to(3.0, { era: era.index, e: era.home + 0.1, yaw: 0.2, pitch: 0.2, roll: 0 });
       tl.label('rip-planeta');
-      tl.caption(3.6, 'Faltan treinta minutos', 'Los planetas se rompen en pedazos.');
+      tl.caption(3.6, 'Faltan treinta minutos', 'La Tierra se rompe en pedazos.');
       tl.to(3.6, { 'rip.p': 1, e: era.home + 0.8, yaw: 0.6, roll: 0.1 });
     },
   };
@@ -429,7 +429,7 @@ export function ripAtomo(): EraModule {
       acto: 'El final',
       certeza: 'E',
       name: 'El Gran Desgarro',
-      fact: 'Faltan 10⁻¹⁹ segundos: los átomos se rompen. Después, el espacio mismo.',
+      fact: 'Faltan 10⁻¹⁹ segundos: se rompen los átomos, y tu protón con ellos. Después, el espacio.',
       ficha: ['los planetas se sueltan: 3 meses antes del final', 'la Tierra se rompe: 30 minutos antes', 'los átomos: 10⁻¹⁹ s antes'],
       label: 'átomo',
       unitExp: -11,
@@ -482,7 +482,7 @@ export function ripAtomo(): EraModule {
       tl.set({ 'rip.a': 0 });
       tl.to(3.0, { era: era.index, e: era.home, yaw: 0, pitch: 0.1, roll: 0, bloom: 0.35, umbral: 0.35 });
       tl.label('rip-atomo');
-      tl.caption(3.6, 'Faltan 10⁻¹⁹ segundos', 'Los átomos se rompen. Después, el espacio mismo.');
+      tl.caption(3.6, 'Faltan 10⁻¹⁹ segundos', 'Se rompen los átomos, y tu protón con ellos. Después, el espacio.');
       tl.to(3.6, { 'rip.a': 1, e: era.home + 0.4, roll: 0.2 });
       tl.with(0.2, { silencio: 1 });
       tl.wait(0.8);
@@ -504,7 +504,7 @@ export function colapso(): EraModule {
       acto: 'El final',
       certeza: 'E',
       name: 'El Gran Colapso',
-      fact: 'Si la energía oscura se debilita, la expansión podría frenar e invertirse: todo vuelve a caer, y a calentarse.',
+      fact: 'Si la energía oscura se debilita, todo vuelve a caer, y a calentarse.',
       ficha: ['si la energía oscura se debilita y llega a atraer', 'DESI (2024–2025) lo insinúa; aún no es concluyente', 'una estimación (2025): ~33 000 millones de años de vida en total'],
       label: 'colapso',
       unitExp: 22,
@@ -565,9 +565,9 @@ export function colapso(): EraModule {
       tl.set({ 'col.k': 0, 'col.fin': 0 });
       tl.to(3.0, { era: era.index, e: era.home - 0.1, ah: 10.22, fov: 56, yaw: 1.6, pitch: 0.3, roll: 0, fondo: 1, horno: 1, bloom: 0.5, umbral: 0.2 });
       tl.label('colapso');
-      tl.caption(4.4, 'Todo vuelve a caer', 'Las galaxias dejan de alejarse y regresan, cada vez más rápido. Su luz se corre al azul y el cielo empieza a brillar.');
+      tl.caption(4.4, 'Todo vuelve a caer', 'Las galaxias regresan y el cielo empieza a brillar.');
       tl.to(4.4, { 'col.k': 0.45, ah: 10.27, e: era.home - 0.45, yaw: 2.1, pitch: 0.2, roll: 0.1 });
-      tl.caption(4.8, 'De vuelta a la niebla', 'El universo vuelve a ser un plasma incandescente, como antes de la primera luz. ¿Un final, o el comienzo de un rebote?');
+      tl.caption(4.8, 'De vuelta a la niebla', 'Todo vuelve a ser fuego, como al principio. ¿Un final, o un comienzo?');
       tl.to(4.8, { 'col.k': 1, ah: 10.29, e: era.home - 0.9, yaw: 2.7, pitch: 0.05, roll: 0.3 });
       // Hotter than any star, back to the temperature of the beginning: a flash, and nothing.
       tl.to(1.4, { 'col.fin': 1, bloom: 0.9, e: era.home - 1.2 });
@@ -589,8 +589,8 @@ export function vacio(): EraModule {
       acto: 'El final',
       certeza: 'E',
       name: 'El vacío que decae',
-      fact: 'Si nuestro vacío no es el más estable, una burbuja de vacío verdadero podría nacer en cualquier punto y crecer casi a la velocidad de la luz.',
-      ficha: ['el Higgs (125 GeV) sugiere que nuestro vacío sería metaestable', 'vida estimada: ~10¹⁶¹ años (Andreassen et al., 2018)', 'la burbuja viajaría casi a la velocidad de la luz'],
+      fact: 'Si nuestro vacío no es el más estable, una burbuja de otro vacío podría nacer en cualquier parte.',
+      ficha: ['el Higgs (125 GeV) sugiere que nuestro vacío sería metaestable', 'vida estimada: ~10¹⁶¹ años (Andreassen et al., 2018)', 'la burbuja viajaría casi a la velocidad de la luz', 'dentro, las leyes de la física serían otras'],
       label: 'vacío',
       unitExp: 22,
       frame: 10,
@@ -664,7 +664,7 @@ export function vacio(): EraModule {
       tl.to(3.0, { era: era.index, e: era.home - 0.2, ah: 10.25, fov: 56, yaw: VISTA.y, pitch: VISTA.x, roll: 0, fondo: 1, horno: 1, bloom: 0.5, umbral: 0.2 });
       tl.label('vacio');
       tl.to(3.4, { 'vac.r': 8, yaw: VISTA.y + 0.04 });
-      tl.caption(5.6, 'Sin aviso', 'Dentro, las leyes de la física serían otras. Nada de lo que conocemos podría existir.');
+      tl.caption(5.6, 'Sin aviso', 'Viaja casi a la velocidad de la luz: nadie la vería venir.');
       // (the wall reaches us at about r = 19: the last bell)
       tl.to(1.9, { 'vac.r': 19, yaw: VISTA.y + 0.06, roll: 0.02 });
       tl.with(0.15, { silencio: 1 });

@@ -50,7 +50,7 @@ export function nucleos(): EraModule {
       acto: 'La niebla',
       certeza: 'O',
       name: 'Veinte minutos de cocina',
-      fact: 'Protones y neutrones se juntan en núcleos de helio. Nuestro protón queda solo: será hidrógeno.',
+      fact: 'Protones y neutrones se pegan en núcleos de helio. El tuyo queda solo: será hidrógeno.',
       ficha: ['entre 3 y 20 minutos, a ~10⁹ K', '≈ 75 % hidrógeno y ≈ 25 % helio, en masa', 'más trazas de deuterio y de litio'],
       label: 'núcleos',
       unitExp: -13,
@@ -131,7 +131,7 @@ export function nucleos(): EraModule {
       tl.to(2.4, { lt: 2.5, 'nuc.d': 1, yaw: 0.9, pitch: 0.2, roll: 0.05 });
       tl.to(2.4, { lt: 2.85, 'nuc.he': 1, yaw: 1.6, pitch: 0.1, roll: 0 });
       // Then back over the sea: a quarter helium, three quarters hydrogen.
-      tl.caption(3.6, 'Un cuarto de helio', 'Tres cuartos de hidrógeno y un cuarto de helio, en masa: la misma mezcla que se mide hoy en las estrellas más viejas.');
+      tl.caption(3.6, 'Un cuarto de helio', 'Sale un cuarto de helio y casi todo lo demás es hidrógeno. La misma mezcla de las estrellas más viejas.');
       tl.to(3.6, { lt: 3.1, 'nucleos.fx': 0, 'nucleos.fy': 0, 'nucleos.fz': 0, e: era.home + 0.3, yaw: 2.0, pitch: 0.25 });
     },
   };

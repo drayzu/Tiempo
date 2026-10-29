@@ -50,7 +50,7 @@ export function aniquilacion(): EraModule {
       acto: 'El primer segundo',
       certeza: 'O',
       name: 'Una de cada mil millones',
-      fact: 'La materia y la antimateria se aniquilan en destellos de luz. Sobra una partícula de cada mil millones: todo lo que existe es ese sobrante.',
+      fact: 'Materia y antimateria se destruyen en destellos. Sobra una partícula de cada mil millones: de ese sobrante estás hecho.',
       ficha: ['por cada 10⁹ antiprotones había 10⁹ + 1 protones', 'por qué sobró materia sigue sin explicarse', 'electrones y positrones: entre 1 y 10 segundos'],
       label: 'aniquilación',
       unitExp: -14,
@@ -122,7 +122,7 @@ export function aniquilacion(): EraModule {
       tl.label('aniquilacion');
       tl.to(4.6, { 'ani.p': 1, lt: -3.6, e: era.home + 0.05, fondo: 0.6, yaw: 0.9, pitch: 0.18, roll: 0.04 });
       tl.to(1.2, { lt: -1.5, fondo: 0.35, yaw: 1.1, roll: 0, 'ani.ev': 1 });
-      tl.caption(4.4, 'Los electrones también', 'Hacia el primer segundo les toca a los electrones y a sus antipartículas. Sobra, otra vez, uno de cada mil millones: uno por cada protón.');
+      tl.caption(4.4, 'Los electrones también', 'Después les toca a los electrones. Sobra justo uno por cada protón.');
       tl.to(3.6, { 'ani.e': 1, lt: 0.6, fondo: 0.55, 'aniquilacion.fz': -14, yaw: 0.7, pitch: 0.05 });
       tl.to(0.8, { lt: 1.0, fondo: 0.35 });
     },

@@ -75,7 +75,7 @@ export function planck(): EraModule {
       acto: 'El primer segundo',
       certeza: 'E',
       name: 'La época de Planck',
-      fact: 'El primer instante que la física puede nombrar. Hipótesis: el espacio burbujea, y quizá todo sean cuerdas vibrando.',
+      fact: 'El primer instante que se puede nombrar. Nadie sabe cómo es: quizá el espacio burbujea y todo son cuerdas que vibran.',
       ficha: ['tiempo de Planck: 5,4 × 10⁻⁴⁴ s', 'longitud de Planck: 1,6 × 10⁻³⁵ m', 'temperatura de Planck: 1,4 × 10³² K'],
       label: 'Planck',
       unitExp: -35,

@@ -84,3 +84,31 @@ export function createProtagonista() {
     at,
   };
 }
+
+/** Infinito's «tú» (infinito/estudios/comun.ts, TU): the series' point for you. */
+export const TU = new THREE.Color(0.45, 1.0, 0.85);
+
+/**
+ * A lone point drawn like the protagonist (a core, a soft halo, a dark core over bright light), for
+ * the opening's «tú» and proton and for you in «Ahora». Its uniforms are set by whoever owns it.
+ */
+export function createPunto(color: THREE.Color) {
+  const u = { uPx: { value: 16 }, uColor: { value: color }, uAlpha: { value: 0 }, uInk: { value: 0 } };
+  const points = new THREE.Points(
+    new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3)),
+    new THREE.ShaderMaterial({
+      vertexShader: VERT,
+      fragmentShader: FRAG,
+      uniforms: u,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      blending: THREE.CustomBlending,
+      blendSrc: THREE.OneFactor,
+      blendDst: THREE.OneMinusSrcAlphaFactor,
+    }),
+  );
+  points.frustumCulled = false;
+  points.renderOrder = 60;
+  return { points, u };
+}

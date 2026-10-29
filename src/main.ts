@@ -16,7 +16,7 @@ import { createSound } from './engine/sonido';
 import { createFondo } from './engine/fondo';
 import { createProtagonista } from './engine/protagonista';
 import { anillo, cono, escala, ficha, hud, llegaste, nota, proyectar, rotulo, CONO, type Cono, type Lectura } from './engine/placa';
-import { aperturaChoreo, createApertura } from './engine/apertura';
+import { aperturaChoreo, cierreChoreo, createApertura } from './engine/apertura';
 import { contactSheet, pelicula, type SheetHost } from './engine/contactos';
 import { crearEras, FINALES, type Final } from './eras';
 import { lang, switchLang, tx } from './i18n';
@@ -111,8 +111,8 @@ MODULES.forEach((m, i) => {
   starts.set(eras.list[i].id, tl.length);
   m.choreo(tl, eras.list[i]);
 });
-// A last breath on the final era, for the closing line.
-tl.wait(1.2);
+// And the closing: of all this time, an instant was yours (the loop then lands on the same point).
+cierreChoreo(tl);
 
 const scroll = createScroll(document.querySelector<HTMLElement>('#spacer')!, tl.length);
 const sound = createSound();
@@ -256,7 +256,7 @@ const ENLACES = [
   { from: tl.at('quarks') + 2, to: tl.at('aniquilacion') - 1, href: ESPACIO(22.5), text: '«Nadie ha visto un quark solo», en Espacio' },
   { from: tl.at('niebla') + 4, to: tl.at('gas') - 1, href: ESPACIO(275), text: 'La luz más antigua, en Espacio' },
   { from: tl.at('andromeda'), to: forkAt - 0.5, href: ESPACIO(236), text: 'Andrómeda, en Espacio' },
-  { from: tl.at('despues') - 1, to: tl.length - 1, href: 'https://drayzu.github.io/Atlas/', text: '¿Podría una civilización escapar del final? En el Atlas' },
+  { from: tl.at('despues') - 1, to: tl.at('este-instante'), href: 'https://drayzu.github.io/Atlas/', text: '¿Podría una civilización escapar del final? En el Atlas' },
 ].filter((x) => x.to > x.from);
 let enlaceOn = -1;
 

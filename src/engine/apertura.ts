@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { smoothstep } from '../lib/math';
 import { AGE, YEAR } from '../lib/cosmo';
 import type { Timeline } from './timeline';
-import { ACCENT } from './protagonista';
+import { ACCENT, TU, createPunto } from './protagonista';
 import { rotulo } from './placa';
 import { HITOS, type Hito } from '../eras/ahora';
 
@@ -20,9 +20,6 @@ import { HITOS, type Hito } from '../eras/ahora';
  * brand, the cone, the plate), `ap.tu` (you), `ap.sale` (the proton steps out of you), `ap.queda`
  * (you stay behind), `ap.proton` (the proton), `ap.hitos` (the milestones).
  */
-
-/** Infinito's «tú» (infinito/estudios/comun.ts, TU). */
-const TU = new THREE.Color(0.45, 1.0, 0.85);
 
 /** log10 of the years in `s` seconds. */
 const LB = (s: number) => Math.log10(s / YEAR);
@@ -89,53 +86,27 @@ export function aperturaChoreo(tl: Timeline) {
   return tl.length;
 }
 
-const VERT = /* glsl */ `
-  uniform float uPx;
-  void main() {
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = uPx;
-  }
-`;
-/** The protagonist's point (protagonista.ts): a core and a soft halo, with a dark core over bright light. */
-const FRAG = /* glsl */ `
-  uniform vec3 uColor;
-  uniform float uAlpha, uInk;
-  void main() {
-    vec2 c = gl_PointCoord - 0.5;
-    float d2 = dot(c, c);
-    float core = exp(-d2 * 90.0);
-    float halo = exp(-d2 * 14.0) * 0.35;
-    float f = (core + halo) * uAlpha;
-    gl_FragColor = vec4(uColor * f, core * uInk * uAlpha);
-  }
-`;
-
-function punto(color: THREE.Color) {
-  const u = { uPx: { value: 16 }, uColor: { value: color }, uAlpha: { value: 0 }, uInk: { value: 0 } };
-  const points = new THREE.Points(
-    new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0], 3)),
-    new THREE.ShaderMaterial({
-      vertexShader: VERT,
-      fragmentShader: FRAG,
-      uniforms: u,
-      transparent: true,
-      depthTest: false,
-      depthWrite: false,
-      blending: THREE.CustomBlending,
-      blendSrc: THREE.OneFactor,
-      blendDst: THREE.OneMinusSrcAlphaFactor,
-    }),
-  );
-  points.frustumCulled = false;
-  points.renderOrder = 60;
-  return { points, u };
+/**
+ * The closing (GUION.md 74), after the last era of every ending: the figures go out and you are left,
+ * the point of the beginning, while the clock counts since you arrived again. The chrome leaves too,
+ * so the loop lands on this very frame.
+ */
+export function cierreChoreo(tl: Timeline) {
+  tl.label('este-instante');
+  tl.with(0.02, { reloj: 5, 'ap.sale': 0, 'ap.queda': 0 });
+  tl.caption(7.4, 'Este instante', 'De todo este tiempo, a ti te tocó un instante. Este.');
+  tl.with(1.6, { velo: 1 });
+  tl.with(2.0, { 'ap.tu': 1 });
+  tl.wait(5.0);
+  tl.to(1.6, { cromo: 0 });
+  tl.wait(0.8);
 }
 
 export function createApertura(scene: THREE.Scene) {
   const group = new THREE.Group();
   scene.add(group);
-  const tu = punto(TU.clone().multiplyScalar(1.8));
-  const proton = punto(new THREE.Color(ACCENT).multiplyScalar(2.2));
+  const tu = createPunto(TU.clone().multiplyScalar(1.8));
+  const proton = createPunto(new THREE.Color(ACCENT).multiplyScalar(2.2));
   group.add(tu.points, proton.points);
   const at = new THREE.Vector3();
   const tmp = new THREE.Vector3();

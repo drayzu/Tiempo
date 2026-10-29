@@ -95,8 +95,8 @@ export function solMuere(): EraModule {
       acto: 'El futuro cercano',
       certeza: 'T',
       name: 'El Sol se apaga',
-      fact: 'El Sol brillará cada vez más, se hinchará y se apagará: le quedan unos cinco mil millones de años.',
-      ficha: ['el Sol brilla ~10 % más cada 1 000 millones de años', 'gigante roja: en ~5 000 millones de años, ~200 veces su radio', 'queda una enana blanca de ~0,5 masas solares'],
+      fact: 'Al Sol le queda la mitad de su vida.',
+      ficha: ['el Sol brilla ~10 % más cada 1 000 millones de años', 'gigante roja: en ~5 000 millones de años, ~200 veces su radio', 'queda una enana blanca de ~0,5 masas solares', 'los océanos de la Tierra se evaporan en ~1 000 millones de años'],
       label: 'el Sol se apaga',
       unitExp: 11,
       frame: 8,
@@ -219,11 +219,11 @@ export function solMuere(): EraModule {
       tl.set({ 'sm.dry': 0, 'sm.giant': 0, 'sm.neb': 0 });
       tl.to(3.0, { era: era.index, e: era.home - 0.1, ah: 8.0, fondo: 1, horno: 0, fov: 52, yaw: 0.25, pitch: 0.55, roll: 0, bloom: 0.55, umbral: 0.2 });
       tl.label('futuro');
-      tl.caption(3.6, 'La Tierra pierde sus océanos', 'El Sol brilla cada vez más. En unos mil millones de años el agua de la Tierra se evapora y escapa al espacio. Nuestro protón se va con ella.');
+      tl.caption(3.6, 'La Tierra pierde sus océanos', 'El Sol brilla cada vez más y el agua de la Tierra se evapora. Tu protón se va con ella.');
       tl.to(3.6, { 'sm.dry': 1, ah: 9.1, yaw: 0.45 });
-      tl.caption(4.0, 'Gigante roja', 'En unos cinco mil millones de años el Sol se hincha hasta casi la órbita de la Tierra y se traga a Mercurio y a Venus. Quizá también a la Tierra.');
+      tl.caption(4.0, 'Gigante roja', 'El Sol se hincha y se traga a Mercurio y a Venus. Quizá también a la Tierra.');
       tl.to(4.0, { 'sm.giant': 1, ah: 9.88, e: era.home + 0.25, yaw: 0.8, pitch: 0.4 });
-      tl.caption(4.0, 'Nebulosa planetaria', 'Suelta sus capas en una nube de colores. Queda una enana blanca del tamaño de la Tierra, que se enfriará durante billones de años.');
+      tl.caption(4.0, 'Nebulosa planetaria', 'Suelta sus capas en una nube de colores. Queda un rescoldo del tamaño de la Tierra.');
       tl.to(4.0, { 'sm.neb': 1, ah: 9.92, e: era.home + 1.7, yaw: 1.2, pitch: 0.3 });
     },
   };

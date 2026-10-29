@@ -6,6 +6,7 @@ import type { EraModule } from '../engine/eras';
 import { ink, nota, rotulo } from '../engine/placa';
 import { tx } from '../i18n';
 import { GLSL_COMUN, luna as lunaReal, tierra as tierraReal, type Planeta } from '../horizontes';
+import { TU, createPunto } from '../engine/protagonista';
 import { cargar } from '../horizontes/mapas';
 
 /**
@@ -238,7 +239,7 @@ export function ahora(): EraModule {
       acto: 'Nosotros',
       certeza: 'O',
       name: 'Ahora',
-      fact: 'Cada gesto, diez veces menos tiempo: mil millones de años, un millón, mil, un año, un segundo.',
+      fact: 'Volvemos hacia ti. Cada gesto, diez veces menos tiempo.',
       ficha: ['edad del universo: 13 787 ± 20 millones de años', 'el fondo de microondas: 2,725 K', 'el universo observable: ~93 000 millones de años luz'],
       label: 'ahora',
       unitExp: 6,
@@ -368,6 +369,10 @@ export function ahora(): EraModule {
 
         const object = new THREE.Group();
         object.add(stars.points, planet);
+        // You, the opening's point, back where you are when the journey reaches now (the proton is there).
+        const tu = createPunto(TU.clone().multiplyScalar(1.8));
+        tu.points.renderOrder = 40;
+        object.add(tu.points);
         let prevL = Math.pow(10, LB0);
         const st = { L: prevL, ice: 0, drift: 0, lb: LB0, reloj: 1 };
         const you = new THREE.Vector3();
@@ -448,6 +453,11 @@ export function ahora(): EraModule {
             }
             // You, on the turning planet.
             dirOf(HERE.lat, HERE.lon, uni.uRot.value, you).applyQuaternion(TURN).multiplyScalar(R * 1.004);
+            const kTu = f.tl.get('aho.tu', f.p) * f.alpha;
+            tu.points.visible = kTu > 0.002;
+            tu.points.position.copy(you);
+            tu.u.uAlpha.value = kTu * (0.86 + 0.14 * Math.sin(f.time * 1.5));
+            tu.u.uPx.value = 22 * f.dpr;
             Object.assign(st, { L, ice, drift, lb, reloj });
           },
           proton: () => you,
@@ -488,19 +498,23 @@ export function ahora(): EraModule {
       tl.with(0.02, { reloj: 1 });
       tl.to(3.4, { era: era.index, e: era.home + 1.35, lb: LB0 - 0.25, fov: 50, yaw: -1.1, pitch: 0.42, roll: 0.05, fondo: 1, horno: 0, bloom: 0.45, umbral: 0.4 });
       tl.label('ahora');
-      tl.caption(10.6, 'Hacia ahora', 'Cada gesto, diez veces menos tiempo: mil millones de años, un millón, mil, un año, un segundo.');
+      tl.caption(10.6, 'Hacia ahora', 'Volvemos hacia ti. Cada gesto, diez veces menos tiempo.');
       tl.to(4.4, { lb: 3.0, e: era.home + 0.45, yaw: -0.55, pitch: 0.22, roll: 0 });
       tl.to(3.0, { lb: -2.6, e: era.home + 0.1, yaw: -0.2, pitch: 0.08 });
       tl.to(3.2, { lb: LB1, e: era.home, yaw: 0, pitch: 0 });
       // Now: down to where you are.
+      // (a pause: the meeting; you light up again where your proton is)
       tl.with(0.02, { reloj: 2 });
-      tl.caption(4.4, 'Este protón está en ti', 'Nació en la primera millonésima de segundo. Hoy es parte del agua de tu cuerpo.');
+      tl.caption(5.4, 'Este protón está en ti', 'Tú llegaste hace un momento. Él viene viajando desde el principio.');
+      tl.with(1.6, { 'aho.tu': 1 });
       tl.to(1.4, { 'ahora.fx': YOU.x * 0.85, 'ahora.fy': YOU.y * 0.85, 'ahora.fz': YOU.z * 0.85, e: era.home - 0.36, fov: 46, roll: -0.04 });
-      tl.wait(3.0);
+      tl.wait(4.0);
       // And time goes on: the axis opens towards the future; the camera rises and turns away.
       tl.set({ ah: LB1 });
       tl.with(0.02, { reloj: 3 });
-      tl.caption(3.2, 'Y el tiempo sigue', 'Desde aquí el eje se abre de nuevo, hacia el futuro.');
+      // (it lasts into the next era's arrival, until its name takes over)
+      tl.caption(4.7, 'Y el tiempo sigue', 'Pero el tiempo no se detiene en ti.');
+      tl.with(2.4, { 'aho.tu': 0 });
       tl.to(3.2, { ah: 0.3, 'ahora.fx': 0, 'ahora.fy': 0, 'ahora.fz': 0, e: era.home + 0.5, fov: 50, yaw: 0.5, pitch: 0.15, roll: 0, bloom: 0.7, umbral: 0.12 });
     },
   };

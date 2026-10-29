@@ -55,7 +55,7 @@ export function quarks(): EraModule {
       acto: 'El primer segundo',
       certeza: 'T',
       name: 'El plasma de quarks',
-      fact: 'Quarks y gluones sueltos a billones de grados: ni siquiera existen los protones.',
+      fact: 'Hace demasiado calor para que exista un protón. Solo hay sus piezas, sueltas.',
       ficha: ['plasma de quarks y gluones: sobre 2 × 10¹² K', 'se recrea en choques de núcleos en el LHC y en RHIC', 'los protones se forman hacia 10⁻⁵ s'],
       label: 'quarks',
       unitExp: -16,
@@ -141,7 +141,7 @@ export function quarks(): EraModule {
       tl.to(2.6, { lt: -6.2, 'quarks.fz': -32, 'quarks.fx': 0.3, yaw: -0.12, pitch: 0.05, roll: -0.04 });
       // The universe cools below two trillion degrees: the quarks are caught. The camera slows and
       // comes to our proton, circling it as it forms.
-      tl.caption(6.4, 'Los quarks quedan presos', 'De a tres, sus colores se suman en blanco: nacen los protones y los neutrones. Uno de ellos es nuestro protón.');
+      tl.caption(6.4, 'Ahí está', 'Los quarks quedan presos de a tres. Uno de esos tríos es tu protón: el que buscábamos.');
       tl.to(2.0, { lt: -5.45, 'quarks.fx': OURS.x, 'quarks.fy': OURS.y, 'quarks.fz': OURS.z + 4, e: era.home - 0.5, yaw: 0, pitch: 0, roll: 0, 'qrk.bind': 0.1 });
       tl.to(2.6, { lt: -5.1, 'quarks.fz': OURS.z, e: era.home - 0.78, yaw: 0.9, pitch: 0.2, 'qrk.bind': 0.75, 'qrk.bound': 1 });
       tl.to(1.8, { lt: -4.8, e: era.home - 0.4, yaw: 1.5, pitch: 0.12, 'qrk.bind': 1 });

@@ -22,8 +22,8 @@ export function inflacion(): EraModule {
       acto: 'El primer segundo',
       certeza: 'T',
       name: 'Inflación',
-      fact: 'En menos tiempo del que la luz tarda en cruzar un protón, el espacio crece unas 10²⁶ veces.',
-      ficha: ['dura unos 10⁻³² s (según el modelo)', 'el espacio crece al menos 10²⁶ veces', 'sus arrugas: 1 parte en 100 000 en el fondo de microondas'],
+      fact: 'En una fracción de instante, el espacio se estira de golpe. Todo lo que hoy ves cabía en algo más pequeño que un protón.',
+      ficha: ['dura unos 10⁻³² s (según el modelo)', 'el espacio crece al menos 10²⁶ veces', 'sus arrugas: 1 parte en 100 000 en el fondo de microondas', 'antes, lo que hoy ves medía mucho menos que un protón (según el modelo)'],
       label: 'inflación',
       unitExp: -35,
       frame: 10,
@@ -77,7 +77,7 @@ export function inflacion(): EraModule {
       tl.to(2.4, { era: era.index, e: era.home, lt: -36, fondo: 0, horno: 0, fov: 70, yaw: 0, pitch: 0, roll: 0 });
       tl.label('inflacion');
       tl.to(2.2, { 'inf.k': 0.4, lt: -34.4, roll: 0.12 });
-      tl.caption(3.0, 'Las semillas', 'Las arrugas del vacío, estiradas a escala cósmica, quedan congeladas: de ellas nacerán las galaxias.');
+      tl.caption(3.0, 'Las semillas', 'Unas arrugas diminutas quedan estiradas y quietas. De ellas saldrán las galaxias, también la tuya.');
       tl.to(3.0, { 'inf.k': 0.88, lt: -32.6, roll: 0.3, yaw: 0.15 });
       tl.to(1.0, { 'inf.k': 1, lt: -32, roll: 0.36 });
     },

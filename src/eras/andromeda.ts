@@ -132,7 +132,7 @@ export function andromeda(conUltima = true): EraModule {
       certeza: 'T',
       name: 'Andrómeda',
       fact: 'Andrómeda viene hacia nosotros. Quizá choquemos.',
-      ficha: ['a 2,5 millones de años luz, acercándose a ~110 km/s', 'fusión: ~50 % en 10 000 millones de años (Sawala et al., 2025)', 'las demás galaxias cruzan el horizonte hacia 10¹¹ años'],
+      ficha: ['a 2,5 millones de años luz, acercándose a ~110 km/s', 'fusión: ~50 % en 10 000 millones de años (Sawala et al., 2025)', 'las demás galaxias cruzan el horizonte hacia 10¹¹ años', 'la última enana roja se apaga hacia 10¹⁴ años'],
       label: 'Andrómeda',
       unitExp: 21,
       frame: 20,
@@ -274,7 +274,7 @@ export function andromeda(conUltima = true): EraModule {
       const a0 = desdeAqui(0, 20.0, 62, { yaw: 1.2, roll: 0 }, new THREE.Vector3(0.12, -0.06, 0));
       tl.to(3.6, { era: era.index, ah: 9.93, fondo: 1, horno: 0, ...a0, bloom: 0.45, umbral: 0.3 });
       tl.label('andromeda');
-      tl.caption(6.8, 'Andrómeda se acerca', 'Desde donde estuvo el Sol, la Vía Láctea es una banda en el cielo. Andrómeda, una mancha que crece hasta llenarlo.');
+      tl.caption(6.8, 'Andrómeda se acerca', 'Andrómeda crece en el cielo hasta llenarlo.');
       const a1 = desdeAqui(0.14, 20.0, 64, a0, new THREE.Vector3(0.06, -0.03, 0));
       tl.to(2.4, { 'and.k': 0.14, ah: 9.94, ...a1 });
       const a2 = desdeAqui(0.27, 20.05, 68, a1, new THREE.Vector3(0.02, 0.0, 0));
@@ -282,14 +282,14 @@ export function andromeda(conUltima = true): EraModule {
       const a3 = desdeAqui(0.35, 20.1, 74, a2, new THREE.Vector3(0.0, 0.08, 0.05));
       tl.to(2.2, { 'and.k': 0.35, ah: 9.958, ...a3 });
       // The first pass: its disk sweeps over us; the camera rises out of the galaxy to see the tides.
-      tl.caption(6.6, 'El choque', 'Las estrellas casi nunca chocan: están demasiado lejos unas de otras. Pero las mareas lanzan colas de millones de estrellas, y el gas comprimido enciende estrellas nuevas.');
+      tl.caption(6.6, 'El choque', 'Las estrellas casi nunca chocan: están demasiado lejos. Las galaxias, sí.');
       const out1 = vista(new THREE.Vector3(0.5, 0.75, 0.45), new THREE.Vector3(0, 1, 0), a3);
       tl.to(1.6, { 'and.k': 0.4, 'and.dentro': 0, ah: 9.962, e: 20.9, fov: 62, ...out1, roll: out1.roll + 0.2, ...viajeA('andromeda', lugares(0.4).mw.clone().lerp(lugares(0.4).sun, 0.5)) });
       tl.to(2.4, { 'and.k': 0.47, ah: 9.968, e: 21.75, fov: 54, ...vista(new THREE.Vector3(0.45, 0.8, 0.4), new THREE.Vector3(0, 1, 0), out1), ...viajeA('andromeda', new THREE.Vector3()) });
       const out2 = vista(new THREE.Vector3(-0.2, 0.6, 0.8), new THREE.Vector3(0, 1, 0), out1);
       tl.to(2.6, { 'and.k': 0.66, ah: 9.98, e: 21.95, ...out2 });
       // They come back and become one: the camera goes back in.
-      tl.caption(6.0, 'Una sola galaxia', 'Si chocan, en unos miles de millones de años se funden en una galaxia elíptica. Desde adentro, el cielo es un resplandor por todas partes.');
+      tl.caption(6.0, 'Una sola galaxia', 'Si chocan, las dos se vuelven una.');
       tl.to(2.6, { 'and.k': 0.84, ah: 9.99, e: 21.6, ...vista(new THREE.Vector3(-0.6, 0.5, 0.6), new THREE.Vector3(0, 1, 0), out2) });
       const dIn = new THREE.Vector3(0.3, 0.15, -1).normalize();
       const inEnd = vista(dIn, new THREE.Vector3(0, 1, 0), out2);
@@ -303,11 +303,12 @@ export function andromeda(conUltima = true): EraModule {
         return;
       }
       // Out again: one galaxy alone, while every other one reddens and crosses the horizon.
-      tl.caption(4.4, 'Un cielo con una sola galaxia', 'Las demás galaxias se alejan cada vez más rápido y cruzan el horizonte. Un astrónomo del futuro no podría saber que hubo un Big Bang.');
+      tl.caption(4.4, 'Un cielo con una sola galaxia', 'Las demás galaxias se alejan hasta perderse. Quien viva aquí no sabrá que hubo un Big Bang.');
       tl.to(4.4, { 'and.sky': 1, 'and.dentro': 0, ah: 11.4, e: 21.3, fov: 54, yaw: 1.6, pitch: 0.2, roll: 0, ...viajeA('andromeda', new THREE.Vector3()) });
       // The last star belongs to the cold ending: back in, among the red dwarfs, until the last.
-      tl.caption(5.2, 'La última estrella', 'Las estrellas se apagan una a una, las más grandes primero. Hacia los 10¹⁴ años se apaga la última enana roja.');
-      tl.to(5.2, { 'and.last': 1, 'and.dentro': 0.5, ah: 14, e: 20.95, fov: 60, yaw: 1.9, pitch: 0.45, silencio: 0.25, ...viajeA('andromeda', OURS_END.clone().multiplyScalar(0.9)) });
+      // (a pause)
+      tl.caption(6.4, 'La última estrella', 'Se apaga la última estrella. Nadie volverá a ver un amanecer.');
+      tl.to(6.4, { 'and.last': 1, 'and.dentro': 0.5, ah: 14, e: 20.95, fov: 60, yaw: 1.9, pitch: 0.45, silencio: 0.25, ...viajeA('andromeda', OURS_END.clone().multiplyScalar(0.9)) });
     },
   };
 }

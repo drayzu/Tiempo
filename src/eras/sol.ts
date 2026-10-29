@@ -66,7 +66,7 @@ export function sol(): EraModule {
       acto: 'Nosotros',
       certeza: 'O',
       name: 'Nace el Sol',
-      fact: 'Una nube de gas y polvo colapsa en un disco. En su centro se enciende el Sol.',
+      fact: 'Una nube de gas y polvo se derrumba en un disco. En el centro se enciende tu estrella.',
       ficha: ['hace 4 567 millones de años (los meteoritos más antiguos)', 'el disco que formó los planetas: ~100 UA', 'la Tierra tardó decenas de millones de años en formarse'],
       label: 'el Sol',
       unitExp: 13,
@@ -170,11 +170,11 @@ export function sol(): EraModule {
       // Into the cloud in the arm.
       tl.to(3.0, { era: era.index, e: 17.2, lt: LT(9.17e9), fondo: 1, horno: 0, fov: 60, yaw: 0.2, pitch: 0.3, roll: 0, bloom: 0.45, umbral: 0.25 });
       tl.label('sol');
-      tl.caption(3.6, 'Restos de estrellas muertas', 'Una supernova cercana siembra la nube con carbono, oxígeno y hierro. Su hidrógeno, como nuestro protón, viene del principio.');
+      tl.caption(3.6, 'Restos de estrellas muertas', 'Una estrella que estalla cerca siembra la nube. Todo lo pesado de tu cuerpo se hizo en estrellas así. Tu protón no: viene del principio.');
       tl.to(3.6, { 'sol.sn': 1, lt: LT(9.183e9), e: 16.6, yaw: 0.5, pitch: 0.2 });
       // The core collapses: the camera falls in with it.
       tl.to(3.4, { 'sol.col': 0.55, 'sol.jet': 1, lt: LT(9.186e9), e: 14.2, yaw: 0.35, pitch: 0.55, roll: 0.06 });
-      tl.caption(4.2, 'Se enciende el Sol', 'Hace 4 600 millones de años, en el centro del disco, empieza a fusionar hidrógeno. El polvo de alrededor se junta en anillos: ahí nacen los planetas.');
+      tl.caption(4.2, 'Se enciende el Sol', 'El Sol empieza a brillar. En el polvo que gira alrededor nacen los planetas.');
       // Seen face on (the rings as ALMA sees them), the view turning about its axis.
       tl.to(2.6, { 'sol.col': 1, 'sol.on': 1, 'sol.jet': 0, 'sol.rings': 1, lt: LT(9.19e9), e: 13.6, yaw: 0.1, pitch: 1.3, roll: 0.4, umbral: 0.4 });
       tl.to(1.8, { lt: LT(9.2e9), e: 13.45, yaw: 0.05, pitch: 1.35, roll: 0.9 });

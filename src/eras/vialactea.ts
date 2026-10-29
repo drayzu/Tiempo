@@ -52,8 +52,8 @@ export function viaLactea(anchor?: THREE.Vector3): EraModule {
       acto: 'Nosotros',
       certeza: 'O',
       name: 'La Vía Láctea se arma',
-      fact: 'Nuestra galaxia crece tragándose galaxias más pequeñas. Nuestro protón viaja en el gas del disco.',
-      ficha: ['~100 000 años luz de diámetro', 'entre 100 000 y 400 000 millones de estrellas', 'el Sol, a ~26 000 años luz del centro'],
+      fact: 'Tu galaxia crece tragándose otras más pequeñas. Tu protón viaja en su gas.',
+      ficha: ['~100 000 años luz de diámetro', 'entre 100 000 y 400 000 millones de estrellas', 'el Sol, a ~26 000 años luz del centro', 'la expansión acelera desde hace ~5 000 millones de años: la energía oscura'],
       label: 'Vía Láctea',
       unitExp: 20,
       frame: 14,
@@ -165,7 +165,7 @@ export function viaLactea(anchor?: THREE.Vector3): EraModule {
       tl.label('via-lactea');
       tl.to(3.6, { 'vl.k': 0.45, 'vl.rot': -2.1, lt: LT(3.5e9), e: era.home + 0.15, yaw: 0.1, pitch: 1.2 });
       tl.to(3.6, { 'vl.k': 0.85, 'vl.rot': -1.0, lt: LT(7.5e9), e: era.home - 0.05, yaw: 0.6, pitch: 1.1 });
-      tl.caption(3.4, 'La expansión acelera', 'Hace unos cinco mil millones de años la energía oscura toma el mando: desde entonces el universo crece cada vez más rápido.');
+      tl.caption(3.4, 'La expansión acelera', 'Desde aquí, el universo crece cada vez más rápido. Nadie sabe bien por qué.');
       tl.to(3.4, { 'vl.k': 1, 'vl.rot': -0.3, lt: LT(8.9e9), e: era.home - 0.1, yaw: 1.0, pitch: 0.95 });
       // Down over the arm where the Sun will be born.
       tl.to(2.8, { 'vl.rot': 0, lt: LT(9.17e9), 'via-lactea.fx': SUN.x, e: era.home - 0.3, yaw: 1.3, pitch: 1.05 });

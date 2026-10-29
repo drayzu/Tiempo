@@ -309,17 +309,17 @@ export function higgs(): EraModule {
       // Reheating: out of the cold dark of inflation, a flash, and the universe is full of hot matter.
       tl.with(0.02, { reloj: 0 });
       tl.set({ 'hig.s': 0, 'hig.mass': 0, 'hig.field': 0, 'hig.flash': 0, 'higgs.fz': 0 });
-      tl.caption(3.0, 'El universo se enciende', 'La inflación termina y su energía se vuelve partículas y luz: el universo se llena de fuego.');
+      tl.caption(3.0, 'El universo se enciende', 'La inflación se acaba y su energía se vuelve fuego.');
       tl.to(0.7, { era: era.index - 0.4, 'hig.flash': 1.1, fondo: 0.35, horno: 0.04, lt: -31, fov: 80 });
       tl.to(0.6, { era: era.index - 0.2, 'hig.flash': 0.4, fondo: 0.3, horno: 0, lt: -30.4 });
       tl.to(1.7, { era: era.index, e: era.home - 0.1, lt: -29, 'hig.flash': 0, fondo: 0.2, horno: 0, fov: 72, yaw: 0, pitch: 0, roll: 0, bloom: 0.55, umbral: 0.18, 'hig.s': 40, 'higgs.fz': -20 });
       tl.label('higgs');
       // First person through particles at the speed of light; the clock races through twenty orders.
-      tl.caption(5.4, 'Nada pesa', 'Sin masa, cada partícula vuela a la velocidad de la luz: quarks, electrones, gluones, luz. Así pasa la primera billonésima de segundo.');
+      tl.caption(5.4, 'Nada pesa', 'Todavía nada tiene masa. Todo vuela a la velocidad de la luz.');
       tl.to(2.7, { lt: -21, 'hig.s': 240, 'higgs.fz': -150, 'higgs.fx': 6, yaw: 0.22, pitch: 0.06, roll: 0.12, fov: 76 });
       tl.to(2.7, { lt: -12.4, 'hig.s': 440, 'higgs.fz': -300, 'higgs.fx': -4, yaw: -0.1, pitch: -0.04, roll: -0.08 });
       // The Higgs field takes its value everywhere: the massive ones slow to points; light streaks on.
-      tl.caption(4.8, 'El Higgs se enciende', 'A una billonésima de segundo, el campo de Higgs toma un valor en todo el espacio. Las partículas ganan masa y ya no van a la velocidad de la luz. La luz sí.');
+      tl.caption(4.8, 'El Higgs se enciende', 'De pronto, las cosas pesan. Sin esto no habría átomos, ni tú.');
       tl.to(2.2, { lt: -11.9, 'hig.mass': 0.55, 'hig.field': 1, 'hig.s': 520, 'higgs.fz': -340, e: era.home - 0.25, fov: 60, yaw: 0.35, pitch: 0.1, roll: 0 });
       tl.to(2.6, { lt: -11.4, 'hig.mass': 1, 'hig.s': 600, 'higgs.fz': -352, e: era.home - 0.35, yaw: 0.6, pitch: 0.16, roll: 0.05 });
     },

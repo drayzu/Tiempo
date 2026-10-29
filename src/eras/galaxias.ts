@@ -90,7 +90,7 @@ export function galaxias(): EraModule {
       acto: 'Oscuridad y amanecer',
       certeza: 'O',
       name: 'Las burbujas se tocan',
-      fact: 'La luz de las primeras galaxias ioniza burbujas de gas que crecen hasta tocarse y fundirse, como un queso suizo.',
+      fact: 'Su luz abre burbujas en el gas, que crecen hasta tocarse.',
       ficha: ['reionización: hasta ~1 000 millones de años', 'JWST: galaxias a z ≈ 14, unos 290 millones de años', 'el gas entre galaxias sigue ionizado hasta hoy'],
       label: 'galaxias',
       unitExp: 21.5,
@@ -170,7 +170,7 @@ export function galaxias(): EraModule {
       // Out of the first star's knot, the web a hundred times larger; first person along a thread.
       tl.to(3.0, { era: era.index, e: era.home - 0.3, lt: LT(2.6e8), fondo: 1, horno: 0, fov: 58, yaw: -0.2, pitch: 0.08, roll: 0 });
       tl.label('galaxias');
-      tl.caption(3.6, 'Más temprano de lo esperado', 'El telescopio James Webb ve galaxias brillantes a menos de 300 millones de años del inicio: se formaron antes de lo que se creía.');
+      tl.caption(3.6, 'Más temprano de lo esperado', 'Hoy un telescopio ve estas galaxias, y son más brillantes y tempranas de lo que nadie esperaba.');
       tl.to(3.6, { 'gal.k': 0.35, lt: LT(4e8), 'galaxias.fz': 10, 'galaxias.fx': -2, yaw: 0.1, roll: 0.04 });
       tl.to(3.6, { 'gal.k': 0.75, lt: LT(6.5e8), 'galaxias.fz': 3, 'galaxias.fx': 0, yaw: 0.45, pitch: 0.18, roll: -0.03 });
       tl.to(2.8, { 'gal.k': 1, lt: LT(1e9), 'galaxias.fz': 0, e: era.home + 0.25, yaw: 0.8, pitch: 0.25, roll: 0 });
