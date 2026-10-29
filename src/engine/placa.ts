@@ -195,6 +195,16 @@ function wrap(g: CanvasRenderingContext2D, text: string, maxW: number) {
     } else line = test;
   }
   if (line) lines.push(line);
+  // No word alone on the last line: the one before keeps it company, if it fits.
+  const n = lines.length;
+  if (n > 1 && !lines[n - 1].includes(' ') && lines[n - 2].includes(' ')) {
+    const cut = lines[n - 2].lastIndexOf(' ');
+    const joined = `${lines[n - 2].slice(cut + 1)} ${lines[n - 1]}`;
+    if (g.measureText(joined).width <= maxW) {
+      lines[n - 2] = lines[n - 2].slice(0, cut);
+      lines[n - 1] = joined;
+    }
+  }
   return lines;
 }
 
@@ -429,6 +439,8 @@ export interface Cono {
   colors: string[];
   /** Where the endings fork (0..1 of the journey), if they do. */
   fork?: number;
+  /** The beat where the journey through time begins (the opening comes before: the cone does not show it). */
+  start?: number;
 }
 
 export const CONO = { top: 0.15, bottom: 0.85, right: 70 };
@@ -444,7 +456,8 @@ export function cono(g: CanvasRenderingContext2D, u: number, W: number, H: numbe
   const y0 = CONO.top * H;
   const y1 = CONO.bottom * H;
   const yAt = (q: number) => y0 + q * (y1 - y0);
-  const qOf = (beat: number) => Math.min(Math.max(beat / c.length, 0), 1);
+  const s0 = c.start ?? 0;
+  const qOf = (beat: number) => Math.min(Math.max((beat - s0) / (c.length - s0), 0), 1);
   if (fade <= 0.01) return;
   g.save();
   g.globalAlpha = fade;
@@ -563,7 +576,7 @@ export function cono(g: CanvasRenderingContext2D, u: number, W: number, H: numbe
 
 /** What the clocks read. */
 export interface Lectura {
-  /** 0: since the beginning; 1: back from now; 2: now; 3: ahead of now; 4: before time (t = ?). */
+  /** 0: since the beginning; 1: back from now; 2: now; 3: ahead of now; 4: before time (t = ?); 5: since you arrived (the opening). */
   reloj: number;
   /** log10 of seconds since the beginning. */
   lt: number;
@@ -586,6 +599,17 @@ let leaving: Shown | null = null;
 
 const reloj = new Intl.DateTimeFormat(EN ? 'en-GB' : 'es-CL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 const loaded = performance.now();
+/** Seconds since the visitor arrived at the page. */
+export const llegaste = () => (performance.now() - loaded) / 1000;
+
+/** How long ago you arrived, as the opening's clock says it: «hace 8 s», «hace 3 min 12 s». */
+function haceUnMomento(s: number) {
+  const n = Math.floor(s);
+  const h = Math.floor(n / 3600);
+  const m = Math.floor((n % 3600) / 60);
+  const span = h > 0 ? `${h} h ${m} min` : m > 0 ? (m < 10 ? `${m} min ${n % 60} s` : `${m} min`) : `${n} s`;
+  return EN ? `${span} ago` : `hace ${span}`;
+}
 
 /**
  * The name and sentence of what is on screen (a moment's caption or the era's), then the clocks.
@@ -646,6 +670,9 @@ export function hud(g: CanvasRenderingContext2D, u: number, H: number, l: Lectur
     mono(kelvin(l.logT), 0.62);
     const ahead = l.logYears >= 12 ? `10${sup(Math.floor(l.logYears))} ${EN ? 'years' : 'años'}` : anios(l.years, 2);
     mono(EN ? `${ahead} from now` : `dentro de ${ahead}`, l.logYears >= 1e4 ? 0 : 0.85);
+  } else if (l.reloj === 5) {
+    mono(EN ? 'you arrived at this page' : 'llegaste a esta página', 0.42);
+    mono(`${EN ? 'now' : 'ahora'}: ${reloj.format(new Date())}`, 0.85);
   } else if (l.reloj === 4) {
     mono(EN ? 'before time: hypotheses' : 'antes del tiempo: hipótesis', 0.42);
     mono(EN ? 'physics as we know it begins at the Planck time, 10⁻⁴³ s' : 'la física que conocemos empieza en el tiempo de Planck, 10⁻⁴³ s', 0.62);
@@ -668,6 +695,10 @@ export function hud(g: CanvasRenderingContext2D, u: number, H: number, l: Lectur
     g.font = FONT.serif(big);
     g.fillStyle = ink(inkT);
     g.fillText('t = ?', x, y);
+  } else if (l.reloj === 5) {
+    g.font = FONT.serif(big);
+    g.fillStyle = ink(inkT);
+    g.fillText(haceUnMomento(llegaste()), x, y);
   } else if (l.reloj === 1 || l.reloj === 3) {
     const pre = l.reloj === 1 ? (EN ? '' : 'hace') : EN ? 'in' : 'dentro de';
     const unitY = EN ? (l.reloj === 1 ? 'years ago' : 'years') : 'años';

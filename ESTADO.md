@@ -157,6 +157,10 @@ antes del tiempo → época de Planck → inflación → **el campo de Higgs** �
 - El Sol de `horizontes-cuerpos` en «el Sol se apaga», de hoy a gigante roja (ver «El Sol de la serie»), con la temperatura y las celdas nuevas de la biblioteca; revisado con hoja de contactos y un clip de 120 cuadros.
 - El planeta que se rompe en el Desgarro es ahora la Tierra (ver «La Tierra que se rompe»), revisado con hoja de contactos y un clip de 100 cuadros.
 
+**Sesión del 29 de octubre de 2026 (narración, paso 1 y 2):**
+- `GUION.md`: la voz nueva de toda la obra, a la manera de Infinito (segunda persona, un nombre y una frase por momento, las cifras a la lámina, «tu protón»), con la coda hacia Destino como borrador. Espera la aprobación de Diego; solo la apertura está en código.
+- **La apertura** (`src/engine/apertura.ts`, GUION 1–4, ~18,6 beats antes de la portada): negro y el punto verde agua de Infinito (tú) que respira, con el reloj contando en vivo desde que llegaste (reloj 5); de él sale el protón azul, y el reloj corre hacia atrás con los hitos de «Ahora» al revés, tenues, sobre el protón (`HITOS` se exporta de `ahora.ts`); pasado el Sol y la Tierra cuenta desde el inicio hacia cero y el cielo se enciende al revés (rojo, naranja, el blanco del Horno), donde el protón se deshace. Recién ahí el título (*Horizontes · 02*, en tinta oscura sobre la luz), la luz se apaga y entra «t = ?». Pistas: `velo` (oculta las eras), `titulo` (0 → 1 → 2), `cromo` (marca, cono y lámina), `ap.*`. El cono empieza en la portada (`Cono.start`): la apertura no es parte de él. El polvo de escala se apaga en la apertura. Los textos nunca dejan una palabra sola en la última línea.
+
 ## Siguiente paso
 1. Que Diego recorra el viaje (mejor con **A**, y también a mano para sentir el empuje del scroll) y los cuatro finales, y diga qué funciona, sobre todo las eras nuevas (Higgs, cuásar, la Tierra con Tea, Andrómeda desde dentro, la última luz).
 2. Pulido con hoja de contactos (viaje y finales) y rendimiento en teléfonos reales.

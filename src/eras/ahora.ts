@@ -32,14 +32,14 @@ const D2R = Math.PI / 180;
 const LB0 = 9.66;
 const LB1 = -7.6;
 
-interface Hito {
+export interface Hito {
   L: () => number;
   texto: string;
 }
 const ago = (y: number) => () => nowYear() - y;
 const fixed = (L: number) => () => L;
 /** Milestones, years before now (to verify, see ESTADO.md). */
-const HITOS: Hito[] = [
+export const HITOS: Hito[] = [
   { L: fixed(4.54e9), texto: 'se forma la Tierra' },
   { L: fixed(2.4e9), texto: 'el aire se llena de oxígeno' },
   { L: fixed(1.0e9), texto: 'las primeras algas multicelulares' },

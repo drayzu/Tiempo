@@ -15,7 +15,8 @@ import { createScaleDust } from './engine/polvo';
 import { createSound } from './engine/sonido';
 import { createFondo } from './engine/fondo';
 import { createProtagonista } from './engine/protagonista';
-import { anillo, cono, escala, ficha, hud, nota, proyectar, rotulo, CONO, type Cono, type Lectura } from './engine/placa';
+import { anillo, cono, escala, ficha, hud, llegaste, nota, proyectar, rotulo, CONO, type Cono, type Lectura } from './engine/placa';
+import { aperturaChoreo, createApertura } from './engine/apertura';
 import { contactSheet, pelicula, type SheetHost } from './engine/contactos';
 import { crearEras, FINALES, type Final } from './eras';
 import { lang, switchLang, tx } from './i18n';
@@ -101,7 +102,10 @@ langBtn.addEventListener('click', switchLang);
 
 // ---------------------------------------------------------------- the choreography
 
-const tl = new Timeline({ era: 0, e: eras.list[0].home, lt: -45, lb: 9.6, ah: 0, reloj: 4, yaw: 0, pitch: 0, roll: 0, fov: 50, fondo: 0, horno: 0, bloom: 0.7, umbral: 0.12, silencio: 0 });
+const tl = new Timeline({ era: 0, e: eras.list[0].home, lt: -45, lb: 9.6, ah: 0, reloj: 4, yaw: 0, pitch: 0, roll: 0, fov: 50, fondo: 0, horno: 0, bloom: 0.7, umbral: 0.12, silencio: 0, velo: 0, titulo: 2, cromo: 1 });
+// The opening comes first (you, now, and the way back to the fire: GUION.md 1–4); the journey
+// through time begins after it.
+const INICIO = aperturaChoreo(tl);
 const starts = new Map<string, number>();
 MODULES.forEach((m, i) => {
   starts.set(eras.list[i].id, tl.length);
@@ -118,6 +122,7 @@ const dust = createScaleDust(post.dpr);
 scene.add(dust.points);
 const proton = createProtagonista();
 root.add(proton.points);
+const apertura = createApertura(scene);
 
 /** What the clocks read at beat p. */
 function lecturaAt(p: number): Lectura {
@@ -128,6 +133,8 @@ function lecturaAt(p: number): Lectura {
   let logSize: number;
   if (reloj === 1 || reloj === 3) {
     logYears = tl.get(reloj === 1 ? 'lb' : 'ah', p);
+    // On the opening's way back, the clock never reads less than the time since you arrived.
+    if (reloj === 1 && p < INICIO) logYears = Math.max(logYears, Math.log10(llegaste() / YEAR));
     // Far ahead the years themselves overflow (10¹⁰⁰ and beyond): work in logarithms.
     const years = Math.pow(10, Math.min(logYears, 300));
     const t = reloj === 1 ? AGE : AGE + years * YEAR;
@@ -150,13 +157,14 @@ function lecturaAt(p: number): Lectura {
   return { reloj, lt, logYears, years: Math.pow(10, Math.min(logYears, 300)), logT, logSize };
 }
 
-// The cone: one tick per era, and the colour of the universe along the whole journey.
+// The cone: one tick per era, and the colour of the universe along the whole journey (from the
+// cover on: the opening is not part of it).
 const conoData: Cono = (() => {
   const ticks = eras.list.map((e) => ({ beat: tl.at(e.id), label: e.label, acto: e.acto, certeza: e.certeza }));
   const colors: string[] = [];
   const bb = { r: 0, g: 0, b: 0 };
   for (let k = 0; k <= 120; k++) {
-    const p = (k / 120) * tl.length;
+    const p = INICIO + (k / 120) * (tl.length - INICIO);
     const l = lecturaAt(p);
     const T = Math.pow(10, Math.min(l.logT, 30));
     const v = bbVisible(T) * tl.get('fondo', p);
@@ -165,7 +173,7 @@ const conoData: Cono = (() => {
     const gam = (x: number) => Math.round(255 * Math.pow(Math.min(1, x * kk), 1 / 2.2));
     colors.push(v > 0.002 ? `rgba(${gam(bb.r)},${gam(bb.g)},${gam(bb.b)},${0.25 + 0.6 * v})` : 'rgba(143,180,255,0.05)');
   }
-  return { length: tl.length, ticks, colors, fork: tl.at('bifurcacion') / tl.length };
+  return { length: tl.length, ticks, colors, fork: (tl.at('bifurcacion') - INICIO) / (tl.length - INICIO), start: INICIO };
 })();
 
 // The cone's eras as buttons: they jump, and they tell the canvas what the pointer is on.
@@ -173,7 +181,7 @@ const ruler = document.querySelector<HTMLElement>('#ruler')!;
 let hovered: number | null = null;
 conoData.ticks.forEach((t, i) => {
   const b = document.createElement('button');
-  b.style.top = `${(t.beat / tl.length) * 100}%`;
+  b.style.top = `${((t.beat - INICIO) / (tl.length - INICIO)) * 100}%`;
   b.setAttribute('aria-label', `${t.label}`);
   b.addEventListener('click', () => scroll.jump(t.beat));
   b.addEventListener('pointerenter', () => (hovered = i));
@@ -187,6 +195,8 @@ conoData.ticks.forEach((t, i) => {
 
 const $ = <T extends HTMLElement>(s: string) => document.querySelector<T>(s)!;
 const intro = $('#intro');
+const cue = $('#cue');
+const brand = $('.brand');
 const outro = $('#outro');
 const leer = $('#leer');
 const playBtn = $<HTMLButtonElement>('#play');
@@ -372,6 +382,9 @@ function step(now: number) {
   };
   let eraInk = 0;
   let eraVelo = 0;
+  // The opening hides every era (the cover's figures come in as its light goes out).
+  const velo = tl.get('velo', p);
+  root.visible = velo < 0.999;
   for (const era of eras.list) {
     if (!era.content || !era.group.visible) continue;
     for (const c of era.content.clouds) {
@@ -379,7 +392,7 @@ function step(now: number) {
       c.u.uFocal.value = focal;
       c.u.uMinPx.value = 1.6 * post.dpr;
       c.u.uMaxPx.value = 26 * post.dpr;
-      c.u.uAlpha.value = era.alpha;
+      c.u.uAlpha.value = era.alpha * (1 - velo);
       c.u.uCamDist.value = camera.position.z;
     }
     const f = frameOf(era);
@@ -389,14 +402,15 @@ function step(now: number) {
   }
   const inkT = Math.max(fondo.state.tinta, eraInk);
 
-  // Our proton.
+  // Our proton, and in the opening you and the proton that steps out of you.
   const pr = eras.proton(frameOf, protonAt);
   proton.update(pr, post.dpr, inkT, dt);
+  apertura.update(tl, p, time, post.dpr, inkT);
 
   const a = eras.list[eras.segment];
   const b = eras.list[eras.segment + 1];
   tint.setHex(a.tint).lerp(tintB.setHex(b.tint), eras.blend);
-  dust.update(e, zoomSpeed, innerWidth / innerHeight, tint);
+  dust.update(e, zoomSpeed, innerWidth / innerHeight, tint, 1 - velo);
 
   // Over a bright full-bleed sky the bloom would fill in every dark speck: it gives way.
   const bright = fondo.state.bgL;
@@ -414,7 +428,7 @@ function step(now: number) {
   const u = H / 860;
   const toScreen = (era: Era) => (v: THREE.Vector3) => proyectar(tmp.copy(v).applyMatrix4(era.group.matrixWorld), camera, W, H);
   for (const era of eras.list) {
-    if (!era.content || !era.group.visible) continue;
+    if (!era.content || !era.group.visible || velo > 0.5) continue;
     era.content.placa?.(g, { ...frameOf(era), u }, plateOn, toScreen(era));
     if (era.alpha < 0.45) continue;
     // Its notes (plate layer), leaders pointing away from the centre.
@@ -440,9 +454,13 @@ function step(now: number) {
   if (over?.logSize !== undefined) l.logSize = over.logSize;
   if (over?.logT !== undefined) l.logT = over.logT;
   if ((cur as Era & { provisional?: boolean }).provisional) rotulo(g, u, W / 2, 26 * u, tx('era provisional'), 9.5, inkT, 0.5);
+  // The milestones the opening passes on its way back.
+  apertura.placa(g, u, tl, p, Math.max(tl.get('lb', p), Math.log10(llegaste() / YEAR)), camera, W, H, inkT);
+  // The opening keeps the chrome (the brand, the cone, the plate) until the title.
+  const cromo = tl.get('cromo', p);
   // The plate: a true scale bar, and each era's card (crossing over between eras).
   if (plateOn) {
-    const introOut = Math.min(1, Math.max(0, (p - 0.05) / 0.55));
+    const introOut = cromo;
     const A = eras.list[eras.segment];
     const B = eras.list[eras.segment + 1];
     const show = (era: Era | undefined, a: number) => era?.ficha && ficha(g, u, era.certeza, era.ficha, inkT, a * introOut);
@@ -455,18 +473,25 @@ function step(now: number) {
   conoData.ticks.forEach((t, i) => {
     if (t.beat <= p + 1e-6) here = i;
   });
-  const introOut = Math.min(1, Math.max(0, (p - 0.05) / 0.55));
-  cono(g, u, W, H, conoData, p, inkT, hovered, here, introOut);
-  const named = tl.captionAt(p) ?? (cur ? { name: cur.name, fact: cur.fact } : null);
-  if (hud(g, u, H, l, named, inkT, now, introOut, Math.max(Math.min(1, fondo.state.vis * 1.6), eraVelo) * (1 - inkT))) {
+  cono(g, u, W, H, conoData, p, inkT, hovered, here, cromo);
+  // (in the opening, only its own words: the cover's name comes with the cover)
+  const named = tl.captionAt(p) ?? (cur && p >= INICIO ? { name: cur.name, fact: cur.fact } : null);
+  if (hud(g, u, H, l, named, inkT, now, 1, Math.max(Math.min(1, fondo.state.vis * 1.6), eraVelo) * (1 - inkT))) {
     sound.chime();
     clearTimeout(speakTimer);
     speakTimer = window.setTimeout(() => (leer.textContent = named ? `${named.name}. ${named.fact}` : ''), 400);
   }
 
-  intro.style.opacity = String(1 - introOut);
-  intro.style.transform = `translateY(${-introOut * 40}px)`;
-  ruler.style.opacity = String(introOut);
+  // The title comes (0 → 1) and goes (1 → 2), rising a little all the while; over the white light
+  // its ink turns dark, as the plate's does. The cue stays under the point until the first gesture.
+  const titulo = tl.get('titulo', p);
+  intro.style.opacity = String(smoothstep(0, 1, titulo) * (1 - smoothstep(1, 2, titulo)));
+  intro.style.transform = `translateY(${titulo < 1 ? (1 - titulo) * 16 : -(titulo - 1) * 24}px)`;
+  intro.classList.toggle('is-dark', inkT > 0.5);
+  cue.style.opacity = String(1 - smoothstep(0.05, 0.6, p));
+  brand.style.opacity = String(cromo);
+  ruler.style.opacity = String(cromo);
+  ruler.style.pointerEvents = cromo > 0.5 ? '' : 'none';
   outro.classList.toggle('is-in', p > tl.length - 0.6);
   finales.classList.toggle('is-in', p > forkAt - 0.3 && p < forkAt + 4.4);
   const k = ENLACES.findIndex((x) => p >= x.from && p <= x.to);

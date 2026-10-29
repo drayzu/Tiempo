@@ -43,6 +43,7 @@ body {
 }
 
 /* ---------- Intro ---------- */
+/* The title arrives with the white light of the opening (not on load), so it starts unseen. */
 #intro {
   position: fixed;
   inset: 0;
@@ -52,8 +53,31 @@ body {
   text-align: center;
   gap: 18px;
   pointer-events: none;
+  opacity: 0;
   /* The title sits over the film: a soft shadow keeps the small lines legible. */
   text-shadow: 0 0 14px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.9);
+}
+
+/* Over the white light its ink turns dark, as the plate's does. */
+#intro.is-dark {
+  color: #1a1510;
+  text-shadow: 0 0 14px rgba(255, 246, 232, 0.8), 0 0 4px rgba(255, 246, 232, 0.7);
+}
+
+#intro.is-dark::before {
+  opacity: 0;
+}
+
+.kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+#intro.is-dark .kicker {
+  color: #2d5bb0;
 }
 
 /* And a soft dark pool behind the title block, so the foam recedes there. */
@@ -84,8 +108,17 @@ body {
   color: rgba(236, 231, 219, 0.85);
 }
 
+#intro.is-dark .lede {
+  color: rgba(26, 21, 16, 0.85);
+}
+
+/* «Desliza para empezar», under the point that opens the journey. */
 .cue {
-  margin-top: 28px;
+  position: fixed;
+  left: 50%;
+  top: calc(50% + 36px);
+  transform: translateX(-50%);
+  pointer-events: none;
   display: flex;
   flex-direction: column;
   align-items: center;

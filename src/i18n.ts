@@ -44,6 +44,15 @@ const EN: Record<string, string> = {
   'Un solo scroll que recorre todo el tiempo: de antes del Big Bang a la última luz.': 'One scroll through all of time: from before the Big Bang to the last light.',
   'De antes del Big Bang a la última luz.': 'From before the Big Bang to the last light.',
   'Desliza para empezar': 'Scroll to begin',
+
+  // ---- The opening (GUION.md 1–4).
+  'Llegaste': 'You arrived',
+  'Llegaste aquí hace un momento.': 'You arrived here a moment ago.',
+  'Más viejo que tú': 'Older than you',
+  'En una gota de agua de tu cuerpo hay un protón. Es mucho más viejo que tú.': 'In a drop of water in your body there is a proton. It is much older than you.',
+  'Hacia atrás': 'Backwards',
+  'Más viejo que la Tierra y que el Sol. Vamos a buscar dónde empezó.': "Older than the Earth and the Sun. Let's go and find where it began.",
+  'nacen el Sol y la Tierra': 'the Sun and the Earth are born',
   'Lámina': 'Plate',
   'Sonido': 'Sound',
   'Sonido · pronto': 'Sound · soon',

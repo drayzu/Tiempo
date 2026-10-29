@@ -66,10 +66,11 @@ export function createScaleDust(pixelRatio: number, count = 2400) {
   points.renderOrder = 10;
   return {
     points,
-    update(e: number, zoomSpeed: number, aspect: number, tint: THREE.Color) {
+    /** `gain` dims it (the opening is a point alone in the black). */
+    update(e: number, zoomSpeed: number, aspect: number, tint: THREE.Color, gain = 1) {
       uniforms.uE.value = e;
       uniforms.uAspect.value = aspect;
-      uniforms.uGain.value = 0.05 + Math.min(Math.abs(zoomSpeed), 3) * 0.12;
+      uniforms.uGain.value = (0.05 + Math.min(Math.abs(zoomSpeed), 3) * 0.12) * gain;
       uniforms.uColor.value.copy(tint);
     },
   };
