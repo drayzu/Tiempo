@@ -286,7 +286,7 @@ export function niebla(): EraModule {
       tl.with(0.02, { reloj: 0 });
       tl.to(3.2, { era: era.index, e: era.home + 0.05, lt: LT(1.2e5), fondo: 1, horno: 0, fov: 50, yaw: 0, pitch: 0, roll: 0, bloom: 0.7, umbral: 0.12 });
       tl.label('niebla');
-      tl.caption(4.6, 'El universo sonaba', 'Un plasma incandescente donde la luz no puede avanzar, que vibra con ondas de sonido reales. Con sonido (S) se oyen, unas cincuenta octavas más agudas.');
+      tl.caption(4.6, 'El universo sonaba', 'Un plasma incandescente donde la luz no puede avanzar, que vibra con ondas de sonido reales, unas cincuenta octavas más graves de lo que alcanza el oído.');
       tl.to(4.4, { lt: LT(2.9e5), 'niebla.fz': -2.5, yaw: 0.12, pitch: 0.04 });
       // Se hace la luz: the sky turns orange (Horno), and the camera leans in to our proton.
       tl.caption(4.8, 'Se hace la luz', 'Los electrones caen en los protones: nace el hidrógeno, y la luz por fin puede viajar.');

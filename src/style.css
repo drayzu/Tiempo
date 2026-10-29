@@ -219,6 +219,26 @@ body {
   opacity: 1;
 }
 
+/* Not ready yet (the sound, for now): the icon stays, faint, and the word under it says it comes
+   soon, on hover or when pressed (a tap, where there is no hover, or its key). */
+.chip.is-soon {
+  cursor: default;
+}
+
+.chip.is-soon:hover,
+.chip.is-soon:focus-visible {
+  color: var(--dim);
+}
+
+.chip.is-soon .chip-k {
+  opacity: 0.45;
+}
+
+.chip.is-soon.is-told .chip-t {
+  display: block;
+  opacity: 1;
+}
+
 /* ---------- The plate (HUD, cone, notes): drawn on a canvas over the film ---------- */
 #placa {
   position: fixed;

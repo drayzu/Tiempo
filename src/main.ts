@@ -198,14 +198,28 @@ const showToggle = (b: HTMLButtonElement, on: boolean) => {
   b.setAttribute('aria-pressed', String(on));
 };
 showToggle(plateBtn, plateOn);
+// The sound is not polished yet: its icon stays, faint, and says it comes soon (`soundReady` brings it back).
+const soundReady = false;
+let told = 0;
+const toggleSound = () => {
+  if (soundReady) return showToggle(soundBtn, sound.toggle());
+  soundBtn.classList.add('is-told');
+  clearTimeout(told);
+  told = window.setTimeout(() => soundBtn.classList.remove('is-told'), 1800);
+};
+if (!soundReady) {
+  soundBtn.classList.add('is-soon');
+  soundBtn.setAttribute('aria-disabled', 'true');
+  soundBtn.querySelector('.chip-t')!.textContent = tx('Sonido · pronto');
+}
 playBtn.addEventListener('click', () => scroll.togglePlay());
-soundBtn.addEventListener('click', () => showToggle(soundBtn, sound.toggle()));
+soundBtn.addEventListener('click', toggleSound);
 plateBtn.addEventListener('click', () => showToggle(plateBtn, (plateOn = !plateOn)));
 addEventListener('keydown', (ev) => {
   if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
   const k = ev.key.toLowerCase();
   if (k === 'a') scroll.togglePlay();
-  if (k === 's') showToggle(soundBtn, sound.toggle());
+  if (k === 's') toggleSound();
   if (k === 'i') showToggle(plateBtn, (plateOn = !plateOn));
   if (k === 'l') switchLang();
 });
