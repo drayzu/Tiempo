@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { materiaBuilder } from '../engine/materia';
+import { rng } from '../lib/math';
 
 /**
  * An infinite zoom: a field of points that looks the same at every scale, for the eras that cross
@@ -61,20 +61,39 @@ export interface InfinitoOpts {
 
 export function infinitoData(o: InfinitoOpts) {
   const K = o.layers ?? 8;
-  const b = materiaBuilder(o.seed);
+  const r = rng(o.seed);
+  const pos: number[] = [];
+  const col: number[] = [];
+  const size: number[] = [];
+  const seed: number[] = [];
   const layer: number[] = [];
+  const color = new THREE.Color();
   const pt = { x: 0, y: 0, z: 0, hex: 0, size: 0, light: 0 };
   for (let k = 0; k < K; k++) {
     let made = 0;
     let tries = 0;
     while (made < o.perLayer && tries++ < o.perLayer * 40) {
-      if (!o.point(b.r, pt)) continue;
-      b.push(pt.x, pt.y, pt.z, pt.hex, pt.size, pt.light);
+      if (!o.point(r, pt)) continue;
+      pos.push(pt.x, pt.y, pt.z);
+      // Match materiaBuilder's random draws, keeping every point's appearance unchanged.
+      color.setHex(pt.hex).multiplyScalar(pt.light * (0.8 + r() * 0.4));
+      col.push(color.r, color.g, color.b);
+      size.push(pt.size * (0.65 + r() * 0.7));
+      seed.push(r());
       layer.push(k);
       made++;
     }
   }
-  return { field: b.data(), layer: new Float32Array(layer), K };
+  return {
+    field: {
+      position: new Float32Array(pos),
+      color: new Float32Array(col),
+      size: new Float32Array(size),
+      seed: new Float32Array(seed),
+    },
+    layer: new Float32Array(layer),
+    K,
+  };
 }
 
 export function infinito(data: ReturnType<typeof infinitoData>, spacing = 0.5) {

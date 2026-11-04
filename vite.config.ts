@@ -36,6 +36,8 @@ function guardar(): Plugin {
 export default defineConfig({
   base: './',
   plugins: [guardar()],
+  // Keep the geography's dynamic import out of the worker's initial download.
+  worker: { format: 'es' },
   build: {
     rollupOptions: {
       input: {

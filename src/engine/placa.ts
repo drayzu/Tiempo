@@ -184,7 +184,31 @@ function potenciaDoble(g: CanvasRenderingContext2D, x: number, y: number, logV: 
   g.fillText(unit, cx, y);
 }
 
+const MAX_TEXT_LAYOUTS = 128;
+let textLayouts = new WeakMap<CanvasRenderingContext2D, Map<string, string[]>>();
+const fonts = typeof document !== 'undefined' ? document.fonts : undefined;
+if (fonts) {
+  const clearLayouts = () => { textLayouts = new WeakMap(); };
+  fonts.addEventListener('loading', clearLayouts);
+  fonts.addEventListener('loadingdone', clearLayouts);
+  fonts.addEventListener('loadingerror', clearLayouts);
+}
+
 function wrap(g: CanvasRenderingContext2D, text: string, maxW: number) {
+  // A phrase keeps its lines while its width and typography stay the same.
+  // During font loading, measure afresh so fallback widths never outlive the fallback.
+  const cacheable = !fonts || fonts.status === 'loaded';
+  const key = cacheable ? JSON.stringify([
+    text, maxW, g.font, g.letterSpacing, g.wordSpacing, g.direction,
+    g.fontKerning, g.fontStretch, g.fontVariantCaps, g.textRendering, fonts?.size,
+  ]) : '';
+  let cache = cacheable ? textLayouts.get(g) : undefined;
+  if (cacheable && !cache) {
+    cache = new Map();
+    textLayouts.set(g, cache);
+  }
+  const cached = cache?.get(key);
+  if (cached) return cached;
   const lines: string[] = [];
   let line = '';
   for (const w of text.split(' ')) {
@@ -204,6 +228,10 @@ function wrap(g: CanvasRenderingContext2D, text: string, maxW: number) {
       lines[n - 2] = lines[n - 2].slice(0, cut);
       lines[n - 1] = joined;
     }
+  }
+  if (cache && (!fonts || fonts.status === 'loaded')) {
+    if (cache.size >= MAX_TEXT_LAYOUTS) cache.delete(cache.keys().next().value!);
+    cache.set(key, lines);
   }
   return lines;
 }

@@ -71,6 +71,7 @@ const FRAG = /* glsl */ `
 
 export interface MateriaData {
   position: Float32Array;
+  /** May share position when no custom origin was supplied. */
   aFrom: Float32Array;
   color: Float32Array;
   aInk: Float32Array;
@@ -126,7 +127,13 @@ export interface Materia {
 /** Wraps generated data into a cloud (cheap: no per-point work). */
 export function materia(data: MateriaData, o: MateriaOpts = {}): Materia {
   const geo = new THREE.BufferGeometry();
-  for (const key of Object.keys(ITEM) as (keyof MateriaData)[]) geo.setAttribute(key, new THREE.BufferAttribute(data[key], ITEM[key]));
+  const position = new THREE.BufferAttribute(data.position, 3);
+  for (const key of Object.keys(ITEM) as (keyof MateriaData)[]) {
+    const attribute = key === 'position' || (key === 'aFrom' && data.aFrom === data.position)
+      ? position
+      : new THREE.BufferAttribute(data[key], ITEM[key]);
+    geo.setAttribute(key, attribute);
+  }
   for (const [k, [arr, n]] of Object.entries(o.extra ?? {})) geo.setAttribute(k, new THREE.BufferAttribute(arr, n));
   const u: MateriaU = {
     uTime: { value: 0 },
@@ -182,11 +189,11 @@ export interface PushOpts {
   drift?: number;
 }
 
-/** Collects points; `data()` hands them over as typed arrays (transferable from a worker). */
+/** Collects transferable points. Explicit origins stay independent of CPU position changes. */
 export function materiaBuilder(seed: number) {
   const r = rng(seed);
   const pos: number[] = [];
-  const from: number[] = [];
+  let from: number[] | null = null;
   const col: number[] = [];
   const ink: number[] = [];
   const size: number[] = [];
@@ -211,8 +218,12 @@ export function materiaBuilder(seed: number) {
     /** `light` scales the colour with ±20 % natural variation; `s` the size with ±35 %. */
     push(x: number, y: number, z: number, hex: number | THREE.Color, s: number, light = 1, o: PushOpts = {}) {
       pos.push(x, y, z);
-      const f = o.from ?? [x, y, z];
-      from.push(f[0], f[1], f[2]);
+      // The positions already contain default origins; allocate only for a custom one.
+      if (o.from && !from) from = pos.slice(0, pos.length - 3);
+      if (from) {
+        const f = o.from ?? [x, y, z];
+        from.push(f[0], f[1], f[2]);
+      }
       if (typeof hex === 'number') c.setHex(hex);
       else c.copy(hex);
       c.multiplyScalar(light * (0.8 + r() * 0.4));
@@ -228,9 +239,10 @@ export function materiaBuilder(seed: number) {
     },
     data(): MateriaData {
       const f = (a: number[]) => new Float32Array(a);
+      const position = f(pos);
       return {
-        position: f(pos),
-        aFrom: f(from),
+        position,
+        aFrom: from ? f(from) : position,
         color: f(col),
         aInk: f(ink),
         size: f(size),
