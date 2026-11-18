@@ -1,0 +1,578 @@
+/* El marco de Horizontes (marco.ts). Usa las fuentes que ya carga cada obra. */
+:root {
+  --marco-ink: #ece7db;
+  --marco-dim: rgba(236, 231, 219, 0.5);
+  --marco-faint: rgba(236, 231, 219, 0.14);
+  --marco-hair: rgba(236, 231, 219, 0.08);
+  --marco-acento: #ff5b2e;
+  --marco-sig: #8fb4ff;
+  --marco-serif: 'Instrument Serif', 'Times New Roman', serif;
+  --marco-sans: 'Geist Variable', 'Geist', system-ui, sans-serif;
+  --marco-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, monospace;
+}
+
+.marco-marca,
+.marco-barra,
+.marco-cue,
+.marco-fin,
+.marco-progreso,
+.marco-mapa {
+  font-family: var(--marco-sans);
+  color: var(--marco-ink);
+  -webkit-font-smoothing: antialiased;
+  z-index: 20;
+}
+.marco-marca button,
+.marco-barra button,
+.marco-fin button,
+.marco-mapa button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.marco-marca :focus-visible,
+.marco-barra :focus-visible,
+.marco-fin :focus-visible,
+.marco-mapa :focus-visible {
+  outline: 1px solid var(--marco-ink);
+  outline-offset: 3px;
+}
+.marco-k {
+  font: 500 11px var(--marco-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--marco-dim);
+}
+
+/* ---------- La marca ---------- */
+.marco-marca {
+  position: fixed;
+  top: 26px;
+  left: 30px;
+  display: grid;
+  gap: 7px;
+  justify-items: start;
+  transition: opacity 0.9s;
+}
+.marco-nombre {
+  font: 400 26px/1 var(--marco-serif) !important;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+}
+.marco-serie {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+.marco-marca:hover .marco-serie,
+.marco-marca:focus-within .marco-serie {
+  opacity: 1;
+  transform: none;
+}
+.marco-serie i {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+.marco-serie i.es {
+  width: 6px;
+  height: 6px;
+  opacity: 1;
+  background: var(--marco-acento);
+  box-shadow: 0 0 6px var(--marco-acento);
+}
+.marco-serie b {
+  margin-left: 6px;
+  font: 500 10px var(--marco-mono);
+  letter-spacing: 0.16em;
+  color: var(--marco-dim);
+}
+
+/* ---------- La barra ---------- */
+.marco-barra {
+  position: fixed;
+  top: 24px;
+  right: 26px;
+  display: flex;
+  gap: 2px;
+  transition: opacity 0.9s;
+}
+.marco-chip {
+  position: relative;
+  display: grid !important;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: var(--marco-dim) !important;
+  transition: color 0.2s;
+}
+.marco-chip:hover,
+.marco-chip:focus-visible {
+  color: var(--marco-ink) !important;
+}
+.marco-chip svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.8));
+}
+.marco-letra {
+  font: 600 11px var(--marco-mono);
+  letter-spacing: 0.06em;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.8));
+}
+.marco-chip.is-on {
+  color: var(--marco-acento) !important;
+}
+.marco-chip.is-on svg {
+  stroke-width: 1.8;
+  filter: drop-shadow(0 0 5px var(--marco-acento));
+}
+.marco-chip .marco-pausa,
+.marco-chip.is-on .marco-juega {
+  display: none;
+}
+.marco-chip.is-on .marco-pausa {
+  display: block;
+}
+.marco-t {
+  position: absolute;
+  top: 100%;
+  right: 50%;
+  transform: translateX(50%);
+  white-space: nowrap;
+  font: 500 10px var(--marco-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--marco-dim);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.marco-t kbd {
+  font: inherit;
+  color: var(--marco-ink);
+}
+.marco-chip:last-child .marco-t {
+  right: 0;
+  transform: none;
+}
+.marco-chip:hover .marco-t,
+.marco-chip:focus-visible .marco-t,
+.marco-chip.is-told .marco-t {
+  opacity: 1;
+}
+/* Lo que la obra todavía no tiene: el ícono queda, tenue, y dice «pronto». */
+.marco-chip.is-soon {
+  cursor: default !important;
+}
+.marco-chip.is-soon:hover,
+.marco-chip.is-soon:focus-visible {
+  color: var(--marco-dim) !important;
+}
+.marco-chip.is-soon svg,
+.marco-chip.is-soon .marco-letra {
+  opacity: 0.4;
+}
+
+/* ---------- El progreso ---------- */
+.marco-progreso {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--marco-hair);
+  pointer-events: none;
+  transition: opacity 0.9s;
+}
+.marco-progreso i {
+  display: block;
+  height: 100%;
+  background: var(--marco-acento);
+  opacity: 0.7;
+  box-shadow: 0 0 6px var(--marco-acento);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+/* ---------- Las capturas (las herramientas de cada obra ponen `is-cap`): solo la obra ---------- */
+body.is-cap .marco-marca,
+body.is-cap .marco-barra,
+body.is-cap .marco-cue,
+body.is-cap .marco-fin,
+body.is-cap .marco-progreso,
+body.is-cap .marco-mapa {
+  display: none !important;
+}
+
+/* ---------- El reposo ---------- */
+body.marco-reposo .marco-marca,
+body.marco-reposo .marco-barra,
+body.marco-reposo .marco-progreso {
+  opacity: 0 !important;
+  transition-duration: 1.6s;
+}
+
+/* ---------- El inicio ---------- */
+.marco-cue {
+  position: fixed;
+  left: 50%;
+  top: calc(50% + 56px);
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+}
+.marco-cue-l {
+  width: 1px;
+  height: 46px;
+  background: linear-gradient(var(--marco-ink), transparent);
+  transform-origin: top;
+  animation: marco-cue 2.4s ease-in-out infinite;
+}
+.marco-cue small {
+  font: 400 10.5px var(--marco-mono);
+  letter-spacing: 0.08em;
+  color: rgba(236, 231, 219, 0.38);
+}
+.marco-cue kbd {
+  font: inherit;
+  color: var(--marco-dim);
+  border: 1px solid var(--marco-faint);
+  border-radius: 3px;
+  padding: 0 4px;
+}
+@keyframes marco-cue {
+  0% { transform: scaleY(0); }
+  50% { transform: scaleY(1); }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* ---------- El final ---------- */
+.marco-fin {
+  position: fixed;
+  left: 50%;
+  top: calc(50% + 44px);
+  transform: translate(-50%, 10px);
+  width: min(540px, calc(100% - 32px));
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s, transform 1s;
+  text-shadow: 0 0 14px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.9);
+}
+.marco-fin.is-in {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+.marco-fin-t {
+  font: italic 400 clamp(44px, 6vw, 64px)/1 var(--marco-serif);
+  color: var(--marco-sig);
+  text-decoration: none;
+}
+.marco-fin-q {
+  font: italic 400 19px var(--marco-serif);
+  color: rgba(236, 231, 219, 0.8);
+}
+.marco-entrar {
+  --k: 0;
+  margin-top: 16px;
+  padding: 9px 22px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--marco-sig) 50%, transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--marco-sig) 24%, transparent) calc(var(--k) * 100%), transparent 0);
+  font: 500 11px var(--marco-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--marco-sig);
+  text-decoration: none;
+  transition: border-color 0.3s;
+}
+.marco-entrar:hover,
+.marco-entrar:focus-visible {
+  border-color: var(--marco-sig);
+}
+.marco-pronto {
+  font: 500 10px var(--marco-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--marco-dim);
+}
+.marco-otros {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  font: 500 10px var(--marco-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.marco-otros button {
+  color: var(--marco-dim) !important;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+.marco-otros button:hover,
+.marco-otros button:focus-visible {
+  color: var(--marco-ink) !important;
+}
+/* Abismo: primero la ayuda, como enlace de verdad. */
+.marco-fin.is-abismo {
+  top: auto;
+  bottom: 5vh;
+}
+/* La línea de ayuda se tiene que leer sobre lo que haya detrás (el agua brilla): una sombra suave. */
+.marco-fin.is-abismo::before {
+  content: '';
+  position: absolute;
+  inset: -30px -90px -36px;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.4) 55%, transparent);
+  pointer-events: none;
+}
+.marco-fin.is-abismo .marco-ayuda span {
+  color: rgba(236, 231, 219, 0.74);
+}
+.marco-ayuda {
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  margin-bottom: 22px;
+}
+.marco-ayuda p {
+  font: 400 15px var(--marco-sans);
+  color: rgba(236, 231, 219, 0.88);
+}
+.marco-ayuda span {
+  font: 400 10.5px var(--marco-mono);
+  letter-spacing: 0.06em;
+  color: var(--marco-dim);
+}
+.marco-ayuda a {
+  color: var(--marco-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--marco-dim);
+  text-underline-offset: 3px;
+}
+.marco-fin.is-abismo .marco-fin-t {
+  font-size: 40px;
+}
+
+/* ---------- El mapa ---------- */
+.marco-mapa {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-content: center;
+  gap: 34px;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.88);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.marco-mapa.is-in {
+  opacity: 1;
+  pointer-events: auto;
+}
+body.marco-con-mapa .marco-marca,
+body.marco-con-mapa .marco-barra,
+body.marco-con-mapa .marco-fin {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.marco-mapa-k {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+.marco-lema {
+  font: italic 400 22px var(--marco-serif);
+  color: rgba(236, 231, 219, 0.85);
+}
+.marco-mapa ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  width: min(830px, calc(100vw - 48px));
+  position: relative;
+}
+.marco-mapa ol::before {
+  content: '';
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  top: 21px;
+  height: 1px;
+  background: var(--marco-faint);
+}
+.marco-mapa li {
+  position: relative;
+  min-width: 0;
+  padding: 0 4px;
+}
+.marco-mapa li > a,
+.marco-mapa li > button,
+.marco-mapa li > .marco-li {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+.marco-pt {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+}
+.marco-pt i {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 10px var(--c);
+  transition: transform 0.3s;
+}
+.marco-mapa li > a:hover .marco-pt i,
+.marco-mapa li > a:focus-visible .marco-pt i {
+  transform: scale(1.7);
+}
+.marco-mapa li.es .marco-pt {
+  border: 1px solid var(--c);
+  border-radius: 50%;
+}
+.marco-mapa li.pronto .marco-pt i {
+  opacity: 0.45;
+}
+.marco-n {
+  font: 500 10px var(--marco-mono);
+  letter-spacing: 0.16em;
+  color: var(--marco-dim);
+}
+.marco-o {
+  font: 400 23px/1 var(--marco-serif);
+  color: var(--marco-ink);
+}
+.marco-mapa li.pronto .marco-o {
+  color: var(--marco-dim);
+}
+.marco-q {
+  font: italic 400 13px/1.25 var(--marco-serif);
+  color: var(--marco-dim);
+}
+.marco-aqui {
+  font: 500 9px var(--marco-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c);
+}
+.marco-mapa-pie {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  font: 500 10px var(--marco-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.marco-mapa-pie a,
+.marco-mapa-pie button {
+  color: var(--marco-dim) !important;
+  text-decoration: none;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+.marco-mapa-pie a:hover,
+.marco-mapa-pie button:hover {
+  color: var(--marco-ink) !important;
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 720px) {
+  .marco-marca {
+    top: 18px;
+    left: 16px;
+  }
+  .marco-nombre {
+    font-size: 24px !important;
+  }
+  .marco-barra {
+    top: 14px;
+    right: 10px;
+    gap: 0;
+  }
+  .marco-t {
+    display: none;
+  }
+  .marco-fin.is-abismo .marco-fin-t {
+    font-size: 34px;
+  }
+  .marco-mapa {
+    place-content: center stretch;
+    gap: 24px;
+    overflow-y: auto;
+  }
+  .marco-mapa ol {
+    grid-template-columns: 1fr;
+    width: auto;
+    gap: 2px;
+    text-align: left;
+  }
+  .marco-mapa ol::before {
+    left: 20px;
+    right: auto;
+    top: 21px;
+    bottom: 21px;
+    width: 1px;
+    height: auto;
+  }
+  .marco-mapa li > a,
+  .marco-mapa li > button,
+  .marco-mapa li > .marco-li {
+    grid-template-columns: 42px 22px auto 1fr;
+    justify-items: start;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+  }
+  .marco-o {
+    font-size: 21px;
+  }
+  .marco-aqui {
+    grid-column: 4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marco-cue-l {
+    animation: none;
+  }
+}

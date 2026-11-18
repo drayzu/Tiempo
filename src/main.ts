@@ -20,6 +20,7 @@ import { aperturaChoreo, cierreChoreo, createApertura } from './engine/apertura'
 import { contactSheet, pelicula, type SheetHost } from './engine/contactos';
 import { crearEras, FINALES, type Final } from './eras';
 import { lang, switchLang, tx } from './i18n';
+import { crearMarco } from './marco/marco';
 
 /**
  * Tiempo. The journey is a chain of eras in the order they are lived; each brings its own
@@ -94,11 +95,6 @@ for (const el of document.querySelectorAll<HTMLElement>('[data-i18n]')) {
 }
 for (const el of document.querySelectorAll<HTMLElement>('[data-i18n-label]')) el.setAttribute('aria-label', tx(el.getAttribute('aria-label')!));
 document.querySelector('meta[name="description"]')?.setAttribute('content', tx(document.querySelector('meta[name="description"]')!.getAttribute('content')!));
-const langBtn = document.querySelector<HTMLButtonElement>('#lang')!;
-langBtn.querySelector('.chip-t')!.textContent = lang === 'en' ? 'Español' : 'English';
-langBtn.querySelector('.chip-k')!.textContent = lang === 'en' ? 'ES' : 'EN';
-langBtn.setAttribute('aria-label', lang === 'en' ? 'Ver en español' : 'View in English');
-langBtn.addEventListener('click', switchLang);
 
 // ---------------------------------------------------------------- the choreography
 
@@ -195,44 +191,17 @@ conoData.ticks.forEach((t, i) => {
 
 const $ = <T extends HTMLElement>(s: string) => document.querySelector<T>(s)!;
 const intro = $('#intro');
-const cue = $('#cue');
-const brand = $('.brand');
 const outro = $('#outro');
 const leer = $('#leer');
-const playBtn = $<HTMLButtonElement>('#play');
-const soundBtn = $<HTMLButtonElement>('#sound');
-const plateBtn = $<HTMLButtonElement>('#plate');
 let plateOn = params.has('lamina');
-const showToggle = (b: HTMLButtonElement, on: boolean) => {
-  b.classList.toggle('is-on', on);
-  b.setAttribute('aria-pressed', String(on));
-};
-showToggle(plateBtn, plateOn);
-// The sound is not polished yet: its icon stays, faint, and says it comes soon (`soundReady` brings it back).
-const soundReady = false;
-let told = 0;
-const toggleSound = () => {
-  if (soundReady) return showToggle(soundBtn, sound.toggle());
-  soundBtn.classList.add('is-told');
-  clearTimeout(told);
-  told = window.setTimeout(() => soundBtn.classList.remove('is-told'), 1800);
-};
-if (!soundReady) {
-  soundBtn.classList.add('is-soon');
-  soundBtn.setAttribute('aria-disabled', 'true');
-  soundBtn.querySelector('.chip-t')!.textContent = tx('Sonido · pronto');
-}
-playBtn.addEventListener('click', () => scroll.togglePlay());
-soundBtn.addEventListener('click', toggleSound);
-plateBtn.addEventListener('click', () => showToggle(plateBtn, (plateOn = !plateOn)));
-addEventListener('keydown', (ev) => {
-  if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
-  const k = ev.key.toLowerCase();
-  if (k === 'a') scroll.togglePlay();
-  if (k === 's') toggleSound();
-  if (k === 'i') showToggle(plateBtn, (plateOn = !plateOn));
-  if (k === 'l') switchLang();
+// The sound is not polished yet: without `sonido` the frame shows its icon faint, saying it comes soon.
+// The keys (A, S, I, F, L) are the frame's.
+const marco = crearMarco({
+  obra: 'tiempo',
+  lang,
+  acciones: { play: () => scroll.togglePlay(), lamina: () => (plateOn = !plateOn), idioma: switchLang },
 });
+marco.lamina(plateOn);
 
 // The fork: from here on physics is not sure; the visitor chooses how it ends (kept in the URL).
 const finales = $('#finales');
@@ -299,7 +268,6 @@ let last = performance.now();
 let prevE = tl.get('e', 0);
 let prevLt = tl.get('lt', 0);
 let speakTimer = 0;
-let atEnd = 0;
 let lastSilencio = 0;
 let lastP = 0;
 let prevP = 0;
@@ -473,10 +441,12 @@ function step(now: number) {
   conoData.ticks.forEach((t, i) => {
     if (t.beat <= p + 1e-6) here = i;
   });
-  cono(g, u, W, H, conoData, p, inkT, hovered, here, cromo);
+  // At rest the cone steps back with the buttons; at the end the closing card is left alone.
+  const marcoK = (1 - marco.reposo) * (1 - marco.final);
+  cono(g, u, W, H, conoData, p, inkT, hovered, here, cromo * marcoK);
   // (in the opening, only its own words: the cover's name comes with the cover)
   const named = tl.captionAt(p) ?? (cur && p >= INICIO ? { name: cur.name, fact: cur.fact } : null);
-  if (hud(g, u, H, l, named, inkT, now, 1, Math.max(Math.min(1, fondo.state.vis * 1.6), eraVelo) * (1 - inkT))) {
+  if (hud(g, u, H, l, named, inkT, now, 1 - marco.final, Math.max(Math.min(1, fondo.state.vis * 1.6), eraVelo) * (1 - inkT))) {
     sound.chime();
     clearTimeout(speakTimer);
     speakTimer = window.setTimeout(() => (leer.textContent = named ? `${named.name}. ${named.fact}` : ''), 400);
@@ -488,11 +458,9 @@ function step(now: number) {
   intro.style.opacity = String(smoothstep(0, 1, titulo) * (1 - smoothstep(1, 2, titulo)));
   intro.style.transform = `translateY(${titulo < 1 ? (1 - titulo) * 16 : -(titulo - 1) * 24}px)`;
   intro.classList.toggle('is-dark', inkT > 0.5);
-  cue.style.opacity = String(1 - smoothstep(0.05, 0.6, p));
-  brand.style.opacity = String(cromo);
-  ruler.style.opacity = String(cromo);
-  ruler.style.pointerEvents = cromo > 0.5 ? '' : 'none';
+  ruler.style.pointerEvents = cromo * marcoK > 0.5 ? '' : 'none';
   outro.classList.toggle('is-in', p > tl.length - 0.6);
+  marco.update({ p: p / tl.length, playing: scroll.playing, cromo, inicio: 1 - smoothstep(0.05, 0.6, p), fin: p > tl.length - 0.6 ? 1 : 0 });
   finales.classList.toggle('is-in', p > forkAt - 0.3 && p < forkAt + 4.4);
   const k = ENLACES.findIndex((x) => p >= x.from && p <= x.to);
   if (k !== enlaceOn) {
@@ -503,15 +471,7 @@ function step(now: number) {
     }
     enlace.classList.toggle('is-in', k >= 0);
   }
-  // The loop: the end draws the cover again; a moment there, and the journey begins anew.
-  if (p > tl.length - 0.03 && scroll.held === null) {
-    atEnd += dt;
-    if (atEnd > 1.8) {
-      atEnd = 0;
-      scroll.restart();
-    }
-  } else atEnd = 0;
-  playBtn.classList.toggle('is-on', scroll.playing);
+  // The end no longer loops on its own: the closing card offers to watch again or to go on to Destino.
   // The plasma rings while the universe is opaque (from its first seconds); the end falls silent,
   // and the moment the silence arrives is the last bell.
   const silencio = tl.get('silencio', p);
